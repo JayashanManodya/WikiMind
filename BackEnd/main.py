@@ -5,13 +5,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
-# Ensure project root is in sys.path so running from inside BackEnd/ or root works seamlessly
+# Ensure project root is in sys.path
 root_dir = Path(__file__).resolve().parent.parent
 if str(root_dir) not in sys.path:
     sys.path.insert(0, str(root_dir))
 
 from BackEnd.schemas import RootResponse, HealthResponse
 from BackEnd.routers.upload import router as upload_router
+from BackEnd.routers.documents import router as documents_router
 
 # Load environment variables
 load_dotenv()
@@ -35,6 +36,7 @@ app.add_middleware(
 
 # Include Routers
 app.include_router(upload_router)
+app.include_router(documents_router)
 
 @app.get(
     "/",

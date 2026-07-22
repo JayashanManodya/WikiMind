@@ -37,8 +37,11 @@ htmlcov/
 
 # WikiLLM Data & Storage (Vector DB, generated wiki files)
 storage/
+documents/*
+!documents/.gitkeep
 wiki/*
 !wiki/.gitkeep
+
 
 # IDEs & System files
 .vscode/
