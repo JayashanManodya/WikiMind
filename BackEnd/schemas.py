@@ -53,6 +53,21 @@ class ParsedDocumentResponse(BaseModel):
     parsed_at: str = Field(..., json_schema_extra={"example": "2026-07-22T18:05:00Z"})
     status: str = Field(default="parsed", json_schema_extra={"example": "parsed"})
 
+class CleanedPage(BaseModel):
+    page_number: int = Field(..., json_schema_extra={"example": 1})
+    raw_char_count: int = Field(..., json_schema_extra={"example": 1400})
+    cleaned_char_count: int = Field(..., json_schema_extra={"example": 1250})
+    cleaned_text: str = Field(..., json_schema_extra={"example": "Cleaned text for page 1."})
+
+class CleanedDocumentResponse(BaseModel):
+    file_id: str = Field(..., json_schema_extra={"example": "f47ac10b-58cc-4372-a567-0e02b2c3d479"})
+    original_filename: str = Field(..., json_schema_extra={"example": "sample_document.pdf"})
+    total_pages: int = Field(..., json_schema_extra={"example": 5})
+    full_cleaned_text: str = Field(..., json_schema_extra={"example": "Cleaned text with extra spaces, headers, and page numbers removed."})
+    pages: List[CleanedPage]
+    cleaned_at: str = Field(..., json_schema_extra={"example": "2026-07-22T18:10:00Z"})
+    status: str = Field(default="cleaned", json_schema_extra={"example": "cleaned"})
+
 class ErrorDetail(BaseModel):
     detail: str = Field(..., json_schema_extra={"example": "Unsupported file format '.exe'. Allowed formats: .docx, .md, .pdf, .txt"})
     error_code: str = Field(default="INVALID_FILE_TYPE", json_schema_extra={"example": "INVALID_FILE_TYPE"})

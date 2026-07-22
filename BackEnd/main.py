@@ -14,6 +14,7 @@ from BackEnd.schemas import RootResponse, HealthResponse
 from BackEnd.routers.upload import router as upload_router
 from BackEnd.routers.documents import router as documents_router
 from BackEnd.routers.parsing import router as parsing_router
+from BackEnd.routers.cleaning import router as cleaning_router
 
 # Load environment variables
 load_dotenv()
@@ -39,6 +40,7 @@ app.add_middleware(
 app.include_router(upload_router)
 app.include_router(documents_router)
 app.include_router(parsing_router)
+app.include_router(cleaning_router)
 
 @app.get(
     "/",
