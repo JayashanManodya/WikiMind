@@ -39,6 +39,20 @@ class DocumentListResponse(BaseModel):
     total_documents: int = Field(..., json_schema_extra={"example": 5})
     documents: List[DocumentMetadata]
 
+class ParsedPage(BaseModel):
+    page_number: int = Field(..., json_schema_extra={"example": 1})
+    text: str = Field(..., json_schema_extra={"example": "Extracted text content from page 1."})
+    char_count: int = Field(..., json_schema_extra={"example": 1250})
+
+class ParsedDocumentResponse(BaseModel):
+    file_id: str = Field(..., json_schema_extra={"example": "f47ac10b-58cc-4372-a567-0e02b2c3d479"})
+    original_filename: str = Field(..., json_schema_extra={"example": "sample_document.pdf"})
+    total_pages: int = Field(..., json_schema_extra={"example": 5})
+    full_text: str = Field(..., json_schema_extra={"example": "Complete extracted plain text with page dividers."})
+    pages: List[ParsedPage]
+    parsed_at: str = Field(..., json_schema_extra={"example": "2026-07-22T18:05:00Z"})
+    status: str = Field(default="parsed", json_schema_extra={"example": "parsed"})
+
 class ErrorDetail(BaseModel):
     detail: str = Field(..., json_schema_extra={"example": "Unsupported file format '.exe'. Allowed formats: .docx, .md, .pdf, .txt"})
     error_code: str = Field(default="INVALID_FILE_TYPE", json_schema_extra={"example": "INVALID_FILE_TYPE"})

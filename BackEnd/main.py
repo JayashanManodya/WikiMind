@@ -13,6 +13,7 @@ if str(root_dir) not in sys.path:
 from BackEnd.schemas import RootResponse, HealthResponse
 from BackEnd.routers.upload import router as upload_router
 from BackEnd.routers.documents import router as documents_router
+from BackEnd.routers.parsing import router as parsing_router
 
 # Load environment variables
 load_dotenv()
@@ -37,6 +38,7 @@ app.add_middleware(
 # Include Routers
 app.include_router(upload_router)
 app.include_router(documents_router)
+app.include_router(parsing_router)
 
 @app.get(
     "/",

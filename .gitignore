@@ -39,8 +39,10 @@ htmlcov/
 storage/
 documents/*
 !documents/.gitkeep
+BackEnd/documents/
 wiki/*
 !wiki/.gitkeep
+
 
 
 # IDEs & System files
