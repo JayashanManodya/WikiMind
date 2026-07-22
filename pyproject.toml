@@ -1,0 +1,18 @@
+[project]
+name = "wikimind"
+version = "0.1.0"
+description = "AI-powered Knowledge Management & Wikipedia-style QA Platform API"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.139.2",
+    "uvicorn>=0.51.0",
+    "pydantic>=2.13.4",
+    "python-dotenv>=1.2.2",
+    "python-multipart>=0.0.20",
+    "httpx>=0.28.1",
+    "pytest>=8.3.4",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

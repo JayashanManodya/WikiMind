@@ -11,3 +11,8 @@ After completing any task, update, or code modification:
 1. Always provide a comprehensive, step-by-step description in the chat detailing everything that was done.
 2. Clearly explain which files were created, updated, or deleted, along with the reasoning and key architectural/design details.
 
+
+## Implementation Plan Requirement
+Before executing code modifications, feature implementations, or complex tasks:
+1. Always create a detailed implementation plan first outlining proposed changes, affected files, architecture, and verification steps.
+2. Present the implementation plan to the user for review prior to executing the implementation.
