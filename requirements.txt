@@ -7,6 +7,7 @@ fastapi==0.139.2
 h11==0.16.0
 httpx==0.28.1
 idna==3.18
+openai==1.65.2
 pydantic==2.13.4
 pydantic_core==2.46.4
 PyMuPDF==1.25.3

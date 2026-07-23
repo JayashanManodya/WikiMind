@@ -68,6 +68,39 @@ class CleanedDocumentResponse(BaseModel):
     cleaned_at: str = Field(..., json_schema_extra={"example": "2026-07-22T18:10:00Z"})
     status: str = Field(default="cleaned", json_schema_extra={"example": "cleaned"})
 
+# --- Phase 7 Knowledge Extraction Models ---
+
+class ExtractedEntity(BaseModel):
+    name: str = Field(..., json_schema_extra={"example": "Tesla"})
+    type: str = Field(..., json_schema_extra={"example": "ORGANIZATION"})
+    description: str = Field(..., json_schema_extra={"example": "Electric vehicle and clean energy company founded by Elon Musk."})
+
+class ExtractedDefinition(BaseModel):
+    term: str = Field(..., json_schema_extra={"example": "Knowledge Graph"})
+    definition: str = Field(..., json_schema_extra={"example": "A structured representation of entities and relationships."})
+
+class ExtractedFact(BaseModel):
+    fact: str = Field(..., json_schema_extra={"example": "Tesla was founded by Elon Musk in 2003."})
+    confidence: float = Field(default=0.95, json_schema_extra={"example": 0.95})
+    source_section: Optional[str] = Field(None, json_schema_extra={"example": "Section 1"})
+
+class ExtractedRelationship(BaseModel):
+    source_entity: str = Field(..., json_schema_extra={"example": "Tesla"})
+    relation: str = Field(..., json_schema_extra={"example": "FOUNDED_BY"})
+    target_entity: str = Field(..., json_schema_extra={"example": "Elon Musk"})
+    description: str = Field(..., json_schema_extra={"example": "Elon Musk co-founded Tesla Motors."})
+
+class KnowledgeExtractionResponse(BaseModel):
+    file_id: str = Field(..., json_schema_extra={"example": "f47ac10b-58cc-4372-a567-0e02b2c3d479"})
+    original_filename: str = Field(..., json_schema_extra={"example": "sample_document.pdf"})
+    summary: str = Field(..., json_schema_extra={"example": "Overview of Tesla's founding and core technological architecture."})
+    entities: List[ExtractedEntity]
+    definitions: List[ExtractedDefinition]
+    facts: List[ExtractedFact]
+    relationships: List[ExtractedRelationship]
+    extracted_at: str = Field(..., json_schema_extra={"example": "2026-07-22T18:20:00Z"})
+    status: str = Field(default="extracted", json_schema_extra={"example": "extracted"})
+
 class ErrorDetail(BaseModel):
     detail: str = Field(..., json_schema_extra={"example": "Unsupported file format '.exe'. Allowed formats: .docx, .md, .pdf, .txt"})
     error_code: str = Field(default="INVALID_FILE_TYPE", json_schema_extra={"example": "INVALID_FILE_TYPE"})
