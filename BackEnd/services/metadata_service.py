@@ -5,9 +5,14 @@ from typing import List, Optional
 from threading import Lock
 from BackEnd.schemas import DocumentMetadata
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+
 class MetadataService:
     def __init__(self, metadata_dir: str = "./storage/metadata"):
-        self.metadata_dir = Path(metadata_dir)
+        if isinstance(metadata_dir, str) and metadata_dir.startswith("./"):
+            self.metadata_dir = (PROJECT_ROOT / metadata_dir[2:]).resolve()
+        else:
+            self.metadata_dir = Path(metadata_dir).resolve()
         self.metadata_dir.mkdir(parents=True, exist_ok=True)
         self.file_path = self.metadata_dir / "documents_metadata.json"
         self._lock = Lock()

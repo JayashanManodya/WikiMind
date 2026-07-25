@@ -16,6 +16,7 @@ from BackEnd.routers.documents import router as documents_router
 from BackEnd.routers.parsing import router as parsing_router
 from BackEnd.routers.cleaning import router as cleaning_router
 from BackEnd.routers.knowledge import router as knowledge_router
+from BackEnd.routers.wiki import router as wiki_router
 
 # Load environment variables
 load_dotenv()
@@ -43,6 +44,7 @@ app.include_router(documents_router)
 app.include_router(parsing_router)
 app.include_router(cleaning_router)
 app.include_router(knowledge_router)
+app.include_router(wiki_router)
 
 @app.get(
     "/",
@@ -66,7 +68,7 @@ def read_root():
 )
 def health_check():
     storage_dir = os.getenv("STORAGE_DIR", "./storage")
-    wiki_dir = os.getenv("WIKI_DIR", "./wiki")
+    wiki_dir = os.getenv("WIKI_DIR", "./BackEnd/storage/wiki")
     llm_provider = os.getenv("LLM_PROVIDER", "openai")
     
     storage_accessible = os.path.exists(storage_dir) or os.access(".", os.W_OK)

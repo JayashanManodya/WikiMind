@@ -9,9 +9,14 @@ from BackEnd.services.metadata_service import metadata_service
 
 ALLOWED_EXTENSIONS = {".pdf", ".docx", ".txt", ".md"}
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+
 class FileService:
     def __init__(self, base_documents_dir: str = "./documents"):
-        self.documents_dir = Path(base_documents_dir)
+        if isinstance(base_documents_dir, str) and base_documents_dir.startswith("./"):
+            self.documents_dir = (PROJECT_ROOT / base_documents_dir[2:]).resolve()
+        else:
+            self.documents_dir = Path(base_documents_dir).resolve()
         self.documents_dir.mkdir(parents=True, exist_ok=True)
 
     def is_valid_file_extension(self, filename: str) -> bool:

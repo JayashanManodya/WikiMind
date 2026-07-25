@@ -10,9 +10,14 @@ from fastapi import HTTPException, status
 from BackEnd.schemas import ParsedPage, ParsedDocumentResponse
 from BackEnd.services.metadata_service import metadata_service
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+
 class ParserService:
     def __init__(self, parsed_dir: str = "./storage/parsed"):
-        self.parsed_dir = Path(parsed_dir)
+        if isinstance(parsed_dir, str) and parsed_dir.startswith("./"):
+            self.parsed_dir = (PROJECT_ROOT / parsed_dir[2:]).resolve()
+        else:
+            self.parsed_dir = Path(parsed_dir).resolve()
         self.parsed_dir.mkdir(parents=True, exist_ok=True)
 
     def parse_pdf(self, file_path: Path) -> List[ParsedPage]:

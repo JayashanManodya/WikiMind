@@ -16,9 +16,14 @@ from BackEnd.services.cleaner_service import cleaner_service
 from BackEnd.services.metadata_service import metadata_service
 from BackEnd.services.llm_service import llm_service
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+
 class KnowledgeService:
     def __init__(self, knowledge_dir: str = "./storage/knowledge"):
-        self.knowledge_dir = Path(knowledge_dir)
+        if isinstance(knowledge_dir, str) and knowledge_dir.startswith("./"):
+            self.knowledge_dir = (PROJECT_ROOT / knowledge_dir[2:]).resolve()
+        else:
+            self.knowledge_dir = Path(knowledge_dir).resolve()
         self.knowledge_dir.mkdir(parents=True, exist_ok=True)
 
     def extract_knowledge_for_document(self, file_id: str) -> KnowledgeExtractionResponse:

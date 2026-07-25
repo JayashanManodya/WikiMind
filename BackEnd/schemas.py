@@ -101,6 +101,35 @@ class KnowledgeExtractionResponse(BaseModel):
     extracted_at: str = Field(..., json_schema_extra={"example": "2026-07-22T18:20:00Z"})
     status: str = Field(default="extracted", json_schema_extra={"example": "extracted"})
 
+# --- Phase 8 Wiki Generation Models ---
+
+class WikiPageSummary(BaseModel):
+    entity_name: str = Field(..., json_schema_extra={"example": "Tesla"})
+    filename: str = Field(..., json_schema_extra={"example": "Tesla.md"})
+    entity_type: str = Field(..., json_schema_extra={"example": "ORGANIZATION"})
+    link_count: int = Field(default=0, json_schema_extra={"example": 3})
+    updated_at: str = Field(..., json_schema_extra={"example": "2026-07-25T20:00:00Z"})
+
+class WikiPageResponse(BaseModel):
+    entity_name: str = Field(..., json_schema_extra={"example": "Tesla"})
+    filename: str = Field(..., json_schema_extra={"example": "Tesla.md"})
+    entity_type: str = Field(..., json_schema_extra={"example": "ORGANIZATION"})
+    content: str = Field(..., json_schema_extra={"example": "# Tesla\n\n**Type**: ORGANIZATION\n\n## Overview\n..."})
+    links_to: List[str] = Field(default_factory=list, json_schema_extra={"example": ["Elon Musk", "Electric Vehicles"]})
+    created_at: str = Field(..., json_schema_extra={"example": "2026-07-25T20:00:00Z"})
+    status: str = Field(default="generated", json_schema_extra={"example": "generated"})
+
+class WikiIndexResponse(BaseModel):
+    total_pages: int = Field(..., json_schema_extra={"example": 12})
+    pages: List[WikiPageSummary]
+
+class WikiGenerationResponse(BaseModel):
+    file_id: str = Field(..., json_schema_extra={"example": "f47ac10b-58cc-4372-a567-0e02b2c3d479"})
+    total_pages_generated: int = Field(..., json_schema_extra={"example": 3})
+    pages_generated: List[WikiPageSummary]
+    status: str = Field(default="wiki_generated", json_schema_extra={"example": "wiki_generated"})
+    message: str = Field(..., json_schema_extra={"example": "Successfully generated wiki pages from document knowledge."})
+
 class ErrorDetail(BaseModel):
     detail: str = Field(..., json_schema_extra={"example": "Unsupported file format '.exe'. Allowed formats: .docx, .md, .pdf, .txt"})
     error_code: str = Field(default="INVALID_FILE_TYPE", json_schema_extra={"example": "INVALID_FILE_TYPE"})
