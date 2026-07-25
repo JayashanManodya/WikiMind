@@ -16,12 +16,16 @@ from BackEnd.services.cleaner_service import cleaner_service
 from BackEnd.services.metadata_service import metadata_service
 from BackEnd.services.llm_service import llm_service
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+BACKEND_DIR = Path(__file__).resolve().parent.parent
 
 class KnowledgeService:
-    def __init__(self, knowledge_dir: str = "./storage/knowledge"):
+    def __init__(self, knowledge_dir: str = "./BackEnd/storage/knowledge"):
         if isinstance(knowledge_dir, str) and knowledge_dir.startswith("./"):
-            self.knowledge_dir = (PROJECT_ROOT / knowledge_dir[2:]).resolve()
+            clean_rel = knowledge_dir[2:]
+            if clean_rel.startswith("BackEnd/"):
+                self.knowledge_dir = (BACKEND_DIR.parent / clean_rel).resolve()
+            else:
+                self.knowledge_dir = (BACKEND_DIR / "storage" / clean_rel.replace("storage/", "")).resolve()
         else:
             self.knowledge_dir = Path(knowledge_dir).resolve()
         self.knowledge_dir.mkdir(parents=True, exist_ok=True)
@@ -71,7 +75,14 @@ class KnowledgeService:
         with open(json_path, "w", encoding="utf-8") as f:
             f.write(knowledge_response.model_dump_json(indent=2))
 
-        # Step 5: Update document metadata status
+        # Step 5: Sync Knowledge entities, definitions, facts, relationships to Database
+        try:
+            from BackEnd.services.db_service import db_service
+            db_service.save_knowledge(knowledge_response)
+        except Exception:
+            pass
+
+        # Step 6: Update document metadata status
         metadata = metadata_service.get_metadata_by_id(file_id)
         if metadata:
             metadata.status = "extracted"

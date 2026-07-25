@@ -12,12 +12,16 @@ from BackEnd.schemas import CleanedPage, CleanedDocumentResponse
 from BackEnd.services.parser_service import parser_service
 from BackEnd.services.metadata_service import metadata_service
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+BACKEND_DIR = Path(__file__).resolve().parent.parent
 
 class TextCleaner:
-    def __init__(self, cleaned_dir: str = "./storage/cleaned"):
+    def __init__(self, cleaned_dir: str = "./BackEnd/storage/cleaned"):
         if isinstance(cleaned_dir, str) and cleaned_dir.startswith("./"):
-            self.cleaned_dir = (PROJECT_ROOT / cleaned_dir[2:]).resolve()
+            clean_rel = cleaned_dir[2:]
+            if clean_rel.startswith("BackEnd/"):
+                self.cleaned_dir = (BACKEND_DIR.parent / clean_rel).resolve()
+            else:
+                self.cleaned_dir = (BACKEND_DIR / "storage" / clean_rel.replace("storage/", "")).resolve()
         else:
             self.cleaned_dir = Path(cleaned_dir).resolve()
         self.cleaned_dir.mkdir(parents=True, exist_ok=True)

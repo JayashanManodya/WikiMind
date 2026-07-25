@@ -5,12 +5,16 @@ from typing import List, Optional
 from threading import Lock
 from BackEnd.schemas import DocumentMetadata
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+BACKEND_DIR = Path(__file__).resolve().parent.parent
 
 class MetadataService:
-    def __init__(self, metadata_dir: str = "./storage/metadata"):
+    def __init__(self, metadata_dir: str = "./BackEnd/storage/metadata"):
         if isinstance(metadata_dir, str) and metadata_dir.startswith("./"):
-            self.metadata_dir = (PROJECT_ROOT / metadata_dir[2:]).resolve()
+            clean_rel = metadata_dir[2:]
+            if clean_rel.startswith("BackEnd/"):
+                self.metadata_dir = (BACKEND_DIR.parent / clean_rel).resolve()
+            else:
+                self.metadata_dir = (BACKEND_DIR / "storage" / clean_rel.replace("storage/", "")).resolve()
         else:
             self.metadata_dir = Path(metadata_dir).resolve()
         self.metadata_dir.mkdir(parents=True, exist_ok=True)
@@ -54,6 +58,14 @@ class MetadataService:
                 records.append(record_dict)
                 
             self._write_records(records)
+            
+            # Sync metadata to SQLite/PostgreSQL Database
+            try:
+                from BackEnd.services.db_service import db_service
+                db_service.save_document(metadata)
+            except Exception:
+                pass
+
             return metadata
 
     def get_all_metadata(self) -> List[DocumentMetadata]:

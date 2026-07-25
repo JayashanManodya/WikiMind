@@ -17,9 +17,14 @@ from BackEnd.routers.parsing import router as parsing_router
 from BackEnd.routers.cleaning import router as cleaning_router
 from BackEnd.routers.knowledge import router as knowledge_router
 from BackEnd.routers.wiki import router as wiki_router
+from BackEnd.routers.database import router as database_router
+from BackEnd.database import init_db
 
 # Load environment variables
 load_dotenv()
+
+# Initialize Database Tables
+init_db()
 
 app = FastAPI(
     title=os.getenv("APP_NAME", "WikiMind"),
@@ -45,6 +50,7 @@ app.include_router(parsing_router)
 app.include_router(cleaning_router)
 app.include_router(knowledge_router)
 app.include_router(wiki_router)
+app.include_router(database_router)
 
 @app.get(
     "/",
@@ -67,7 +73,7 @@ def read_root():
     description="System health inspection and path accessibility check."
 )
 def health_check():
-    storage_dir = os.getenv("STORAGE_DIR", "./storage")
+    storage_dir = os.getenv("STORAGE_DIR", "./BackEnd/storage")
     wiki_dir = os.getenv("WIKI_DIR", "./BackEnd/storage/wiki")
     llm_provider = os.getenv("LLM_PROVIDER", "openai")
     

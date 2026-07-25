@@ -17,15 +17,18 @@ from BackEnd.schemas import (
 from BackEnd.services.knowledge_service import knowledge_service
 from BackEnd.services.metadata_service import metadata_service
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+BACKEND_DIR = Path(__file__).resolve().parent.parent
 
 class WikiService:
     def __init__(self, wiki_dir: str = "./BackEnd/storage/wiki"):
         if isinstance(wiki_dir, str) and wiki_dir.startswith("./"):
-            self.wiki_dir = (PROJECT_ROOT / wiki_dir[2:]).resolve()
+            clean_rel = wiki_dir[2:]
+            if clean_rel.startswith("BackEnd/"):
+                self.wiki_dir = (BACKEND_DIR.parent / clean_rel).resolve()
+            else:
+                self.wiki_dir = (BACKEND_DIR / "storage" / clean_rel.replace("storage/", "")).resolve()
         else:
             self.wiki_dir = Path(wiki_dir).resolve()
-            
         self.wiki_dir.mkdir(parents=True, exist_ok=True)
         self.index_json_path = self.wiki_dir / "index.json"
         self.index_md_path = self.wiki_dir / "Index.md"
@@ -144,6 +147,21 @@ class WikiService:
 
             with open(filepath, "w", encoding="utf-8") as f:
                 f.write(page_content)
+
+            # Sync Wiki Page Record to Database
+            try:
+                from BackEnd.services.db_service import db_service
+                db_service.save_wiki_page(
+                    entity_name=entity_name,
+                    filename=filename,
+                    entity_type=entity_type,
+                    filepath=str(filepath),
+                    content=page_content,
+                    links=list(links_to),
+                    updated_at=now_iso
+                )
+            except Exception:
+                pass
 
             summary_item = WikiPageSummary(
                 entity_name=entity_name,

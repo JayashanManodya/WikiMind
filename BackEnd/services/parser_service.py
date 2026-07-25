@@ -10,12 +10,17 @@ from fastapi import HTTPException, status
 from BackEnd.schemas import ParsedPage, ParsedDocumentResponse
 from BackEnd.services.metadata_service import metadata_service
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+BACKEND_DIR = Path(__file__).resolve().parent.parent
 
 class ParserService:
-    def __init__(self, parsed_dir: str = "./storage/parsed"):
+    def __init__(self, parsed_dir: str = "./BackEnd/storage/parsed"):
         if isinstance(parsed_dir, str) and parsed_dir.startswith("./"):
-            self.parsed_dir = (PROJECT_ROOT / parsed_dir[2:]).resolve()
+            # If path starts with ./BackEnd, resolve relative to project root, else relative to BACKEND_DIR
+            clean_rel = parsed_dir[2:]
+            if clean_rel.startswith("BackEnd/"):
+                self.parsed_dir = (BACKEND_DIR.parent / clean_rel).resolve()
+            else:
+                self.parsed_dir = (BACKEND_DIR / "storage" / clean_rel.replace("storage/", "")).resolve()
         else:
             self.parsed_dir = Path(parsed_dir).resolve()
         self.parsed_dir.mkdir(parents=True, exist_ok=True)
