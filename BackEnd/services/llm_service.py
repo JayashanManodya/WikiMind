@@ -9,6 +9,8 @@ from BackEnd.schemas import (
     ExtractedRelationship
 )
 
+from BackEnd.prompts import SYSTEM_EXTRACTION_PROMPT
+
 SYSTEM_PROMPT = """
 You are an expert AI Knowledge Extraction Engine for WikiMind.
 Your task is to analyze document text and extract structured domain knowledge in JSON format.
@@ -44,25 +46,9 @@ class LLMService:
         self.model = os.getenv("LLM_MODEL", "gpt-4o-mini")
 
     def extract_knowledge_with_llm(self, text: str) -> Dict[str, Any]:
-        """Calls OpenAI API with JSON mode if OPENAI_API_KEY is available"""
-        try:
-            from openai import OpenAI
-            client = OpenAI(api_key=self.api_key)
-            
-            response = client.chat.completions.create(
-                model=self.model,
-                response_format={"type": "json_object"},
-                messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": f"Extract structured knowledge from the following text:\n\n{text}"}
-                ],
-                temperature=0.1
-            )
-            content = response.choices[0].message.content
-            return json.loads(content)
-        except Exception as e:
-            # Fallback to rule-based extraction if API call fails
-            return self.extract_knowledge_deterministic(text)
+        """Calls LangChain LCEL Chain (prompt | llm | parser) for Knowledge Extraction"""
+        from BackEnd.services.langchain_service import langchain_engine
+        return langchain_engine.extract_knowledge_chain(text)
 
     def extract_knowledge_deterministic(self, text: str) -> Dict[str, Any]:
         """

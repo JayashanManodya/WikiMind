@@ -40,53 +40,12 @@ class QAService:
         return sorted(list(set(valid_citations)))
 
     def answer_question_openai(self, question: str, retrieval_res: RetrievalContextResponse) -> QAResponse:
-        """Executes grounded QA using OpenAI API with strict context prompt"""
-        filenames = [p.filename for p in retrieval_res.retrieved_pages]
-        try:
-            from openai import OpenAI
-            client = OpenAI(api_key=self.api_key)
-
-            user_payload = f"KNOWLEDGE BASE CONTEXT:\n{retrieval_res.assembled_context}\n\nUSER QUESTION:\n{question}"
-
-            response = client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": user_payload}
-                ],
-                temperature=0.0
-            )
-
-            answer = response.choices[0].message.content.strip()
-            is_refusal = REFUSAL_MESSAGE.lower() in answer.lower() or "cannot answer" in answer.lower()
-
-            if is_refusal:
-                return QAResponse(
-                    question=question,
-                    answer=REFUSAL_MESSAGE,
-                    citations=[],
-                    confidence_score=0.0,
-                    grounded=False,
-                    retrieved_pages_count=len(retrieval_res.retrieved_pages),
-                    context_summary=f"Context searched across {len(retrieval_res.retrieved_pages)} pages.",
-                    status="refused"
-                )
-
-            citations = self.extract_citations(answer, filenames)
-            return QAResponse(
-                question=question,
-                answer=answer,
-                citations=citations,
-                confidence_score=0.95,
-                grounded=True,
-                retrieved_pages_count=len(retrieval_res.retrieved_pages),
-                context_summary=f"Answered using {len(filenames)} wiki pages ({', '.join(filenames[:3])}).",
-                status="answered"
-            )
-
-        except Exception as e:
-            # Fallback to offline QA synthesis engine if API call fails
-            return self.answer_question_deterministic(question, retrieval_res)
+        """Executes grounded QA using LangChain LCEL Chain with Pydantic Structured Output"""
+        from BackEnd.services.langchain_service import langchain_engine
+        res = langchain_engine.answer_question_chain(question, retrieval_res.assembled_context)
+        if res:
+            return res
+        return self.answer_question_deterministic(question, retrieval_res)
 
     def answer_question_deterministic(self, question: str, retrieval_res: RetrievalContextResponse) -> QAResponse:
         """
