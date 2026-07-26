@@ -76,12 +76,16 @@ class QAService:
                 status="refused"
             )
 
-        # Check if ALL major query keywords are completely missing from the context
+        # Check if query keywords exist in context (supporting prefix stem matching for inflections like founder/founded)
         all_context_text = " ".join([p.content.lower() for p in pages])
-        matched_keywords = [kw for kw in keywords if kw in all_context_text]
+        matched_keywords = []
+        for kw in keywords:
+            stem = kw[:4] if len(kw) >= 5 else kw
+            if kw in all_context_text or stem in all_context_text:
+                matched_keywords.append(kw)
         
-        # Refusal check: If less than 40% of non-stopword query keywords exist anywhere in retrieved context
-        if not matched_keywords or (len(matched_keywords) / len(keywords)) < 0.4:
+        # Refusal check: If less than 35% of non-stopword query keywords exist anywhere in retrieved context
+        if not matched_keywords or (len(matched_keywords) / len(keywords)) < 0.35:
             return QAResponse(
                 question=question,
                 answer=REFUSAL_MESSAGE,
@@ -104,7 +108,7 @@ class QAService:
                     continue
 
                 line_lower = l_strip.lower()
-                matches = sum(1 for kw in keywords if kw in line_lower)
+                matches = sum(1 for kw in keywords if kw in line_lower or (len(kw) >= 5 and kw[:4] in line_lower))
                 if matches > 0:
                     score = matches / len(keywords)
                     matching_sentences.append((l_strip, page.filename, score))

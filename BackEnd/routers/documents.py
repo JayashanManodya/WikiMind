@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from BackEnd.schemas import DocumentMetadata, DocumentListResponse, ErrorDetail
+from BackEnd.schemas import DocumentMetadata, DocumentListResponse, FullPipelineResponse, ErrorDetail
 from BackEnd.services.metadata_service import metadata_service
 
 router = APIRouter(prefix="/documents", tags=["Documents Management"])
@@ -34,3 +34,23 @@ def get_document(file_id: str):
             detail=f"Document with file_id '{file_id}' not found."
         )
     return doc
+
+@router.post(
+    "/{file_id}/process-full-pipeline",
+    response_model=FullPipelineResponse,
+    summary="Process Complete Ingestion Pipeline",
+    description="Executes the full automated ingestion pipeline (parse, clean, extract DB, wiki generate, vector index) for a document.",
+    responses={
+        404: {"model": ErrorDetail, "description": "Document not found"}
+    }
+)
+def process_full_pipeline(file_id: str):
+    """Trigger complete background ingestion pipeline manually for file_id"""
+    doc = metadata_service.get_metadata_by_id(file_id)
+    if not doc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Document with file_id '{file_id}' not found."
+        )
+    from BackEnd.services.pipeline_service import pipeline_service
+    return pipeline_service.process_document_pipeline(file_id)

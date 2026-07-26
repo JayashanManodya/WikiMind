@@ -193,6 +193,18 @@ class QAResponse(BaseModel):
     context_summary: str = Field(..., json_schema_extra={"example": "Retrieved 2 pages (Tesla.md, Elon_Musk.md)."})
     status: str = Field(default="answered", json_schema_extra={"example": "answered"})
 
+# --- Automated Background Ingestion Pipeline Models ---
+
+class FullPipelineResponse(BaseModel):
+    file_id: str = Field(..., json_schema_extra={"example": "f47ac10b-58cc-4372-a567-0e02b2c3d479"})
+    filename: str = Field(..., json_schema_extra={"example": "sample_document.pdf"})
+    total_pages: int = Field(..., json_schema_extra={"example": 5})
+    entities_extracted: int = Field(..., json_schema_extra={"example": 12})
+    wiki_pages_generated: int = Field(..., json_schema_extra={"example": 4})
+    vector_indexed: bool = Field(default=True, json_schema_extra={"example": True})
+    status: str = Field(default="fully_processed", json_schema_extra={"example": "fully_processed"})
+    message: str = Field(..., json_schema_extra={"example": "Document automatically ingested, parsed, cleaned, extracted, wiki generated, and vector indexed."})
+
 class ErrorDetail(BaseModel):
     detail: str = Field(..., json_schema_extra={"example": "Unsupported file format '.exe'. Allowed formats: .docx, .md, .pdf, .txt"})
     error_code: str = Field(default="INVALID_FILE_TYPE", json_schema_extra={"example": "INVALID_FILE_TYPE"})
