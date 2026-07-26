@@ -176,6 +176,23 @@ class RetrievalContextResponse(BaseModel):
     retrieved_pages: List[RetrievedPageDetail]
     status: str = Field(default="retrieved", json_schema_extra={"example": "retrieved"})
 
+# --- Phase 12 Question Answering Models ---
+
+class QARequest(BaseModel):
+    question: str = Field(..., json_schema_extra={"example": "Who founded Tesla and what do they produce?"})
+    top_k: int = Field(default=3, ge=1, le=10, json_schema_extra={"example": 3})
+    max_chars: int = Field(default=4000, ge=500, le=16000, json_schema_extra={"example": 4000})
+
+class QAResponse(BaseModel):
+    question: str = Field(..., json_schema_extra={"example": "Who founded Tesla and what do they produce?"})
+    answer: str = Field(..., json_schema_extra={"example": "Tesla was founded by Elon Musk in 2003 [Elon_Musk.md]. Tesla produces Electric Vehicles [Tesla.md]."})
+    citations: List[str] = Field(default_factory=list, json_schema_extra={"example": ["Elon_Musk.md", "Tesla.md"]})
+    confidence_score: float = Field(default=0.95, json_schema_extra={"example": 0.95})
+    grounded: bool = Field(default=True, json_schema_extra={"example": True})
+    retrieved_pages_count: int = Field(..., json_schema_extra={"example": 2})
+    context_summary: str = Field(..., json_schema_extra={"example": "Retrieved 2 pages (Tesla.md, Elon_Musk.md)."})
+    status: str = Field(default="answered", json_schema_extra={"example": "answered"})
+
 class ErrorDetail(BaseModel):
     detail: str = Field(..., json_schema_extra={"example": "Unsupported file format '.exe'. Allowed formats: .docx, .md, .pdf, .txt"})
     error_code: str = Field(default="INVALID_FILE_TYPE", json_schema_extra={"example": "INVALID_FILE_TYPE"})
