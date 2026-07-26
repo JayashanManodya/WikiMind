@@ -163,6 +163,18 @@ class WikiService:
             except Exception:
                 pass
 
+            # Sync Wiki Page Embeddings to Vector Store
+            try:
+                from BackEnd.services.vector_service import vector_service
+                vector_service.index_wiki_page(
+                    entity_name=entity_name,
+                    filename=filename,
+                    content=page_content,
+                    entity_type=entity_type
+                )
+            except Exception:
+                pass
+
             summary_item = WikiPageSummary(
                 entity_name=entity_name,
                 filename=filename,

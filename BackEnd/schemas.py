@@ -130,6 +130,27 @@ class WikiGenerationResponse(BaseModel):
     status: str = Field(default="wiki_generated", json_schema_extra={"example": "wiki_generated"})
     message: str = Field(..., json_schema_extra={"example": "Successfully generated wiki pages from document knowledge."})
 
+# --- Phase 10 Embeddings & Semantic Search Models ---
+
+class SemanticSearchResult(BaseModel):
+    entity_name: str = Field(..., json_schema_extra={"example": "Tesla"})
+    filename: str = Field(..., json_schema_extra={"example": "Tesla.md"})
+    entity_type: str = Field(..., json_schema_extra={"example": "ORGANIZATION"})
+    similarity_score: float = Field(..., json_schema_extra={"example": 0.892})
+    snippet: str = Field(..., json_schema_extra={"example": "Tesla is an electric vehicle and clean energy company..."})
+    links_to: List[str] = Field(default_factory=list, json_schema_extra={"example": ["Elon Musk", "Electric Vehicles"]})
+
+class SemanticSearchResponse(BaseModel):
+    query: str = Field(..., json_schema_extra={"example": "EV manufacturers"})
+    total_results: int = Field(..., json_schema_extra={"example": 2})
+    results: List[SemanticSearchResult]
+
+class VectorIndexResponse(BaseModel):
+    indexed_pages_count: int = Field(..., json_schema_extra={"example": 5})
+    vector_dim: int = Field(..., json_schema_extra={"example": 1536})
+    status: str = Field(default="indexed", json_schema_extra={"example": "indexed"})
+    message: str = Field(..., json_schema_extra={"example": "Successfully generated vector embeddings for all wiki pages."})
+
 class ErrorDetail(BaseModel):
     detail: str = Field(..., json_schema_extra={"example": "Unsupported file format '.exe'. Allowed formats: .docx, .md, .pdf, .txt"})
     error_code: str = Field(default="INVALID_FILE_TYPE", json_schema_extra={"example": "INVALID_FILE_TYPE"})
