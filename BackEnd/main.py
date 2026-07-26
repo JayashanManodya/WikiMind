@@ -19,6 +19,7 @@ from BackEnd.routers.knowledge import router as knowledge_router
 from BackEnd.routers.wiki import router as wiki_router
 from BackEnd.routers.database import router as database_router
 from BackEnd.routers.search import router as search_router
+from BackEnd.routers.retrieval import router as retrieval_router
 from BackEnd.database import init_db
 
 # Load environment variables
@@ -53,6 +54,7 @@ app.include_router(knowledge_router)
 app.include_router(wiki_router)
 app.include_router(database_router)
 app.include_router(search_router)
+app.include_router(retrieval_router)
 
 @app.get(
     "/",

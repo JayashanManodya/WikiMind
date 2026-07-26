@@ -151,6 +151,31 @@ class VectorIndexResponse(BaseModel):
     status: str = Field(default="indexed", json_schema_extra={"example": "indexed"})
     message: str = Field(..., json_schema_extra={"example": "Successfully generated vector embeddings for all wiki pages."})
 
+# --- Phase 11 Intelligent Retrieval Models ---
+
+class RetrievedPageDetail(BaseModel):
+    entity_name: str = Field(..., json_schema_extra={"example": "Tesla"})
+    filename: str = Field(..., json_schema_extra={"example": "Tesla.md"})
+    hop_level: int = Field(..., json_schema_extra={"example": 1})
+    relevance_score: float = Field(..., json_schema_extra={"example": 0.895})
+    connection_reason: str = Field(default="Direct Vector Match", json_schema_extra={"example": "Direct Vector Match"})
+    snippet: str = Field(..., json_schema_extra={"example": "Tesla is an electric vehicle and clean energy company..."})
+    content: str = Field(..., json_schema_extra={"example": "# Tesla\n\n**Entity Type**: ORGANIZATION..."})
+
+class RetrievalRequest(BaseModel):
+    question: str = Field(..., json_schema_extra={"example": "Who founded Tesla and what do they produce?"})
+    top_k: int = Field(default=3, ge=1, le=10, json_schema_extra={"example": 3})
+    max_chars: int = Field(default=4000, ge=500, le=16000, json_schema_extra={"example": 4000})
+
+class RetrievalContextResponse(BaseModel):
+    question: str = Field(..., json_schema_extra={"example": "Who founded Tesla and what do they produce?"})
+    primary_pages_count: int = Field(..., json_schema_extra={"example": 1})
+    related_pages_count: int = Field(..., json_schema_extra={"example": 1})
+    total_chars: int = Field(..., json_schema_extra={"example": 1850})
+    assembled_context: str = Field(..., json_schema_extra={"example": "# RETRIEVED KNOWLEDGE CONTEXT\n\n## Primary Page: Tesla..."})
+    retrieved_pages: List[RetrievedPageDetail]
+    status: str = Field(default="retrieved", json_schema_extra={"example": "retrieved"})
+
 class ErrorDetail(BaseModel):
     detail: str = Field(..., json_schema_extra={"example": "Unsupported file format '.exe'. Allowed formats: .docx, .md, .pdf, .txt"})
     error_code: str = Field(default="INVALID_FILE_TYPE", json_schema_extra={"example": "INVALID_FILE_TYPE"})
