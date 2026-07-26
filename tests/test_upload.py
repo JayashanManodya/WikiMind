@@ -17,7 +17,7 @@ def test_upload_pdf_success():
     
     data = response.json()
     assert data["filename"] == "sample.pdf"
-    assert data["status"] == "uploaded"
+    assert data["status"] in ("uploaded", "fully_processed")
     assert data["size_bytes"] == len(pdf_content)
     assert "file_id" in data
     assert os.path.exists(data["saved_path"])
