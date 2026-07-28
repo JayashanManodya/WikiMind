@@ -1,35 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  FileText, 
-  Layers, 
   BookOpen, 
-  Database, 
-  Sparkles,
+  Share2, 
   ArrowRight,
   Sun,
   Shield,
-  AlertTriangle
+  AlertTriangle,
+  UploadCloud,
+  MessageSquare
 } from 'lucide-react';
-import { getDatabaseStats, getDocuments, getWikiIndex } from '../api/client';
+import { getWikiIndex, getWikiGraph } from '../api/client';
 
 export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
-  const [stats, setStats] = useState({ documents: 0, entities: 0, relationships: 0, wikiPages: 0 });
+  const [stats, setStats] = useState({ wikiPages: 0, graphNodes: 0, graphEdges: 0 });
   const [recentWikiPages, setRecentWikiPages] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [dbStats, docsRes, wikiRes] = await Promise.all([
-          getDatabaseStats().catch(() => ({ total_documents: 0, total_entities: 0, total_relationships: 0 })),
-          getDocuments().catch(() => ({ total_documents: 0 })),
-          getWikiIndex().catch(() => ({ total_pages: 0, pages: [] }))
+        const [wikiRes, graphRes] = await Promise.all([
+          getWikiIndex().catch(() => ({ total_pages: 0, pages: [] })),
+          getWikiGraph().catch(() => ({ nodes: [], edges: [] }))
         ]);
 
         setStats({
-          documents: docsRes.total_documents || dbStats.total_documents || 0,
-          entities: dbStats.total_entities || 0,
-          relationships: dbStats.total_relationships || 0,
-          wikiPages: wikiRes.total_pages || 0
+          wikiPages: wikiRes.total_pages || (wikiRes.pages ? wikiRes.pages.length : 0),
+          graphNodes: graphRes.nodes ? graphRes.nodes.length : 0,
+          graphEdges: graphRes.edges ? graphRes.edges.length : 0
         });
 
         if (wikiRes.pages) {
@@ -49,127 +46,106 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
       {/* Top Header */}
       <div style={{ textAlign: 'center', margin: '20px 0 10px 0' }}>
         <h1 style={{ fontSize: '32px', fontWeight: '700', color: '#09090B', marginBottom: '4px' }}>
-          WikiMind
+          WikiLLM System
         </h1>
         <p style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
-          Version 1.0 • Grounded AI Knowledge System
+          Grounded Knowledge Management & Graph-Aware QA System
         </p>
       </div>
 
       {/* Metrics Row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
         <div className="clean-card" style={{ padding: '20px' }}>
-          <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '4px' }}>Ingested Documents</p>
-          <h2 style={{ fontSize: '26px' }}>{stats.documents}</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', marginBottom: '6px' }}>
+            <BookOpen size={16} />
+            <span style={{ fontSize: '12.5px' }}>Stored Wiki Pages</span>
+          </div>
+          <h2 style={{ fontSize: '28px', fontWeight: '700' }}>{stats.wikiPages}</h2>
         </div>
 
         <div className="clean-card" style={{ padding: '20px' }}>
-          <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '4px' }}>Knowledge Entities</p>
-          <h2 style={{ fontSize: '26px' }}>{stats.entities}</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', marginBottom: '6px' }}>
+            <Share2 size={16} />
+            <span style={{ fontSize: '12.5px' }}>Knowledge Graph Nodes</span>
+          </div>
+          <h2 style={{ fontSize: '28px', fontWeight: '700' }}>{stats.graphNodes}</h2>
         </div>
 
         <div className="clean-card" style={{ padding: '20px' }}>
-          <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '4px' }}>Wiki Topic Pages</p>
-          <h2 style={{ fontSize: '26px' }}>{stats.wikiPages}</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', marginBottom: '6px' }}>
+            <Share2 size={16} color="#10B981" />
+            <span style={{ fontSize: '12.5px' }}>Graph Relationship Edges</span>
+          </div>
+          <h2 style={{ fontSize: '28px', fontWeight: '700' }}>{stats.graphEdges}</h2>
         </div>
 
         <div className="clean-card" style={{ padding: '20px' }}>
-          <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '4px' }}>Vector Search Index</p>
-          <h2 style={{ fontSize: '16px', color: '#10B981', marginTop: '6px' }}>Active & Ready</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', marginBottom: '6px' }}>
+            <Shield size={16} color="#10B981" />
+            <span style={{ fontSize: '12.5px' }}>Full-Wiki Retrieval Engine</span>
+          </div>
+          <h2 style={{ fontSize: '15px', color: '#10B981', marginTop: '6px', fontWeight: '600' }}>Active & Ready</h2>
         </div>
       </div>
 
-      {/* 3-Column ChatGPT Style Cards Layout (Examples, Capabilities, Limitations) */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+      {/* Quick Action Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
         
-        {/* Examples Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center', marginBottom: '4px' }}>
-            <Sun size={18} color="#71717A" />
-            <h3 style={{ fontSize: '15px' }}>Examples</h3>
+        <div 
+          className="clean-card" 
+          style={{ padding: '20px', cursor: 'pointer', transition: 'transform 0.15s ease' }}
+          onClick={() => setActiveTab('upload')}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#F4F4F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <UploadCloud size={20} color="#09090B" />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '15px', fontWeight: '600' }}>1. Document Ingestion</h3>
+              <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Upload Word & PDF files</p>
+            </div>
           </div>
-
-          <div 
-            className="clean-card" 
-            style={{ padding: '16px', cursor: 'pointer', textAlign: 'center' }}
-            onClick={() => setActiveTab('chat')}
-          >
-            <p style={{ fontSize: '13px', color: 'var(--text-main)' }}>
-              "What company did Elon Musk founder and what do they produce?" →
-            </p>
-          </div>
-
-          <div 
-            className="clean-card" 
-            style={{ padding: '16px', cursor: 'pointer', textAlign: 'center' }}
-            onClick={() => setActiveTab('upload')}
-          >
-            <p style={{ fontSize: '13px', color: 'var(--text-main)' }}>
-              "Upload raw PDF document to generate Wikipedia pages" →
-            </p>
-          </div>
-
-          <div 
-            className="clean-card" 
-            style={{ padding: '16px', cursor: 'pointer', textAlign: 'center' }}
-            onClick={() => setActiveTab('wiki')}
-          >
-            <p style={{ fontSize: '13px', color: 'var(--text-main)' }}>
-              "Browse topic pages with interactive cross-links" →
-            </p>
-          </div>
+          <p style={{ fontSize: '12.5px', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+            Automated 4-step pipeline parses text, cleans noise, generates Wiki `.md` files, and indexes vectors.
+          </p>
         </div>
 
-        {/* Capabilities Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center', marginBottom: '4px' }}>
-            <Shield size={18} color="#71717A" />
-            <h3 style={{ fontSize: '15px' }}>Capabilities</h3>
+        <div 
+          className="clean-card" 
+          style={{ padding: '20px', cursor: 'pointer', transition: 'transform 0.15s ease' }}
+          onClick={() => setActiveTab('wiki')}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#F4F4F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <BookOpen size={20} color="#09090B" />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '15px', fontWeight: '600' }}>2. Wiki & Graph Browser</h3>
+              <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Browse Markdown & Triples</p>
+            </div>
           </div>
-
-          <div className="clean-card" style={{ padding: '16px', textAlign: 'center' }}>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-              Option A background pipeline automatically parses, cleans, and indexes uploaded files.
-            </p>
-          </div>
-
-          <div className="clean-card" style={{ padding: '16px', textAlign: 'center' }}>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-              Multi-hop retriever expands Hop-1 vector search with Hop-2 graph relationships.
-            </p>
-          </div>
-
-          <div className="clean-card" style={{ padding: '16px', textAlign: 'center' }}>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-              Provides exact inline citations (`[Tesla.md]`) to original source documents.
-            </p>
-          </div>
+          <p style={{ fontSize: '12.5px', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+            Read structured Wiki Markdown pages and explore Knowledge Graph relationship connections.
+          </p>
         </div>
 
-        {/* Limitations Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center', marginBottom: '4px' }}>
-            <AlertTriangle size={18} color="#71717A" />
-            <h3 style={{ fontSize: '15px' }}>Limitations</h3>
+        <div 
+          className="clean-card" 
+          style={{ padding: '20px', cursor: 'pointer', transition: 'transform 0.15s ease' }}
+          onClick={() => setActiveTab('chat')}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#F4F4F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <MessageSquare size={20} color="#09090B" />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '15px', fontWeight: '600' }}>3. Graph-Aware QA Chat</h3>
+              <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Multi-Agent Reasoning</p>
+            </div>
           </div>
-
-          <div className="clean-card" style={{ padding: '16px', textAlign: 'center' }}>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-              Answers strictly using ingested documents to prevent AI hallucinations.
-            </p>
-          </div>
-
-          <div className="clean-card" style={{ padding: '16px', textAlign: 'center' }}>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-              Refuses cleanly if knowledge is not found in the stored database.
-            </p>
-          </div>
-
-          <div className="clean-card" style={{ padding: '16px', textAlign: 'center' }}>
-            <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-              Supports PDF, DOCX, TXT, MD document formats.
-            </p>
-          </div>
+          <p style={{ fontSize: '12.5px', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+            Ask natural language questions. The system retrieves seed Wiki pages and traverses 1-hop relationships.
+          </p>
         </div>
 
       </div>
@@ -179,7 +155,8 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h3>Stored Wiki Topic Pages</h3>
           <button className="btn btn-outline" onClick={() => setActiveTab('wiki')}>
-            View All Wiki Pages
+            <span>View All Wiki Pages</span>
+            <ArrowRight size={14} />
           </button>
         </div>
 
@@ -199,10 +176,10 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                   <h4 style={{ fontSize: '14px', fontWeight: '600' }}>{page.entity_name}</h4>
-                  <span className="badge-clean">{page.entity_type}</span>
+                  <span className="badge-clean">{page.entity_type || 'CONCEPT'}</span>
                 </div>
                 <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-                  {page.link_count} internal links
+                  File: {page.filename}
                 </p>
               </div>
             ))}

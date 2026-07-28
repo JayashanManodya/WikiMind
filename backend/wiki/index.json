@@ -1,6 +1,6 @@
 {
-  "total_pages": 10,
-  "rebuilt_at": "2026-07-28T06:26:40.824114+00:00",
+  "total_pages": 13,
+  "rebuilt_at": "2026-07-28T06:41:41.714867+00:00",
   "pages": [
     {
       "entity_name": "Tesla",
@@ -92,6 +92,34 @@
         "Electric Vehicles"
       ],
       "updated_at": "2026-07-28T06:26:40.824114+00:00"
+    },
+    {
+      "entity_name": "Kendangamuwe Pathirannehelage Jayashan Manodya",
+      "filename": "Kendangamuwe_Pathirannehelage_Jayashan_Manodya.md",
+      "entity_type": "PERSON",
+      "related_entities": [
+        "Sri Lanka Institute of Information Technology",
+        "Artificial Intelligence"
+      ],
+      "updated_at": "2026-07-28T06:41:41.714867+00:00"
+    },
+    {
+      "entity_name": "Sri Lanka Institute of Information Technology",
+      "filename": "Sri_Lanka_Institute_of_Information_Technology.md",
+      "entity_type": "ORGANIZATION",
+      "related_entities": [
+        "Kendangamuwe Pathirannehelage Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-28T06:41:41.714867+00:00"
+    },
+    {
+      "entity_name": "Artificial Intelligence",
+      "filename": "Artificial_Intelligence.md",
+      "entity_type": "CONCEPT",
+      "related_entities": [
+        "Kendangamuwe Pathirannehelage Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-28T06:41:41.714867+00:00"
     }
   ],
   "graph": {
@@ -145,6 +173,21 @@
         "id": "Rivian",
         "label": "Rivian",
         "type": "ORGANIZATION"
+      },
+      {
+        "id": "Kendangamuwe Pathirannehelage Jayashan Manodya",
+        "label": "Kendangamuwe Pathirannehelage Jayashan Manodya",
+        "type": "PERSON"
+      },
+      {
+        "id": "Sri Lanka Institute of Information Technology",
+        "label": "Sri Lanka Institute of Information Technology",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "Artificial Intelligence",
+        "label": "Artificial Intelligence",
+        "type": "CONCEPT"
       }
     ],
     "edges": [
@@ -162,6 +205,16 @@
         "source": "Tesla",
         "relation": "LED_BY",
         "target": "Elon Musk"
+      },
+      {
+        "source": "Kendangamuwe Pathirannehelage Jayashan Manodya",
+        "relation": "STUDIES_AT",
+        "target": "Sri Lanka Institute of Information Technology"
+      },
+      {
+        "source": "Kendangamuwe Pathirannehelage Jayashan Manodya",
+        "relation": "SPECIALIZES_IN",
+        "target": "Artificial Intelligence"
       }
     ]
   }

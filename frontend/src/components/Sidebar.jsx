@@ -4,7 +4,6 @@ import {
   Upload, 
   BookOpen, 
   MessageSquare, 
-  FileText, 
   Bot,
   Activity
 } from 'lucide-react';
@@ -17,7 +16,7 @@ export default function Sidebar({ activeTab, setActiveTab }) {
     const checkBackend = async () => {
       try {
         const res = await getHealth();
-        if (res.status === 'healthy') {
+        if (res.status === 'ok' || res.status === 'healthy') {
           setHealthStatus('healthy');
         } else {
           setHealthStatus('degraded');
@@ -34,9 +33,8 @@ export default function Sidebar({ activeTab, setActiveTab }) {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'upload', label: 'Upload & Ingest', icon: Upload },
-    { id: 'wiki', label: 'Wiki Browser', icon: BookOpen },
+    { id: 'wiki', label: 'Wiki Browser & Graph', icon: BookOpen },
     { id: 'chat', label: 'AI QA Chat', icon: MessageSquare },
-    { id: 'documents', label: 'Document Storage', icon: FileText },
   ];
 
   return (
@@ -47,8 +45,8 @@ export default function Sidebar({ activeTab, setActiveTab }) {
           <Bot size={18} color="#FFFFFF" />
         </div>
         <div>
-          <h2 style={{ fontSize: '17px', fontWeight: '700', lineHeight: '1.2' }}>WikiMind</h2>
-          <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Grounded AI System</p>
+          <h2 style={{ fontSize: '17px', fontWeight: '700', lineHeight: '1.2' }}>WikiLLM</h2>
+          <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Grounded Knowledge System</p>
         </div>
       </div>
 
@@ -91,8 +89,8 @@ export default function Sidebar({ activeTab, setActiveTab }) {
       {/* Bottom Status Card */}
       <div className="clean-card" style={{ padding: '12px', marginTop: 'auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-          <span style={{ fontSize: '12px', fontWeight: '600' }}>Standard Plan</span>
-          <span className="badge-clean" style={{ fontSize: '10px' }}>v1.0</span>
+          <span style={{ fontSize: '12px', fontWeight: '600' }}>WikiLLM Engine</span>
+          <span className="badge-clean" style={{ fontSize: '10px' }}>v2.0</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--text-muted)' }}>
           <Activity size={12} color={healthStatus === 'healthy' ? '#10B981' : '#EF4444'} />

@@ -5,7 +5,6 @@ import DashboardPage from './pages/DashboardPage';
 import UploadPage from './pages/UploadPage';
 import WikiPage from './pages/WikiPage';
 import ChatPage from './pages/ChatPage';
-import DocumentsPage from './pages/DocumentsPage';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -42,10 +41,6 @@ export default function App() {
               setActiveTab={setActiveTab} 
               setSelectedWikiEntity={setSelectedWikiEntity} 
             />
-          )}
-
-          {activeTab === 'documents' && (
-            <DocumentsPage />
           )}
         </div>
       </div>

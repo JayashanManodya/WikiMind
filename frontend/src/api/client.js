@@ -14,11 +14,6 @@ export const getHealth = async () => {
   return res.data;
 };
 
-export const getDatabaseStats = async () => {
-  const res = await api.get('/database/stats');
-  return res.data;
-};
-
 export const uploadDocument = async (file, autoProcess = true) => {
   const formData = new FormData();
   formData.append('file', file);
@@ -28,16 +23,6 @@ export const uploadDocument = async (file, autoProcess = true) => {
       'Content-Type': 'multipart/form-data',
     },
   });
-  return res.data;
-};
-
-export const getDocuments = async () => {
-  const res = await api.get('/documents');
-  return res.data;
-};
-
-export const processFullPipeline = async (fileId) => {
-  const res = await api.post(`/documents/${fileId}/process-full-pipeline`);
   return res.data;
 };
 
@@ -51,25 +36,14 @@ export const getWikiPage = async (entityName) => {
   return res.data;
 };
 
-export const searchSemantic = async (query, topK = 5) => {
-  const res = await api.get(`/search/semantic?query=${encodeURIComponent(query)}&top_k=${topK}`);
+export const getWikiGraph = async () => {
+  const res = await api.get('/wiki/graph');
   return res.data;
 };
 
-export const retrieveContext = async (question, topK = 3, maxChars = 4000) => {
-  const res = await api.post('/retrieval/context', {
-    question,
-    top_k: topK,
-    max_chars: maxChars,
-  });
-  return res.data;
-};
-
-export const askQuestion = async (question, topK = 3, maxChars = 4000) => {
+export const askQuestion = async (question) => {
   const res = await api.post('/qa/ask', {
-    question,
-    top_k: topK,
-    max_chars: maxChars,
+    question
   });
   return res.data;
 };
