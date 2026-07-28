@@ -1,0 +1,168 @@
+{
+  "total_pages": 10,
+  "rebuilt_at": "2026-07-28T06:26:40.824114+00:00",
+  "pages": [
+    {
+      "entity_name": "Tesla",
+      "filename": "Tesla.md",
+      "entity_type": "ORGANIZATION",
+      "related_entities": [
+        "Elon Musk",
+        "Electric Vehicles"
+      ],
+      "updated_at": "2026-07-28T06:26:40.824114+00:00"
+    },
+    {
+      "entity_name": "BYD",
+      "filename": "BYD.md",
+      "entity_type": "ORGANIZATION",
+      "related_entities": [
+        "Electric Vehicles"
+      ],
+      "updated_at": "2026-07-28T06:26:40.824114+00:00"
+    },
+    {
+      "entity_name": "Volkswagen Group",
+      "filename": "Volkswagen_Group.md",
+      "entity_type": "ORGANIZATION",
+      "related_entities": [
+        "Electric Vehicles"
+      ],
+      "updated_at": "2026-07-28T06:26:40.824114+00:00"
+    },
+    {
+      "entity_name": "Hyundai Motor Company",
+      "filename": "Hyundai_Motor_Company.md",
+      "entity_type": "ORGANIZATION",
+      "related_entities": [
+        "Electric Vehicles"
+      ],
+      "updated_at": "2026-07-28T06:26:40.824114+00:00"
+    },
+    {
+      "entity_name": "BMW",
+      "filename": "BMW.md",
+      "entity_type": "ORGANIZATION",
+      "related_entities": [
+        "Electric Vehicles"
+      ],
+      "updated_at": "2026-07-28T06:26:40.824114+00:00"
+    },
+    {
+      "entity_name": "Mercedes-Benz",
+      "filename": "Mercedes-Benz.md",
+      "entity_type": "ORGANIZATION",
+      "related_entities": [
+        "Electric Vehicles"
+      ],
+      "updated_at": "2026-07-28T06:26:40.824114+00:00"
+    },
+    {
+      "entity_name": "Nissan",
+      "filename": "Nissan.md",
+      "entity_type": "ORGANIZATION",
+      "related_entities": [
+        "Electric Vehicles"
+      ],
+      "updated_at": "2026-07-28T06:26:40.824114+00:00"
+    },
+    {
+      "entity_name": "Ford Motor Company",
+      "filename": "Ford_Motor_Company.md",
+      "entity_type": "ORGANIZATION",
+      "related_entities": [
+        "Electric Vehicles"
+      ],
+      "updated_at": "2026-07-28T06:26:40.824114+00:00"
+    },
+    {
+      "entity_name": "NIO",
+      "filename": "NIO.md",
+      "entity_type": "ORGANIZATION",
+      "related_entities": [
+        "Electric Vehicles"
+      ],
+      "updated_at": "2026-07-28T06:26:40.824114+00:00"
+    },
+    {
+      "entity_name": "Rivian",
+      "filename": "Rivian.md",
+      "entity_type": "ORGANIZATION",
+      "related_entities": [
+        "Electric Vehicles"
+      ],
+      "updated_at": "2026-07-28T06:26:40.824114+00:00"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "Tesla",
+        "label": "Tesla",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "BYD",
+        "label": "BYD",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "Volkswagen Group",
+        "label": "Volkswagen Group",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "Hyundai Motor Company",
+        "label": "Hyundai Motor Company",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "BMW",
+        "label": "BMW",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "Mercedes-Benz",
+        "label": "Mercedes-Benz",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "Nissan",
+        "label": "Nissan",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "Ford Motor Company",
+        "label": "Ford Motor Company",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "NIO",
+        "label": "NIO",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "Rivian",
+        "label": "Rivian",
+        "type": "ORGANIZATION"
+      }
+    ],
+    "edges": [
+      {
+        "source": "Tesla",
+        "relation": "FOUNDED_BY",
+        "target": "Martin Eberhard"
+      },
+      {
+        "source": "Tesla",
+        "relation": "FOUNDED_BY",
+        "target": "Marc Tarpenning"
+      },
+      {
+        "source": "Tesla",
+        "relation": "LED_BY",
+        "target": "Elon Musk"
+      }
+    ]
+  }
+}

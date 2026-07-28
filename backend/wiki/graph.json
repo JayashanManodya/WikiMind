@@ -1,0 +1,71 @@
+{
+  "nodes": [
+    {
+      "id": "Tesla",
+      "label": "Tesla",
+      "type": "ORGANIZATION"
+    },
+    {
+      "id": "BYD",
+      "label": "BYD",
+      "type": "ORGANIZATION"
+    },
+    {
+      "id": "Volkswagen Group",
+      "label": "Volkswagen Group",
+      "type": "ORGANIZATION"
+    },
+    {
+      "id": "Hyundai Motor Company",
+      "label": "Hyundai Motor Company",
+      "type": "ORGANIZATION"
+    },
+    {
+      "id": "BMW",
+      "label": "BMW",
+      "type": "ORGANIZATION"
+    },
+    {
+      "id": "Mercedes-Benz",
+      "label": "Mercedes-Benz",
+      "type": "ORGANIZATION"
+    },
+    {
+      "id": "Nissan",
+      "label": "Nissan",
+      "type": "ORGANIZATION"
+    },
+    {
+      "id": "Ford Motor Company",
+      "label": "Ford Motor Company",
+      "type": "ORGANIZATION"
+    },
+    {
+      "id": "NIO",
+      "label": "NIO",
+      "type": "ORGANIZATION"
+    },
+    {
+      "id": "Rivian",
+      "label": "Rivian",
+      "type": "ORGANIZATION"
+    }
+  ],
+  "edges": [
+    {
+      "source": "Tesla",
+      "relation": "FOUNDED_BY",
+      "target": "Martin Eberhard"
+    },
+    {
+      "source": "Tesla",
+      "relation": "FOUNDED_BY",
+      "target": "Marc Tarpenning"
+    },
+    {
+      "source": "Tesla",
+      "relation": "LED_BY",
+      "target": "Elon Musk"
+    }
+  ]
+}
