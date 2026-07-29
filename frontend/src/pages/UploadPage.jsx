@@ -60,7 +60,7 @@ export default function UploadPage({ setActiveTab }) {
       <div>
         <h2 style={{ fontSize: '22px', fontWeight: '700', marginBottom: '4px' }}>Document Ingestion</h2>
         <p style={{ color: 'var(--text-muted)', fontSize: '13.5px' }}>
-          Upload PDF, DOCX, TXT, or MD documents. Option A automatically executes parsing, knowledge extraction, wiki page generation, and vector indexing.
+          Upload PDF, DOCX, TXT, or MD documents to automatically extract knowledge, generate structured Wiki pages, and index vector embeddings for grounded QA.
         </p>
       </div>
 
@@ -107,44 +107,6 @@ export default function UploadPage({ setActiveTab }) {
               </p>
             </div>
           )}
-        </label>
-      </div>
-
-      {/* Option A Toggle Switch */}
-      <div className="clean-card" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div>
-          <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '2px' }}>Option A: Automated Background Ingestion</h4>
-          <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-            Automatically parses text, extracts DB facts, generates Wiki pages, and updates vector index in 1 step.
-          </p>
-        </div>
-
-        <label style={{ position: 'relative', display: 'inline-block', width: '44px', height: '24px', cursor: 'pointer' }}>
-          <input 
-            type="checkbox" 
-            checked={autoProcess} 
-            onChange={(e) => setAutoProcess(e.target.checked)} 
-            style={{ opacity: 0, width: 0, height: 0 }} 
-          />
-          <span style={{
-            position: 'absolute',
-            top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: autoProcess ? '#09090B' : '#E4E4E7',
-            borderRadius: '34px',
-            transition: '.3s'
-          }}>
-            <span style={{
-              position: 'absolute',
-              content: '""',
-              height: '18px',
-              width: '18px',
-              left: autoProcess ? '22px' : '3px',
-              bottom: '3px',
-              backgroundColor: 'white',
-              borderRadius: '50%',
-              transition: '.3s'
-            }} />
-          </span>
         </label>
       </div>
 
