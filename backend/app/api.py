@@ -38,16 +38,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from .core.paths import get_user_wiki_dir, get_user_raw_docs_dir
+
 # Per-User document storage store (user_id -> file_id -> dict)
 DOCUMENT_STORE: Dict[str, Dict[str, Dict[str, Any]]] = {}
-UPLOAD_DIR = Path("backend/data/uploads")
-
-
-def get_user_wiki_dir(user_id: str) -> Path:
-    """Helper to get user-isolated wiki directory."""
-    path = Path(f"wiki/users/{user_id}")
-    path.mkdir(parents=True, exist_ok=True)
-    return path
 
 
 @app.post("/auth/google")
@@ -95,10 +89,9 @@ async def upload_document(
         file_id = str(uuid.uuid4())
         size_bytes = len(file_bytes)
 
-        # Save to user upload dir
-        user_upload_dir = UPLOAD_DIR / user_id
-        user_upload_dir.mkdir(parents=True, exist_ok=True)
-        saved_file_path = user_upload_dir / f"{file_id}_{file.filename}"
+        # Save to unified user raw_documents dir (wiki/users/{user_id}/raw_documents)
+        user_raw_dir = get_user_raw_docs_dir(user_id)
+        saved_file_path = user_raw_dir / f"{file_id}_{file.filename}"
         saved_file_path.write_bytes(file_bytes)
 
         doc_record = {

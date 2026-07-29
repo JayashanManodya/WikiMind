@@ -29,19 +29,22 @@ ALLOWED_EXTENSIONS = {
 }
 
 
+from ..paths import get_user_raw_docs_dir
+
+
 def store_raw_document(
     file_bytes: bytes,
     filename: str,
     user_id: str,
-    base_dir: str = "backend/data/raw_documents"
+    base_dir: Union[str, Path, None] = None
 ) -> Dict[str, Any]:
-    """Store original file unchanged as an immutable source document.
+    """Store original file unchanged as an immutable source document under wiki/users/{user_id}/raw_documents.
 
     Args:
         file_bytes: Raw binary bytes of the document.
         filename: Original file name.
         user_id: ID of the user performing the upload.
-        base_dir: Directory path for raw document storage.
+        base_dir: Optional custom directory path override.
 
     Returns:
         Dict containing document metadata including immutable path, sha256, and size.
@@ -55,7 +58,11 @@ def store_raw_document(
     # Compute immutable SHA-256 hash
     doc_hash = hashlib.sha256(file_bytes).hexdigest()
     
-    target_dir = Path(base_dir) / user_id
+    if base_dir:
+        target_dir = Path(base_dir) / user_id
+    else:
+        target_dir = get_user_raw_docs_dir(user_id)
+        
     target_dir.mkdir(parents=True, exist_ok=True)
 
     sanitized_filename = filename.replace(" ", "_")
