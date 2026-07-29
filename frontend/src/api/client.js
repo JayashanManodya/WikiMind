@@ -9,6 +9,27 @@ const api = axios.create({
   },
 });
 
+// Interceptor to attach Authorization Bearer token to requests
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('wikillm_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
+export const loginWithGoogle = async (credential) => {
+  const res = await api.post('/auth/google', { credential });
+  return res.data;
+};
+
+export const getCurrentUser = async () => {
+  const res = await api.get('/auth/me');
+  return res.data;
+};
+
 export const getHealth = async () => {
   const res = await api.get('/health');
   return res.data;

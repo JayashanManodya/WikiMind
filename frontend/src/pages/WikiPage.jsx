@@ -10,8 +10,10 @@ import ReactMarkdown from 'react-markdown';
 import { getWikiIndex, getWikiPage, getWikiGraph } from '../api/client';
 import KnowledgeGraphCanvas from '../components/KnowledgeGraphCanvas';
 import NodePopover from '../components/NodePopover';
+import { useAuth } from '../context/AuthContext';
 
 export default function WikiPage({ selectedEntity, setSelectedEntity }) {
+  const { user } = useAuth();
   const [wikiPages, setWikiPages] = useState([]);
   const [activeEntity, setActiveEntity] = useState(selectedEntity || null);
   const [pageContent, setPageContent] = useState(null);
@@ -27,6 +29,7 @@ export default function WikiPage({ selectedEntity, setSelectedEntity }) {
 
   useEffect(() => {
     const fetchIndexAndGraph = async () => {
+      setLoadingList(true);
       try {
         const [res, gRes] = await Promise.all([
           getWikiIndex(),
@@ -35,15 +38,22 @@ export default function WikiPage({ selectedEntity, setSelectedEntity }) {
 
         if (res.pages && res.pages.length > 0) {
           setWikiPages(res.pages);
-          if (!activeEntity) {
+          if (!activeEntity || !res.pages.some(p => p.entity_name === activeEntity)) {
             setActiveEntity(res.pages[0].entity_name);
           }
+        } else {
+          setWikiPages([]);
+          setActiveEntity(null);
+          setPageContent(null);
         }
+
         if (gRes.nodes && gRes.nodes.length > 0) {
           setGraphData(gRes);
         } else if (res.pages) {
           const fallbackNodes = res.pages.map(p => ({ id: p.entity_name, label: p.entity_name, type: p.entity_type }));
           setGraphData({ nodes: fallbackNodes, edges: gRes.edges || [] });
+        } else {
+          setGraphData({ nodes: [], edges: [] });
         }
       } catch (err) {
         console.error("Wiki index fetch error:", err);
@@ -52,7 +62,7 @@ export default function WikiPage({ selectedEntity, setSelectedEntity }) {
       }
     };
     fetchIndexAndGraph();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (!activeEntity) return;

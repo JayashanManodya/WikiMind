@@ -18,4 +18,5 @@ class QAState(TypedDict):
     answer: str | None
     plan: str | None
     sub_questions: list[str] | None
+    user_id: str | None
 

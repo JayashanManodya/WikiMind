@@ -10,13 +10,14 @@ from typing import Dict, Any
 from ..core.agents.graph import run_qa_flow
 
 
-async def answer_question(question: str) -> Dict[str, Any]:
-    """Run the multi-agent QA flow for a given question.
+async def answer_question(question: str, user_id: str = "guest_user") -> Dict[str, Any]:
+    """Run the multi-agent QA flow for a given question and user context.
 
     Args:
-        question: User's natural language question about the vector databases paper.
+        question: User's natural language question.
+        user_id: User ID for document isolation.
 
     Returns:
         Dictionary containing at least `answer` and `context` keys.
     """
-    return await run_qa_flow(question)
+    return await run_qa_flow(question, user_id=user_id)

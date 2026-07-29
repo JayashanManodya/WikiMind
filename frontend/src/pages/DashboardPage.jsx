@@ -3,20 +3,24 @@ import {
   BookOpen, 
   Share2, 
   ArrowRight,
-  Sun,
   Shield,
-  AlertTriangle,
   UploadCloud,
-  MessageSquare
+  MessageSquare,
+  Lock,
+  UserCheck
 } from 'lucide-react';
 import { getWikiIndex, getWikiGraph } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 
 export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
+  const { user, isAuthenticated, openLoginModal } = useAuth();
   const [stats, setStats] = useState({ wikiPages: 0, graphNodes: 0, graphEdges: 0 });
   const [recentWikiPages, setRecentWikiPages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const [wikiRes, graphRes] = await Promise.all([
           getWikiIndex().catch(() => ({ total_pages: 0, pages: [] })),
@@ -31,20 +35,74 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
 
         if (wikiRes.pages) {
           setRecentWikiPages(wikiRes.pages.slice(0, 6));
+        } else {
+          setRecentWikiPages([]);
         }
       } catch (err) {
         console.error("Dashboard fetch error:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [user]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       
+      {/* User Scoped Auth Banner */}
+      {!isAuthenticated ? (
+        <div style={{
+          backgroundColor: '#eff6ff',
+          border: '1px solid #bfdbfe',
+          borderRadius: '12px',
+          padding: '16px 20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '16px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ padding: '10px', backgroundColor: '#dbeafe', borderRadius: '50%', color: '#2563eb' }}>
+              <Lock size={20} />
+            </div>
+            <div>
+              <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '600', color: '#1e3a8a' }}>
+                Per-User Private Knowledge Vault
+              </h4>
+              <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: '#3b82f6' }}>
+                Sign in with Google to create your isolated Knowledge Base where every document, Wiki page, and QA context is private to you.
+              </p>
+            </div>
+          </div>
+          <button 
+            onClick={openLoginModal}
+            className="btn"
+            style={{ backgroundColor: '#2563eb', color: '#fff', fontSize: '13px', whiteSpace: 'nowrap' }}
+          >
+            Sign In with Google
+          </button>
+        </div>
+      ) : (
+        <div style={{
+          backgroundColor: '#f0fdf4',
+          border: '1px solid #bbf7d0',
+          borderRadius: '12px',
+          padding: '12px 18px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          color: '#166534',
+          fontSize: '13px'
+        }}>
+          <UserCheck size={18} color="#16a34a" />
+          <span>Logged in as <strong>{user?.name} ({user?.email})</strong>. Viewing your private knowledge repository.</span>
+        </div>
+      )}
+
       {/* Top Header */}
-      <div style={{ textAlign: 'center', margin: '20px 0 10px 0' }}>
+      <div style={{ textAlign: 'center', margin: '10px 0 0 0' }}>
         <h1 style={{ fontSize: '32px', fontWeight: '700', color: '#09090B', marginBottom: '4px' }}>
           WikiLLM System
         </h1>
@@ -82,9 +140,9 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
         <div className="clean-card" style={{ padding: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', marginBottom: '6px' }}>
             <Shield size={16} color="#10B981" />
-            <span style={{ fontSize: '12.5px' }}>Full-Wiki Retrieval Engine</span>
+            <span style={{ fontSize: '12.5px' }}>Per-User Isolation</span>
           </div>
-          <h2 style={{ fontSize: '15px', color: '#10B981', marginTop: '6px', fontWeight: '600' }}>Active & Ready</h2>
+          <h2 style={{ fontSize: '15px', color: '#10B981', marginTop: '6px', fontWeight: '600' }}>Active & Isolated</h2>
         </div>
       </div>
 

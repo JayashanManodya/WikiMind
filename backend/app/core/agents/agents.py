@@ -115,6 +115,7 @@ def planning_node(state: QAState) -> QAState:
 async def retrieval_node(state: QAState) -> QAState:
     """Retrieval Agent node: gathers context from vector store using sub-questions (parallellized)."""
     sub_questions = state.get("sub_questions") or [state["question"]]
+    user_id = state.get("user_id") or "guest_user"
     
     async def process_question(q):
         result = await retrieval_agent.ainvoke({"messages": [HumanMessage(content=f"Retrieve context for: {q}")]})
@@ -124,13 +125,12 @@ async def retrieval_node(state: QAState) -> QAState:
             tool_tasks = []
             for tool_call in last_msg.tool_calls:
                 if tool_call["name"] == "retrieval_tool":
-                    # retrieval_tool.ainvoke returns (content, artifact)
-                    tool_tasks.append(retrieval_tool.ainvoke(tool_call["args"]))
+                    args = dict(tool_call["args"])
+                    args["user_id"] = user_id
+                    tool_tasks.append(retrieval_tool.ainvoke(args))
             
             if tool_tasks:
                 tool_results = await asyncio.gather(*tool_tasks)
-                # If tool returns (content, artifact), res[0] is content. 
-                # If tool returns just content (string), res is content.
                 final_contents = []
                 for res in tool_results:
                     if isinstance(res, (tuple, list)) and len(res) > 0:
@@ -138,6 +138,14 @@ async def retrieval_node(state: QAState) -> QAState:
                     else:
                         final_contents.append(res)
                 return final_contents
+
+        # Direct retrieve fallback if tool_calls wasn't emitted by LLM
+        from ..retrieval.vector_store import retrieve
+        from ..retrieval.serialization import serialize_wikis
+        docs = retrieve(q, k=3, user_id=user_id)
+        if docs:
+            return [serialize_wikis(docs)]
+
         return []
 
     # Run all sub-questions in parallel

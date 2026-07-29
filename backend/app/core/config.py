@@ -30,6 +30,12 @@ class Settings(BaseSettings):
     # Retrieval Configuration
     retrieval_k: int = 3
 
+    # Auth Configuration
+    google_client_id: str = ""
+    jwt_secret_key: str = "wikillm_super_secret_jwt_key_2026_change_in_production"
+    jwt_algorithm: str = "HS256"
+    jwt_access_token_expire_minutes: int = 10080  # 7 days
+
     model_config = SettingsConfigDict(
         env_file=_ENV_FILE,
         env_file_encoding="utf-8",

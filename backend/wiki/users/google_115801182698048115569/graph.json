@@ -1,0 +1,76 @@
+{
+  "nodes": [
+    {
+      "id": "Kendangamuwe Pathirannehelage Jayashan Manodya",
+      "label": "Kendangamuwe Pathirannehelage Jayashan Manodya",
+      "type": "PERSON"
+    },
+    {
+      "id": "Sri Lanka Institute of Information Technology",
+      "label": "Sri Lanka Institute of Information Technology",
+      "type": "ORGANIZATION"
+    },
+    {
+      "id": "Artificial Intelligence",
+      "label": "Artificial Intelligence",
+      "type": "CONCEPT"
+    },
+    {
+      "id": "Student Performance Profile",
+      "label": "Student Performance Profile",
+      "type": "TOPIC"
+    },
+    {
+      "id": "Daraz",
+      "label": "Daraz",
+      "type": "ORGANIZATION"
+    },
+    {
+      "id": "E-commerce",
+      "label": "E-commerce",
+      "type": "CONCEPT"
+    },
+    {
+      "id": "SWOT Analysis",
+      "label": "SWOT Analysis",
+      "type": "TOPIC"
+    },
+    {
+      "id": "Logistics",
+      "label": "Logistics",
+      "type": "CONCEPT"
+    },
+    {
+      "id": "Customer Service",
+      "label": "Customer Service",
+      "type": "CONCEPT"
+    },
+    {
+      "id": "Jayashan Manodya (8)",
+      "label": "Jayashan Manodya (8)",
+      "type": "DOCUMENT"
+    }
+  ],
+  "edges": [
+    {
+      "source": "Daraz",
+      "relation": "OPERATES_IN",
+      "target": "E-commerce"
+    },
+    {
+      "source": "Daraz",
+      "relation": "ANALYZED_BY",
+      "target": "SWOT Analysis"
+    },
+    {
+      "source": "Daraz",
+      "relation": "RECOMMENDS_IMPROVEMENT",
+      "target": "Logistics"
+    },
+    {
+      "source": "Daraz",
+      "relation": "RECOMMENDS_IMPROVEMENT",
+      "target": "Customer Service"
+    }
+  ]
+}

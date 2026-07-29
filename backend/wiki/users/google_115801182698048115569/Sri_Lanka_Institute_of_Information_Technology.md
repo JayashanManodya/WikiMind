@@ -1,13 +1,14 @@
 # Sri Lanka Institute of Information Technology
 
 **Entity Type**: `ORGANIZATION`  
-**Last Updated**: `2026-07-28`
+**Last Updated**: `2026-07-29`
 
 ## Overview
-The Sri Lanka Institute of Information Technology is an educational institution offering various programs, including a Bachelor of Science Honours in Information Technology.
+The Sri Lanka Institute of Information Technology is an educational institution offering degrees in various fields, including Information Technology.
 
 ## Key Facts
 - Offers Bachelor of Science Honours in Information Technology (Confidence: 0.95)
+- Located in Sri Lanka (Confidence: 0.90)
 
 ## Related Entities
 [[Kendangamuwe Pathirannehelage Jayashan Manodya]]
