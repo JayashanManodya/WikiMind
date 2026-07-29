@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     pinecone_index_name: str = "ikms-rag-agent-system"
     pinecone_environment: str = ""
 
+    # LlamaParse Configuration
+    llama_cloud_api_key: str = ""
+
     # Retrieval Configuration
     retrieval_k: int = 3
 

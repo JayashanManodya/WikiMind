@@ -13,7 +13,7 @@ from pydantic import BaseModel
 from .models import QuestionRequest, QAResponse
 from .services.qa_service import answer_question
 from .core.ingestion.parser import parse_document_bytes
-from .core.ingestion.wiki_generator import generate_wiki_pages_from_text
+from .core.ingestion.wiki_generator import generate_wiki_pages_from_text, run_ingestion_pipeline
 from .core.retrieval.vector_store import index_wiki_documents, index_documents_from_bytes
 from .core.auth import get_current_user, verify_google_token, create_access_token
 
@@ -79,9 +79,9 @@ async def upload_document(
     auto_process: bool = Query(True),
     current_user: Dict[str, Any] = Depends(get_current_user)
 ):
-    """Upload PDF, DOCX, TXT, or MD file and optionally run full WikiLLM ingestion pipeline (Scoped to user)."""
+    """Upload PDF, DOCX, HTML, Markdown, Image, or PPTX document and run 8-stage WikiLLM ingestion pipeline."""
     user_id = current_user["user_id"]
-    allowed_exts = [".pdf", ".docx", ".doc", ".txt", ".md"]
+    allowed_exts = [".pdf", ".docx", ".doc", ".html", ".htm", ".txt", ".md", ".png", ".jpg", ".jpeg", ".webp", ".pptx", ".ppt"]
     file_ext = Path(file.filename).suffix.lower()
     
     if file_ext not in allowed_exts:
@@ -122,16 +122,20 @@ async def upload_document(
         user_wiki_dir = get_user_wiki_dir(user_id)
 
         if auto_process:
-            # 1. Parse
-            parsed = parse_document_bytes(file_bytes, file.filename)
-            doc_record["parsed_data"] = parsed
-            doc_record["cleaned_text"] = parsed["full_text"]
+            # Execute full 8-stage structured ingestion pipeline
+            pipeline_res = run_ingestion_pipeline(
+                file_bytes=file_bytes,
+                filename=file.filename,
+                user_id=user_id,
+                wiki_dir=str(user_wiki_dir)
+            )
 
-            # 2. Wiki Generation (Scoped to user's wiki directory using raw text)
-            wiki_pages = generate_wiki_pages_from_text(parsed["full_text"], file.filename, wiki_dir=str(user_wiki_dir))
+            wiki_pages = pipeline_res["wiki_pages"]
             doc_record["wiki_pages"] = wiki_pages
+            doc_record["parsed_data"] = pipeline_res.get("parsed_output")
+            doc_record["cleaned_text"] = pipeline_res.get("cleaned_output", {}).get("cleaned_markdown", "")
 
-            # 3. Vector Indexing (Scoped with user_id metadata & namespace)
+            # Vector Indexing (Scoped with user_id metadata & namespace)
             num_indexed = index_wiki_documents(wiki_pages, user_id=user_id)
             doc_record["vector_indexed"] = True
             doc_record["status"] = "fully_processed"
@@ -141,9 +145,12 @@ async def upload_document(
                 "filename": file.filename,
                 "saved_path": str(saved_file_path),
                 "size_bytes": size_bytes,
-                "message": f"File {file.filename} fully ingested into WikiLLM system.",
+                "message": f"File {file.filename} fully ingested via 8-stage pipeline into WikiLLM system.",
                 "status": "fully_processed",
                 "vector_indexed": True,
+                "parser_used": pipeline_res.get("parser_used"),
+                "pages_created": pipeline_res.get("pages_created", []),
+                "pages_updated": pipeline_res.get("pages_updated", []),
                 "wiki_pages_generated": len(wiki_pages),
                 "chunks": num_indexed
             }
