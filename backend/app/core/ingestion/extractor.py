@@ -44,6 +44,7 @@ CRITICAL GRAPH & KNOWLEDGE INTEGRATION RULES:
 4. DO NOT SUMMARIZE AWAY SPECIFIC DETAILS. Extract EVERY numeric value, GPA, credit count, registration/ID number, date, grade, affiliation, score, module name, and specific claim present in the document.
 5. For each entity with rich document text, the `description` MUST be a comprehensive, in-depth multi-paragraph overview detailing full background context, qualifications, achievements, affiliations, and attributes strictly based on the text.
 6. ALWAYS EXTRACT THE PRIMARY SUBJECT / PERSON / AUTHOR / CANDIDATE NAME OF THE DOCUMENT (such as the person whose Resume/CV this is) AND INCLUDE THEM IN `entities` AS TYPE `PERSON` with a full description of their profile, skills, and qualifications. Ensure all projects, experience, education, and affiliations explicitly link to this primary person.
+7. NEVER SUMMARIZE OR SHORTEN CONTENT. For each entity, extract exhaustive, complete, un-truncated multi-paragraph narratives containing ALL facts, step-by-step procedures, technical specifications, code snippets, hardware/software details, numbers, dates, and specific statements from the text. DO NOT condense rich document details into high-level generic bullet points.
 
 Extract ONLY structured metadata and knowledge objects according to this exact JSON schema:
 
@@ -177,11 +178,11 @@ def extract_structured_knowledge(
         return _fallback_knowledge_extraction(filename, enrichment_metadata)
 
     llm = create_chat_model()
-    truncated_md = cleaned_markdown[:15000]
+    truncated_md = cleaned_markdown[:100000]
 
     context_prompt = f"Source Document: {filename}\n"
     if existing_wiki_context:
-        context_prompt += f"\nExisting Wiki Context (Check for contradictions):\n{existing_wiki_context[:3000]}\n"
+        context_prompt += f"\nExisting Wiki Context (Check for contradictions):\n{existing_wiki_context[:10000]}\n"
 
     context_prompt += f"\nDocument Text:\n{truncated_md}"
 

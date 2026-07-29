@@ -130,3 +130,37 @@ def test_person_author_wiki_page_generation(tmp_path):
     assert "Jayashan Manodya" in content
     assert "PERSON" in content
 
+
+def test_exhaustive_wiki_content_preservation(tmp_path):
+    """Test that wiki engine preserves full detailed facts, metrics, and un-summarized content."""
+    wiki_dir = tmp_path / "wiki"
+    wiki_dir.mkdir(parents=True)
+
+    knowledge_json = {
+        "entities": [
+            {
+                "name": "Automated Room Comfort System",
+                "type": "SYSTEM",
+                "description": "Comprehensive IoT Room Comfort System with DHT22 temperature sensor operating at 24.5C, relay module 5V, ESP32 microcontroller, and PID loop controller.",
+                "aliases": []
+            }
+        ],
+        "concepts": [],
+        "relationships": [],
+        "facts": [
+            {
+                "subject": "Automated Room Comfort System",
+                "statement": "Operates at 24.5C temperature threshold with 60% relative humidity using DHT22 pin 4.",
+                "provenance": "Section 3.1 Hardware Specifications"
+            }
+        ]
+    }
+
+    res = update_or_create_wiki_pages(knowledge_json, "room_comfort.pdf", str(wiki_dir))
+    page_rec = res["page_records"][0]
+    
+    assert "DHT22" in page_rec["content"]
+    assert "24.5C" in page_rec["content"]
+    assert "Section 3.1 Hardware Specifications" in page_rec["content"]
+
+
