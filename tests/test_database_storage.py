@@ -1,93 +1,122 @@
-import io
-import fitz  # PyMuPDF
+"""Unit tests for Relational Database storage of Wiki pages and Knowledge Graph edges."""
+
 import pytest
-from pathlib import Path
-from fastapi.testclient import TestClient
-from BackEnd.main import app
-from BackEnd.services.Indexing_Services.db_service import db_service
-from BackEnd.models import (
-    DocumentModel,
-    EntityModel,
-    DefinitionModel,
-    FactModel,
-    RelationshipModel,
-    WikiPageModel
+from backend.app.core.db import (
+    init_db,
+    save_wiki_page_db,
+    get_wiki_page_db,
+    get_user_wiki_pages_db,
+    save_graph_edges_db,
+    get_user_graph_edges_db
 )
+from backend.app.core.retrieval.vector_store import index_wiki_documents, retrieve
 
-client = TestClient(app)
 
-def test_database_tables_creation():
-    """Verify SQLite database file wikimind.db exists and database tables are created"""
-    db_file = Path("./storage/wikimind.db")
-    assert db_file.exists() or Path("./BackEnd/storage/wikimind.db").exists()
-    
-    stats = db_service.get_database_stats()
-    assert "total_documents" in stats
-    assert "total_entities" in stats
-    assert "total_wiki_pages" in stats
+def test_database_table_initialization():
+    """Test initializing database tables."""
+    init_db()
 
-def test_full_pipeline_database_persistence():
-    """Verify document upload -> knowledge extraction -> wiki generation persists records across all DB tables"""
-    # 1. Generate sample PDF content
-    doc = fitz.open()
-    page = doc.new_page()
-    page.insert_text((50, 50), "Tesla was founded by Elon Musk in 2003. Tesla produces Electric Vehicles.")
-    pdf_bytes = doc.tobytes()
-    doc.close()
 
-    # 2. Upload file
-    file = ("tesla_db_pipeline.pdf", io.BytesIO(pdf_bytes), "application/pdf")
-    upload_res = client.post("/upload?auto_process=false", files={"file": file})
-    assert upload_res.status_code == 200
-    file_id = upload_res.json()["file_id"]
+def test_wiki_page_save_and_retrieve_db():
+    """Test saving and retrieving wiki page content_md in database."""
+    user_id = "test_db_user_1"
+    entity = "Robotic Control Loop"
+    content = "# Robotic Control Loop\n\nOperates at 100Hz with PID feedback controller."
 
-    # Check DocumentModel inserted in DB
-    db_doc = db_service.get_document(file_id)
-    assert db_doc is not None
-    assert db_doc.original_filename == "tesla_db_pipeline.pdf"
+    saved = save_wiki_page_db(
+        user_id=user_id,
+        entity_name=entity,
+        entity_type="SYSTEM",
+        filename="Robotic_Control_Loop.md",
+        content_md=content,
+        summary="PID feedback loop",
+        related_entities=["PID Controller", "Sensor Feedback"]
+    )
 
-    # 3. Extract Knowledge
-    extract_res = client.post(f"/documents/{file_id}/extract-knowledge")
-    assert extract_res.status_code == 200
+    assert saved["id"] == f"{user_id}:{entity}"
 
-    # Check EntityModel and RelationshipModel inserted in DB
-    session = db_service.get_session()
-    try:
-        entities = session.query(EntityModel).filter(EntityModel.file_id == file_id).all()
-        assert len(entities) >= 1
-        entity_names = [e.name for e in entities]
-        assert len(entity_names) >= 1
+    retrieved = get_wiki_page_db(user_id, entity)
+    assert retrieved is not None
+    assert retrieved["content_md"] == content
+    assert retrieved["entity_type"] == "SYSTEM"
+    assert "PID Controller" in retrieved["related_entities"]
 
-        relationships = session.query(RelationshipModel).filter(RelationshipModel.file_id == file_id).all()
-        assert len(relationships) >= 0
-    finally:
-        session.close()
 
-    # 4. Generate Wiki
-    wiki_res = client.post(f"/documents/{file_id}/generate-wiki")
-    assert wiki_res.status_code == 200
+def test_graph_edges_save_and_retrieve_db():
+    """Test saving and retrieving relationship edges in wiki_graph_edges database table."""
+    user_id = "test_db_user_2"
+    relationships = [
+        {"source": "Robotic Arm", "relation": "USES_MOTOR", "target": "Stepper Motor 24V"},
+        {"source": "Robotic Arm", "relation": "CONTROLLED_BY", "target": "ESP32 Controller"}
+    ]
 
-    # Check WikiPageModel inserted in DB
-    target_name = entity_names[0] if entity_names else "Tesla"
-    wiki_page = db_service.get_wiki_page_by_name(target_name)
-    assert wiki_page is not None or wiki_res.json()["generated_pages_count"] >= 1
+    save_graph_edges_db(user_id=user_id, relationships=relationships)
+    edges = get_user_graph_edges_db(user_id)
+    assert len(edges) >= 2
+    sources = [e["source"] for e in edges]
+    assert "Robotic Arm" in sources
 
-def test_database_stats_endpoint():
-    """Verify GET /database/stats endpoint returns correct record metrics"""
-    res = client.get("/database/stats")
-    assert res.status_code == 200
-    data = res.json()
-    assert data["total_documents"] >= 1
-    assert data["total_entities"] >= 1
 
-def test_database_entities_and_relationships_endpoints():
-    """Verify GET /database/entities and GET /database/relationships query endpoints"""
-    entities_res = client.get("/database/entities")
-    assert entities_res.status_code == 200
-    entities_data = entities_res.json()
-    assert len(entities_data) >= 1
+def test_database_vector_retrieval_end_to_end():
+    """Test end-to-end vector search and SQL database page retrieval."""
+    user_id = "test_db_user_3"
+    wiki_pages = [
+        {
+            "entity_name": "Thermal Sensor Module",
+            "filename": "Thermal_Sensor_Module.md",
+            "content": "# Thermal Sensor Module\n\nUses [[DHT22 Sensor]] to measure 25.0C operating temperature.",
+            "entity_type": "HARDWARE"
+        },
+        {
+            "entity_name": "DHT22 Sensor",
+            "filename": "DHT22_Sensor.md",
+            "content": "# DHT22 Sensor\n\nDigital temperature and humidity sensor module with 3.3V power.",
+            "entity_type": "COMPONENT"
+        }
+    ]
 
-    rels_res = client.get("/database/relationships")
-    assert rels_res.status_code == 200
-    rels_data = rels_res.json()
-    assert len(rels_data) >= 1
+    for p in wiki_pages:
+        save_wiki_page_db(
+            user_id=user_id,
+            entity_name=p["entity_name"],
+            entity_type=p["entity_type"],
+            filename=p["filename"],
+            content_md=p["content"],
+            related_entities=["DHT22 Sensor"] if p["entity_name"] == "Thermal Sensor Module" else []
+        )
+
+    # Index into vector store
+    index_wiki_documents(wiki_pages, user_id=user_id)
+
+    # Retrieve via vector store + 1-hop graph expansion
+    docs = retrieve("What temperature sensor is used?", user_id=user_id)
+    assert len(docs) >= 1
+    content_text = " ".join([d.page_content for d in docs])
+    assert "DHT22" in content_text
+
+
+def test_zero_md_file_disk_creation(tmp_path):
+    """Test that update_or_create_wiki_pages creates zero .md files on disk."""
+    from backend.app.core.ingestion.wiki_engine import update_or_create_wiki_pages
+
+    user_dir = tmp_path / "wiki" / "users" / "test_zero_disk_user"
+    user_dir.mkdir(parents=True)
+
+    knowledge_json = {
+        "entities": [
+            {"name": "Zero Disk Engine", "type": "SYSTEM", "description": "Operates purely in memory and DB."}
+        ],
+        "relationships": []
+    }
+
+    res = update_or_create_wiki_pages(knowledge_json, "doc.pdf", str(user_dir))
+
+    # Verify database record exists
+    rec = get_wiki_page_db("test_zero_disk_user", "Zero Disk Engine")
+    assert rec is not None
+    assert "Zero Disk Engine" in rec["content_md"]
+
+    # Verify zero .md files written to disk
+    md_files = list(user_dir.glob("*.md"))
+    assert len(md_files) == 0
+

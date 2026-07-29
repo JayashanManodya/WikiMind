@@ -339,17 +339,30 @@ async def get_wiki_page(
 ):
     """Return content of specific Wiki Knowledge Markdown page for the current user."""
     user_id = current_user["user_id"]
+    from .core.db import get_wiki_page_db
+
+    # Try database first
+    db_rec = get_wiki_page_db(user_id, entity_name)
+    if not db_rec:
+        db_rec = get_wiki_page_db(user_id, entity_name.replace(" ", "_"))
+
+    if db_rec:
+        return {
+            "entity_name": db_rec["entity_name"],
+            "filename": db_rec["filename"],
+            "content": db_rec["content_md"]
+        }
+
+    # File system fallback
     user_wiki_dir = get_user_wiki_dir(user_id)
     normalized = entity_name.replace(" ", "_")
     md_path = user_wiki_dir / f"{normalized}.md"
 
     if not md_path.exists():
-        # Search user_wiki_dir case-insensitively
         matches = [f for f in user_wiki_dir.glob("*.md") if f.stem.lower() == normalized.lower()]
         if matches:
             md_path = matches[0]
         else:
-            # Fallback to root wiki directory
             root_dir = Path("wiki")
             root_matches = [f for f in root_dir.glob("*.md") if f.stem.lower() == normalized.lower()]
             if root_matches:

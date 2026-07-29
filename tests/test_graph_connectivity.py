@@ -123,12 +123,12 @@ def test_person_author_wiki_page_generation(tmp_path):
     page_names = [p["entity_name"] for p in res["page_records"]]
     assert "Jayashan Manodya" in page_names
 
-    # Check that Jayashan_Manodya.md file was created on disk
-    person_file = wiki_dir / "Jayashan_Manodya.md"
-    assert person_file.exists()
-    content = person_file.read_text(encoding="utf-8")
-    assert "Jayashan Manodya" in content
-    assert "PERSON" in content
+    from backend.app.core.db import get_wiki_page_db
+    user_id = wiki_dir.name if "users" in wiki_dir.parts else "default_user"
+    rec = get_wiki_page_db(user_id, "Jayashan Manodya")
+    assert rec is not None
+    assert "Jayashan Manodya" in rec["content_md"]
+    assert rec["entity_type"] == "PERSON"
 
 
 def test_exhaustive_wiki_content_preservation(tmp_path):

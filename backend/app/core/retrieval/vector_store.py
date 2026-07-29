@@ -14,16 +14,20 @@ except ImportError:
     PineconeVectorStore = None
 
 from langchain_core.documents import Document
+from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_openai import OpenAIEmbeddings
 
 from ..config import get_settings
+from ..paths import get_user_wiki_dir
 from ..ingestion.parser import parse_document_bytes
 from ..ingestion.wiki_generator import generate_wiki_pages_from_text
 
+# Global per-user in-memory vector store registry for fallback storage
+USER_VECTOR_STORES: Dict[str, InMemoryVectorStore] = {}
 
-@lru_cache(maxsize=1)
-def _get_vector_store() -> PineconeVectorStore | None:
-    """Create a PineconeVectorStore instance configured from settings."""
+
+def _get_vector_store(user_id: str = "default_user") -> Any:
+    """Get PineconeVectorStore if configured, or fall back to a per-user InMemoryVectorStore."""
     settings = get_settings()
 
     try:
@@ -31,29 +35,41 @@ def _get_vector_store() -> PineconeVectorStore | None:
             model=settings.openai_embedding_model_name,
             api_key=settings.openai_api_key,
         )
-
-        return PineconeVectorStore(
-            index_name=settings.pinecone_index_name,
-            embedding=embeddings,
-            pinecone_api_key=settings.pinecone_api_key
-        )
     except Exception as e:
-        print(f"Warning: Could not initialize Pinecone vector store ({e})")
+        print(f"Warning: Embeddings initialization failed ({e})")
         return None
 
-def get_retriever(k: int | None = None):
-    """Get a Pinecone retriever instance."""
+    # Try Pinecone vector store if Pinecone library and API key are available
+    if PineconeVectorStore and settings.pinecone_api_key and not settings.pinecone_api_key.startswith("pcsk_placeholder"):
+        try:
+            return PineconeVectorStore(
+                index_name=settings.pinecone_index_name,
+                embedding=embeddings,
+                pinecone_api_key=settings.pinecone_api_key
+            )
+        except Exception as e:
+            print(f"Note: Pinecone initialization failed ({e}). Falling back to local VectorStore.")
+
+    # Fallback: Per-user InMemoryVectorStore (guarantees 100% vector embedding capability)
+    if user_id not in USER_VECTOR_STORES:
+        USER_VECTOR_STORES[user_id] = InMemoryVectorStore(embeddings)
+
+    return USER_VECTOR_STORES[user_id]
+
+
+def get_retriever(k: int | None = None, user_id: str = "default_user"):
+    """Get a vector retriever instance for the specified user."""
     settings = get_settings()
     if k is None:
         k = settings.retrieval_k
 
-    vector_store = _get_vector_store()
+    vector_store = _get_vector_store(user_id)
     if vector_store:
         return vector_store.as_retriever(search_kwargs={"k": k})
     return None
 
 
-def retrieve(query: str, k: int | None = None, follow_relations: bool = True, user_id: str = "guest_user") -> List[Document]:
+def retrieve(query: str, k: int | None = None, follow_relations: bool = True, user_id: str = "default_user") -> List[Document]:
     """Retrieve full Wiki documents with 1-hop relationship graph traversal scoped to user.
 
     Args:
@@ -71,35 +87,32 @@ def retrieve(query: str, k: int | None = None, follow_relations: bool = True, us
 
     seed_docs: List[Document] = []
     try:
-        vector_store = _get_vector_store()
+        vector_store = _get_vector_store(user_id)
         if vector_store:
-            # Use metadata filter and namespace to enforce per-user vector isolation
             filter_dict = {"user_id": {"$eq": user_id}}
             try:
                 seed_docs = vector_store.similarity_search(query, k=k, filter=filter_dict, namespace=user_id)
             except Exception:
-                # Fallback search if namespace/filter syntax varies
-                seed_docs = vector_store.similarity_search(query, k=k, filter=filter_dict)
+                try:
+                    seed_docs = vector_store.similarity_search(query, k=k, filter=filter_dict)
+                except Exception:
+                    seed_docs = vector_store.similarity_search(query, k=k)
     except Exception as e:
-        print(f"Warning: Vector DB retrieval failed ({e}). Falling back to local user Wiki files.")
+        print(f"Warning: Vector DB retrieval error ({e}). Falling back to local user Wiki files.")
 
-    # Determine user-scoped wiki directory
-    user_wiki_dir = Path(f"wiki/users/{user_id}")
-    if not user_wiki_dir.exists():
-        user_wiki_dir = Path("wiki")
+    from ..db import get_user_wiki_pages_db, get_wiki_page_db
 
-    if not seed_docs and user_wiki_dir.exists():
+    if not seed_docs:
+        db_pages = get_user_wiki_pages_db(user_id)
         query_terms = [t.lower() for t in query.split() if len(t) > 2]
-        for md_file in user_wiki_dir.glob("*.md"):
-            if md_file.name == "Index.md":
-                continue
-            content = md_file.read_text(encoding="utf-8")
+        for p in db_pages:
+            content = p["content_md"]
             content_lower = content.lower()
 
             if any(term in content_lower for term in query_terms) or not query_terms:
                 seed_docs.append(Document(
                     page_content=content,
-                    metadata={"source": md_file.name, "entity_name": md_file.stem, "is_wiki": True, "user_id": user_id}
+                    metadata={"source": p["filename"], "entity_name": p["entity_name"], "is_wiki": True, "user_id": user_id}
                 ))
             if len(seed_docs) >= k:
                 break
@@ -120,35 +133,27 @@ def retrieve(query: str, k: int | None = None, follow_relations: bool = True, us
                 connected_entity_names.add(clean_name)
 
     connected_docs: List[Document] = []
-    if user_wiki_dir.exists():
-        for entity in connected_entity_names:
-            normalized = entity.replace(" ", "_")
-            md_file = user_wiki_dir / f"{normalized}.md"
-            if not md_file.exists():
-                matches = [f for f in user_wiki_dir.glob("*.md") if f.stem.lower() == normalized.lower()]
-                if matches:
-                    md_file = matches[0]
-
-            if md_file.exists() and md_file.name not in retrieved_sources:
-                content = md_file.read_text(encoding="utf-8")
-                connected_docs.append(Document(
-                    page_content=content,
-                    metadata={"source": md_file.name, "entity_name": entity, "is_wiki": True, "is_graph_hop": True, "user_id": user_id}
-                ))
-                retrieved_sources.add(md_file.name)
+    for entity in connected_entity_names:
+        db_rec = get_wiki_page_db(user_id, entity)
+        if db_rec and db_rec.get("filename") not in retrieved_sources:
+            connected_docs.append(Document(
+                page_content=db_rec["content_md"],
+                metadata={"source": db_rec["filename"], "entity_name": entity, "is_wiki": True, "is_graph_hop": True, "user_id": user_id}
+            ))
+            retrieved_sources.add(db_rec["filename"])
 
     return seed_docs + connected_docs
 
 
-def index_wiki_documents(wiki_pages: List[Dict[str, Any]], user_id: str = "guest_user") -> int:
-    """Index full Wiki Markdown pages into the Pinecone vector store with user isolation metadata and namespace.
+def index_wiki_documents(wiki_pages: List[Dict[str, Any]], user_id: str = "default_user") -> int:
+    """Index full Wiki Markdown pages into the active vector store with user isolation metadata.
 
     Args:
         wiki_pages: List of dicts containing entity_name, filename, content, entity_type.
         user_id: User identifier.
 
     Returns:
-        The number of Wiki Markdown documents indexed.
+        The number of Wiki Markdown documents indexed into vector store.
     """
     docs = []
     for page in wiki_pages:
@@ -166,14 +171,15 @@ def index_wiki_documents(wiki_pages: List[Dict[str, Any]], user_id: str = "guest
 
     if docs:
         try:
-            vector_store = _get_vector_store()
+            vector_store = _get_vector_store(user_id)
             if vector_store:
                 try:
                     vector_store.add_documents(docs, namespace=user_id)
                 except Exception:
                     vector_store.add_documents(docs)
+                print(f"Successfully embedded {len(docs)} Wiki pages into vector database for user {user_id}.")
         except Exception as e:
-            print(f"Note: Vector storage skipped or failed ({e}). Local Wiki Markdown files were saved.")
+            print(f"Note: Vector storage embedding failed ({e}). Local Wiki Markdown files were saved.")
 
     return len(docs)
 

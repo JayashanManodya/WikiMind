@@ -13,6 +13,8 @@ import datetime
 from pathlib import Path
 from typing import Dict, Any, List, Set, Tuple
 
+from ..db import save_wiki_page_db, get_wiki_page_db, save_graph_edges_db, get_user_wiki_pages_db
+
 
 def update_or_create_wiki_pages(
     knowledge_json: Dict[str, Any],
@@ -36,6 +38,7 @@ def update_or_create_wiki_pages(
     """
     target_dir = Path(wiki_dir)
     target_dir.mkdir(parents=True, exist_ok=True)
+    user_id = target_dir.name if "users" in target_dir.parts else "default_user"
 
     today_str = datetime.date.today().isoformat()
 
@@ -49,6 +52,15 @@ def update_or_create_wiki_pages(
     definitions = knowledge_json.get("definitions", [])
     comparisons = knowledge_json.get("comparisons", [])
     contradictions = knowledge_json.get("contradictions", [])
+    people = knowledge_json.get("people", [])
+    authors = knowledge_json.get("authors", [])
+
+    # Import database module for relational storage
+    from ..db import save_wiki_page_db, save_graph_edges_db
+
+    # Save relationships to graph database table
+    if relationships:
+        save_graph_edges_db(user_id=user_id, relationships=relationships)
 
     pages_created = []
     pages_updated = []
@@ -166,9 +178,10 @@ def update_or_create_wiki_pages(
             if _is_entity_match(entity_name, ent_info["aliases"], c.get("subject", ""))
         ]
 
-        if page_path.exists():
-            # Update existing page
-            existing_content = page_path.read_text(encoding="utf-8")
+        existing_db_rec = get_wiki_page_db(user_id, entity_name)
+        if existing_db_rec or page_path.exists():
+            # Update existing page content
+            existing_content = existing_db_rec["content_md"] if existing_db_rec else page_path.read_text(encoding="utf-8")
             updated_content = _merge_into_existing_page(
                 existing_content=existing_content,
                 entity_info=ent_info,
@@ -181,8 +194,16 @@ def update_or_create_wiki_pages(
                 new_timelines=ent_timelines,
                 new_contradictions=ent_contradictions
             )
-            page_path.write_text(updated_content, encoding="utf-8")
             pages_updated.append(entity_name)
+
+            save_wiki_page_db(
+                user_id=user_id,
+                entity_name=entity_name,
+                entity_type=ent_info["entity_type"],
+                filename=safe_filename,
+                content_md=updated_content,
+                related_entities=list(related_entity_names)
+            )
 
             page_records.append({
                 "entity_name": entity_name,
@@ -196,7 +217,7 @@ def update_or_create_wiki_pages(
             })
 
         else:
-            # Create new page
+            # Create new page in memory & save directly to DB + Vector store (0 disk .md files)
             new_content = _create_new_page_content(
                 entity_info=ent_info,
                 source_filename=source_filename,
@@ -208,8 +229,27 @@ def update_or_create_wiki_pages(
                 timelines=ent_timelines,
                 contradictions=ent_contradictions
             )
-            page_path.write_text(new_content, encoding="utf-8")
             pages_created.append(entity_name)
+
+            save_wiki_page_db(
+                user_id=user_id,
+                entity_name=entity_name,
+                entity_type=ent_info["entity_type"],
+                filename=safe_filename,
+                content_md=new_content,
+                related_entities=list(related_entity_names)
+            )
+
+            page_records.append({
+                "entity_name": entity_name,
+                "filename": safe_filename,
+                "entity_type": ent_info["entity_type"],
+                "related_entities": list(related_entity_names),
+                "relationships": entity_rels,
+                "content": new_content,
+                "path": str(page_path.resolve()),
+                "status": "created"
+            })
 
             page_records.append({
                 "entity_name": entity_name,
@@ -377,25 +417,22 @@ def _merge_into_existing_page(
 
 
 def _update_backlinks_in_wiki(wiki_dir: Path, target_entity_names: List[str]):
-    """Update backlinks section across all markdown pages in the wiki directory."""
-    all_md_files = list(wiki_dir.glob("*.md"))
-    all_pages_map = {}
+    """Update backlinks section across all entity database records."""
+    from ..db import get_user_wiki_pages_db, save_wiki_page_db
 
-    for f in all_md_files:
-        if f.name in ["Index.md", "log.md"]:
-            continue
-        try:
-            txt = f.read_text(encoding="utf-8")
-            entity_title = f.stem.replace("_", " ")
-            all_pages_map[entity_title] = (f, txt)
-        except Exception:
-            continue
+    user_id = wiki_dir.name if "users" in wiki_dir.parts else "default_user"
+    db_pages = get_user_wiki_pages_db(user_id)
+    if not db_pages:
+        return
+
+    all_pages_map = {p["entity_name"]: p for p in db_pages}
 
     # Find backlinks for each page
-    for target_name, (target_path, target_txt) in all_pages_map.items():
+    for target_name, target_rec in all_pages_map.items():
+        target_txt = target_rec["content_md"]
         linking_pages = []
-        for other_name, (other_path, other_txt) in all_pages_map.items():
-            if other_name != target_name and f"[[{target_name}]]" in other_txt:
+        for other_name, other_rec in all_pages_map.items():
+            if other_name != target_name and f"[[{target_name}]]" in other_rec["content_md"]:
                 linking_pages.append(other_name)
 
         if "## Backlinks" in target_txt:
@@ -412,7 +449,14 @@ def _update_backlinks_in_wiki(wiki_dir: Path, target_entity_names: List[str]):
             )
 
             if new_target_txt != target_txt:
-                target_path.write_text(new_target_txt, encoding="utf-8")
+                save_wiki_page_db(
+                    user_id=user_id,
+                    entity_name=target_name,
+                    entity_type=target_rec["entity_type"],
+                    filename=target_rec["filename"],
+                    content_md=new_target_txt,
+                    related_entities=target_rec["related_entities"]
+                )
 
 
 def _sanitize_filename(name: str) -> str:

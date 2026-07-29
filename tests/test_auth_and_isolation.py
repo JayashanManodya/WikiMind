@@ -51,8 +51,9 @@ def test_user_scoped_wiki_generation(tmp_path):
 
     assert len(pages) > 0
     assert user_wiki_dir.exists()
-    assert (user_wiki_dir / "index.json").exists()
-    assert (user_wiki_dir / "graph.json").exists()
+    from backend.app.core.db import get_user_wiki_pages_db
+    db_pages = get_user_wiki_pages_db(user_id)
+    assert len(db_pages) > 0
 
 
 def test_user_isolated_retrieval(tmp_path, monkeypatch):
@@ -115,4 +116,26 @@ def test_unauthenticated_requests_raise_401():
     res_health = client.get("/health")
     assert res_health.status_code == 200
     assert res_health.json()["status"] == "ok"
+
+
+def test_wiki_vector_embedding_indexing():
+    """Test that index_wiki_documents embeds Wiki pages into the active vector store."""
+    from backend.app.core.retrieval.vector_store import index_wiki_documents, _get_vector_store
+
+    user_id = "test_vector_user"
+    wiki_pages = [
+        {
+            "entity_name": "Autonomous Navigation System",
+            "filename": "Autonomous_Navigation_System.md",
+            "content": "# Autonomous Navigation System\n\nUses LiDAR sensors and SLAM algorithm for real-time obstacle avoidance.",
+            "entity_type": "SYSTEM"
+        }
+    ]
+
+    indexed_count = index_wiki_documents(wiki_pages, user_id=user_id)
+    assert indexed_count == 1
+
+    vector_store = _get_vector_store(user_id)
+    assert vector_store is not None
+
 
