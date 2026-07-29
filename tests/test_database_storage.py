@@ -120,3 +120,28 @@ def test_zero_md_file_disk_creation(tmp_path):
     md_files = list(user_dir.glob("*.md"))
     assert len(md_files) == 0
 
+
+def test_cumulative_user_wiki_index_and_graph():
+    """Test that Wiki index and graph accumulate all entity pages across multiple uploads."""
+    user_id = "test_cumulative_user"
+
+    # Upload 1: Project Document
+    save_wiki_page_db(user_id, "Project Alpha", "PRODUCT", "alpha.pdf", "# Project Alpha")
+    save_graph_edges_db(user_id, [{"source": "Project Alpha", "relation": "USES", "target": "Python"}])
+
+    # Upload 2: Person Resume Document
+    save_wiki_page_db(user_id, "Alice Developer", "PERSON", "resume.pdf", "# Alice Developer")
+    save_wiki_page_db(user_id, "Python", "TECHNOLOGY", "resume.pdf", "# Python")
+    save_graph_edges_db(user_id, [{"source": "Alice Developer", "relation": "SKILLED_IN", "target": "Python"}])
+
+    db_pages = get_user_wiki_pages_db(user_id)
+    db_edges = get_user_graph_edges_db(user_id)
+
+    assert len(db_pages) == 3
+    entity_names = [p["entity_name"] for p in db_pages]
+    assert "Project Alpha" in entity_names
+    assert "Alice Developer" in entity_names
+    assert "Python" in entity_names
+    assert len(db_edges) >= 2
+
+

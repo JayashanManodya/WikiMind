@@ -283,13 +283,30 @@ async def process_full_pipeline_endpoint(
 
 @app.get("/wiki/index")
 async def get_wiki_index(current_user: Dict[str, Any] = Depends(get_current_user)):
-    """Return index catalog of generated Wiki pages for the current user."""
+    """Return cumulative index catalog of all generated Wiki pages for the current user."""
     user_id = current_user["user_id"]
+    from .core.db import get_user_wiki_pages_db
+
+    db_pages = get_user_wiki_pages_db(user_id)
+    if db_pages:
+        pages = []
+        for p in db_pages:
+            pages.append({
+                "entity_name": p["entity_name"],
+                "filename": p["filename"],
+                "entity_type": p["entity_type"],
+                "summary": p.get("summary", ""),
+                "related_entities": p.get("related_entities", [])
+            })
+        return {
+            "total_pages": len(pages),
+            "pages": pages
+        }
+
+    # Fallback to filesystem index.json if database is empty
     user_wiki_dir = get_user_wiki_dir(user_id)
     index_file = user_wiki_dir / "index.json"
-
     if not index_file.exists():
-        # Fallback to root wiki directory if user has no isolated index yet
         root_index = Path("wiki/index.json")
         if root_index.exists():
             index_file = root_index
@@ -304,28 +321,58 @@ async def get_wiki_index(current_user: Dict[str, Any] = Depends(get_current_user
 
 @app.get("/wiki/graph")
 async def get_wiki_graph(current_user: Dict[str, Any] = Depends(get_current_user)):
-    """Return Knowledge Graph nodes and edges for visualization for the current user."""
+    """Return cumulative Knowledge Graph nodes and edges for visualization for the current user."""
     user_id = current_user["user_id"]
+    from .core.db import get_user_wiki_pages_db, get_user_graph_edges_db
+
+    db_pages = get_user_wiki_pages_db(user_id)
+    db_edges = get_user_graph_edges_db(user_id)
+
+    if db_pages:
+        nodes = []
+        node_ids = set()
+        for p in db_pages:
+            e_name = p["entity_name"]
+            nodes.append({
+                "id": e_name,
+                "label": e_name,
+                "type": p["entity_type"],
+                "filename": p["filename"]
+            })
+            node_ids.add(e_name)
+
+        edges = []
+        edge_tuples = set()
+        for e in db_edges:
+            src = e["source"]
+            tgt = e["target"]
+            r_type = e["relation"]
+            if src in node_ids and tgt in node_ids:
+                tup = (src, r_type, tgt)
+                if tup not in edge_tuples:
+                    edges.append({"source": src, "relation": r_type, "target": tgt})
+                    edge_tuples.add(tup)
+
+        # Enforce zero isolated nodes (degree >= 1 for every node)
+        if len(nodes) > 1:
+            connected_nodes = set()
+            for eg in edges:
+                connected_nodes.add(eg["source"])
+                connected_nodes.add(eg["target"])
+
+            hub_node = nodes[0]["id"]
+            for nd in nodes:
+                if nd["id"] not in connected_nodes and nd["id"] != hub_node:
+                    edges.append({"source": nd["id"], "relation": "RELATED_TO", "target": hub_node})
+
+        return {"nodes": nodes, "edges": edges}
+
+    # Fallback to filesystem graph.json if database is empty
     user_wiki_dir = get_user_wiki_dir(user_id)
     graph_file = user_wiki_dir / "graph.json"
-    index_file = user_wiki_dir / "index.json"
-
-    if not graph_file.exists() and not index_file.exists():
-        # Fallback to root wiki directory
-        graph_file = Path("wiki/graph.json")
-        index_file = Path("wiki/index.json")
-
     if graph_file.exists():
         try:
             return json.loads(graph_file.read_text(encoding="utf-8"))
-        except Exception:
-            pass
-
-    if index_file.exists():
-        try:
-            data = json.loads(index_file.read_text(encoding="utf-8"))
-            if "graph" in data:
-                return data["graph"]
         except Exception:
             pass
 
