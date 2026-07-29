@@ -91,16 +91,17 @@ export default function UploadPage({ setActiveTab }) {
         </p>
       </div>
 
-      {/* Upload Drag & Drop Area */}
+      {/* Upload Drag & Drop Area matching Reference Image */}
       <div 
         className="clean-card"
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
         style={{
-          padding: '48px 24px',
+          padding: '44px 24px',
           textAlign: 'center',
-          border: '2px dashed var(--border-color)',
+          border: '2px dashed #E4E4E7',
           backgroundColor: '#FFFFFF',
+          borderRadius: '12px',
           cursor: 'pointer'
         }}
       >
@@ -113,28 +114,47 @@ export default function UploadPage({ setActiveTab }) {
         />
         
         <label htmlFor="fileInput" style={{ cursor: 'pointer', display: 'block' }}>
-          <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: '#F4F4F5', margin: '0 auto 16px auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <UploadCloud color="#09090B" size={26} />
+          <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#F4F4F5', margin: '0 auto 12px auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <UploadCloud color="#09090B" size={22} />
           </div>
           
           {file ? (
             <div>
-              <p style={{ fontSize: '16px', fontWeight: '600', color: '#09090B' }}>{file.name}</p>
+              <p style={{ fontSize: '15px', fontWeight: '600', color: '#09090B' }}>{file.name}</p>
               <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>
                 {(file.size / 1024 / 1024).toFixed(2)} MB • Ready to process
               </p>
             </div>
           ) : (
             <div>
-              <p style={{ fontSize: '15px', fontWeight: '500', color: '#09090B' }}>
-                Drag and drop your document here, or <span style={{ textDecoration: 'underline' }}>browse</span>
+              <p style={{ fontSize: '14.5px', fontWeight: '500', color: '#09090B' }}>
+                Drag & drop or <span style={{ color: '#2563EB', fontWeight: '600' }}>choose files</span> to upload.
               </p>
-              <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '6px' }}>
-                Supports PDF, DOCX, TXT, MD up to 25MB
+              <p style={{ fontSize: '11.5px', color: '#71717A', marginTop: '6px' }}>
+                Support formats: .csv, .json, .pdf, .xlsx, .txt, .md, .docx, .pptx • Max 25MB per file
               </p>
             </div>
           )}
         </label>
+      </div>
+
+      {/* Option Pills matching Reference Design */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', flexWrap: 'wrap' }}>
+        <button className="btn btn-outline" style={{ fontSize: '12px', padding: '6px 12px', borderRadius: '8px', color: '#09090B' }}>
+          <span style={{ color: '#4285F4', fontWeight: '700' }}>G</span> Add Google Drive
+        </button>
+        <button className="btn btn-outline" style={{ fontSize: '12px', padding: '6px 12px', borderRadius: '8px', color: '#09090B' }}>
+          Add existing knowledge
+        </button>
+        <button className="btn btn-outline" style={{ fontSize: '12px', padding: '6px 12px', borderRadius: '8px', color: '#09090B' }}>
+          Import website
+        </button>
+        <button className="btn btn-outline" style={{ fontSize: '12px', padding: '6px 12px', borderRadius: '8px', color: '#09090B' }}>
+          Blank table
+        </button>
+        <button className="btn btn-outline" style={{ fontSize: '12px', padding: '6px 12px', borderRadius: '8px', color: '#09090B' }}>
+          Markdown/Text
+        </button>
       </div>
 
       {/* Dynamic Ingestion Stepper Card */}

@@ -78,6 +78,17 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isAsking]);
 
+  // Read pre-filled query if user clicked prompt chip on Overview
+  useEffect(() => {
+    try {
+      const prefill = localStorage.getItem('wikimind_prefill_query');
+      if (prefill) {
+        setInputQuery(prefill);
+        localStorage.removeItem('wikimind_prefill_query');
+      }
+    } catch (e) {}
+  }, []);
+
   // Persist sessions and active session ID to localStorage
   useEffect(() => {
     try {

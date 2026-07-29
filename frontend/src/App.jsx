@@ -46,12 +46,10 @@ function AppGate() {
   }
 
   return (
-    <div className="app-layout">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+    <div className="app-layout" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%' }}>
+      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      <div className="main-viewport">
-        <Navbar activeTab={activeTab} />
-        
+      <div className="main-viewport" style={{ flex: 1, width: '100%', maxWidth: '100%' }}>
         <div className="content-container">
           {activeTab === 'dashboard' && (
             <DashboardPage 

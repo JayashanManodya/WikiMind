@@ -1,46 +1,97 @@
 import React, { useState } from 'react';
-import { ShieldCheck, LogIn, LogOut, User, Lock } from 'lucide-react';
+import { 
+  ArrowLeft, 
+  ChevronDown, 
+  MessageSquare, 
+  BookOpen, 
+  UploadCloud, 
+  LayoutDashboard,
+  LogIn, 
+  LogOut, 
+  History
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-export default function Navbar({ activeTab }) {
+export default function Navbar({ activeTab, setActiveTab }) {
   const { user, isAuthenticated, openLoginModal, logout } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const titles = {
-    dashboard: 'Main Overview',
-    upload: 'Document Ingestion',
-    wiki: 'Knowledge Base Browser',
-    chat: 'ChatGPT Grounded QA',
-    documents: 'Document Storage Manager'
-  };
+  const topTabs = [
+    { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
+    { id: 'chat', label: 'Chat', icon: MessageSquare },
+    { id: 'upload', label: 'Upload', icon: UploadCloud },
+    { id: 'wiki', label: 'Knowledge Base', icon: BookOpen },
+  ];
 
   return (
     <header style={{ 
       backgroundColor: '#FFFFFF', 
       borderBottom: '1px solid var(--border-color)', 
-      padding: '14px 24px',
+      padding: '8px 36px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
       position: 'sticky',
       top: 0,
-      zIndex: 10
+      zIndex: 10,
+      minHeight: '52px'
     }}>
-      {/* Title */}
-      <div>
-        <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#09090B', margin: 0 }}>
-          {titles[activeTab] || 'WikiMind'}
-        </h3>
+      {/* Brand Logo */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => setActiveTab('dashboard')}>
+        <img 
+          src="/logo-color.png" 
+          alt="WikiMind Logo" 
+          style={{ width: '28px', height: '28px', objectFit: 'contain', borderRadius: '6px' }} 
+        />
+        <span style={{ fontSize: '15px', fontWeight: '700', color: '#09090B' }}>WikiMind</span>
       </div>
 
-      {/* Right Auth / User Bar */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--text-muted)' }}>
-          <ShieldCheck size={16} color="#10B981" />
-          <span>User-Isolated Knowledge Active</span>
-        </div>
+      {/* Center: Direct Top Navigation Pills */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        backgroundColor: '#F4F4F5',
+        borderRadius: '9999px',
+        padding: '3px',
+        border: '1px solid #E4E4E7',
+        gap: '2px'
+      }}>
+        {topTabs.map((tb) => {
+          const Icon = tb.icon;
+          const isActive = activeTab === tb.id;
+          return (
+            <button
+              key={tb.id}
+              onClick={() => setActiveTab(tb.id)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 16px',
+                borderRadius: '9999px',
+                border: 'none',
+                backgroundColor: isActive ? '#FFFFFF' : 'transparent',
+                color: isActive ? '#09090B' : '#71717A',
+                fontSize: '13px',
+                fontWeight: isActive ? '600' : '500',
+                cursor: 'pointer',
+                boxShadow: isActive ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <Icon size={14} color={isActive ? '#09090B' : '#71717A'} />
+              <span>{tb.label}</span>
+            </button>
+          );
+        })}
+      </div>
 
-        <div style={{ height: '16px', width: '1px', backgroundColor: 'var(--border-color)' }} />
+      {/* Right: Auth / Actions */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <button className="btn btn-outline" style={{ display: 'flex', alignItems: 'center', padding: '5px 12px', fontSize: '12.5px', gap: '6px', cursor: 'pointer' }}>
+          <History size={13} color="#71717A" />
+          <span>Versions</span>
+        </button>
 
         {isAuthenticated && user ? (
           <div style={{ position: 'relative' }}>
@@ -49,49 +100,39 @@ export default function Navbar({ activeTab }) {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px',
+                gap: '8px',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                padding: '4px 8px',
-                borderRadius: '8px',
-                transition: 'background-color 0.2s',
+                padding: '2px 6px',
+                borderRadius: '8px'
               }}
             >
               {user.picture ? (
                 <img
                   src={user.picture}
                   alt={user.name}
-                  style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }}
+                  style={{ width: '30px', height: '30px', borderRadius: '50%', objectFit: 'cover' }}
                 />
               ) : (
                 <div style={{
-                  width: '32px',
-                  height: '32px',
+                  width: '30px',
+                  height: '30px',
                   borderRadius: '50%',
-                  backgroundColor: '#2563eb',
+                  backgroundColor: '#09090B',
                   color: '#FFFFFF',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '13px',
+                  fontSize: '12px',
                   fontWeight: '600'
                 }}>
                   {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
                 </div>
               )}
-              
-              <div style={{ textAlign: 'left' }}>
-                <div style={{ fontSize: '13px', fontWeight: '600', color: '#09090B' }}>
-                  {user.name || 'Google User'}
-                </div>
-                <div style={{ fontSize: '11px', color: '#64748b' }}>
-                  {user.email || 'Google Account'}
-                </div>
-              </div>
             </button>
 
-            {/* User Dropdown Menu */}
+            {/* Dropdown */}
             {showDropdown && (
               <div style={{
                 position: 'absolute',
@@ -139,23 +180,11 @@ export default function Navbar({ activeTab }) {
         ) : (
           <button
             onClick={openLoginModal}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              backgroundColor: '#2563eb',
-              color: '#FFFFFF',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '8px 16px',
-              fontSize: '13px',
-              fontWeight: '500',
-              cursor: 'pointer',
-              boxShadow: '0 2px 4px rgba(37, 99, 235, 0.2)',
-            }}
+            className="btn btn-black"
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', fontSize: '12.5px', cursor: 'pointer' }}
           >
-            <LogIn size={16} />
-            Sign In with Google
+            <LogIn size={14} />
+            <span>Sign In</span>
           </button>
         )}
       </div>
