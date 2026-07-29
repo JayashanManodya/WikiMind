@@ -8,20 +8,37 @@ import {
   Loader2, 
   BookOpen, 
   Paperclip,
-  Mic
+  Mic,
+  Trash2
 } from 'lucide-react';
 import { askQuestion } from '../api/client';
 
+const INITIAL_WELCOME_MESSAGE = [
+  {
+    sender: 'bot',
+    text: 'Hello! Ask me any question grounded strictly in your ingested knowledge base.',
+    grounded: true,
+    citations: [],
+    confidence: 1.0
+  }
+];
+
 export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
-  const [messages, setMessages] = useState([
-    {
-      sender: 'bot',
-      text: 'Hello! Ask me any question grounded strictly in your ingested knowledge base.',
-      grounded: true,
-      citations: [],
-      confidence: 1.0
+  const [messages, setMessages] = useState(() => {
+    try {
+      const saved = localStorage.getItem('wikimind_chat_history');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load chat history from localStorage", e);
     }
-  ]);
+    return INITIAL_WELCOME_MESSAGE;
+  });
+
   const [inputQuery, setInputQuery] = useState('');
   const [isAsking, setIsAsking] = useState(false);
 
@@ -30,6 +47,24 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Persist messages to browser localStorage cache on change
+  useEffect(() => {
+    try {
+      localStorage.setItem('wikimind_chat_history', JSON.stringify(messages));
+    } catch (e) {
+      console.error("Failed to save chat history to localStorage", e);
+    }
+  }, [messages]);
+
+  const handleClearChat = () => {
+    setMessages(INITIAL_WELCOME_MESSAGE);
+    try {
+      localStorage.removeItem('wikimind_chat_history');
+    } catch (e) {
+      console.error("Failed to clear chat history from localStorage", e);
+    }
+  };
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -86,7 +121,18 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
           </div>
         </div>
 
-        <span className="badge-clean">Ver 4.0 Mar 14</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <button 
+            className="btn btn-outline" 
+            onClick={handleClearChat}
+            style={{ fontSize: '12px', padding: '6px 12px', gap: '6px' }}
+            title="Clear Chat History"
+          >
+            <Trash2 size={13} color="#71717A" />
+            <span>Clear Chat</span>
+          </button>
+          <span className="badge-clean">Ver 4.0 Mar 14</span>
+        </div>
       </div>
 
       {/* Messages Feed */}
