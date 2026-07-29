@@ -89,21 +89,13 @@ export default function LoginModal() {
 
         {/* Modal Header */}
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <div style={{
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            color: '#3b82f6',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '12px'
-          }}>
-            <Shield size={28} />
-          </div>
+          <img 
+            src="/logo-color.png" 
+            alt="WikiMind Logo" 
+            style={{ height: '52px', objectFit: 'contain', marginBottom: '12px' }} 
+          />
           <h2 style={{ fontSize: '1.4rem', fontWeight: '600', margin: '0 0 8px 0', color: '#f8fafc' }}>
-            Sign In to WikiLLM
+            Sign In to WikiMind
           </h2>
           <p style={{ fontSize: '0.875rem', color: '#94a3b8', margin: 0, lineHeight: 1.5 }}>
             Log in with your Google account to keep your documents, Wiki Knowledge pages, and AI context private and unique to you.

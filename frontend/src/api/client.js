@@ -11,7 +11,7 @@ const api = axios.create({
 
 // Interceptor to attach Authorization Bearer token to requests
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('wikillm_token');
+  const token = localStorage.getItem('wikimind_token') || localStorage.getItem('wikillm_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

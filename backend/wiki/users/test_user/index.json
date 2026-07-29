@@ -1,6 +1,6 @@
 {
-  "total_pages": 9,
-  "rebuilt_at": "2026-07-29T09:44:52.042188+00:00",
+  "total_pages": 10,
+  "rebuilt_at": "2026-07-29T10:00:26.522311+00:00",
   "pages": [
     {
       "entity_name": "Artificial Intelligence Knowledge Retrieval",
@@ -12,7 +12,7 @@
         "concept"
       ],
       "related_entities": [],
-      "updated_at": "2026-07-29T09:43:24.163075+00:00"
+      "updated_at": "2026-07-29T09:59:03.431727+00:00"
     },
     {
       "entity_name": "Cached",
@@ -24,7 +24,7 @@
         "document"
       ],
       "related_entities": [],
-      "updated_at": "2026-07-29T09:44:52.042188+00:00"
+      "updated_at": "2026-07-29T10:00:26.522311+00:00"
     },
     {
       "entity_name": "Data Processing and Storage Architecture",
@@ -36,7 +36,7 @@
         "concept"
       ],
       "related_entities": [],
-      "updated_at": "2026-07-29T09:43:24.163075+00:00"
+      "updated_at": "2026-07-29T09:59:03.431727+00:00"
     },
     {
       "entity_name": "Image Doc",
@@ -48,7 +48,7 @@
         "document"
       ],
       "related_entities": [],
-      "updated_at": "2026-07-29T09:43:43.576090+00:00"
+      "updated_at": "2026-07-29T09:59:19.510989+00:00"
     },
     {
       "entity_name": "Knowledge Base",
@@ -60,7 +60,7 @@
         "concept"
       ],
       "related_entities": [],
-      "updated_at": "2026-07-29T09:44:40.015061+00:00"
+      "updated_at": "2026-07-29T10:00:12.648608+00:00"
     },
     {
       "entity_name": "Knowledge Systems",
@@ -72,7 +72,7 @@
         "concept"
       ],
       "related_entities": [],
-      "updated_at": "2026-07-29T09:43:24.163075+00:00"
+      "updated_at": "2026-07-29T09:59:03.431727+00:00"
     },
     {
       "entity_name": "Simple",
@@ -84,7 +84,7 @@
         "document"
       ],
       "related_entities": [],
-      "updated_at": "2026-07-29T09:42:54.222817+00:00"
+      "updated_at": "2026-07-29T09:58:40.044918+00:00"
     },
     {
       "entity_name": "Spec",
@@ -96,7 +96,7 @@
         "document"
       ],
       "related_entities": [],
-      "updated_at": "2026-07-29T09:44:27.155813+00:00"
+      "updated_at": "2026-07-29T09:59:59.494894+00:00"
     },
     {
       "entity_name": "Table Doc",
@@ -108,7 +108,19 @@
         "document"
       ],
       "related_entities": [],
-      "updated_at": "2026-07-29T09:44:03.296251+00:00"
+      "updated_at": "2026-07-29T09:59:38.547760+00:00"
+    },
+    {
+      "entity_name": "WikiMind Knowledge Base",
+      "filename": "WikiMind_Knowledge_Base.md",
+      "entity_type": "CONCEPT",
+      "summary": "Mentioned in uploaded source document without additional background details.\n\n### Known Facts & Data\n- Mentioned in uploaded source document without additional factual statements....",
+      "category": "Concept",
+      "tags": [
+        "concept"
+      ],
+      "related_entities": [],
+      "updated_at": "2026-07-29T10:00:12.648608+00:00"
     }
   ],
   "graph": {
@@ -157,6 +169,11 @@
         "id": "Table Doc",
         "label": "Table Doc",
         "type": "DOCUMENT"
+      },
+      {
+        "id": "WikiMind Knowledge Base",
+        "label": "WikiMind Knowledge Base",
+        "type": "CONCEPT"
       }
     ],
     "edges": []

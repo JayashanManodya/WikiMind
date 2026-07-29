@@ -7,9 +7,7 @@
   "locations": [],
   "products": [],
   "concepts": [
-    "Knowledge Systems",
-    "Data Processing and Storage Architecture",
-    "Artificial Intelligence Knowledge Retrieval"
+    "Knowledge Systems"
   ],
   "keywords": [],
   "citations": [],
@@ -18,7 +16,7 @@
   "section_summaries": [
     {
       "section_title": "Introduction to Knowledge Systems",
-      "summary": "An introductory overview of knowledge systems."
+      "summary": "Overview of knowledge systems and their significance."
     },
     {
       "section_title": "Data Processing and Storage Architecture",

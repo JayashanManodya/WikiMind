@@ -44,6 +44,11 @@
       "id": "Table Doc",
       "label": "Table Doc",
       "type": "DOCUMENT"
+    },
+    {
+      "id": "WikiMind Knowledge Base",
+      "label": "WikiMind Knowledge Base",
+      "type": "CONCEPT"
     }
   ],
   "edges": []

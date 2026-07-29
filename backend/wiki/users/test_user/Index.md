@@ -1,6 +1,6 @@
 # Wiki Knowledge Base Index
 
-**Total Active Wiki Pages**: 9  
+**Total Active Wiki Pages**: 10  
 **Total Knowledge Edges**: 0  
 **Last Updated**: `2026-07-29`
 
@@ -19,6 +19,10 @@
 ### Known Facts & Data
 - Mentioned in uploaded source document without additional fact...*
 - [Knowledge Systems](./Knowledge_Systems.md) - *Mentioned in uploaded source document without additional background details.
+
+### Known Facts & Data
+- Mentioned in uploaded source document without additional factual statements....*
+- [WikiMind Knowledge Base](./WikiMind_Knowledge_Base.md) - *Mentioned in uploaded source document without additional background details.
 
 ### Known Facts & Data
 - Mentioned in uploaded source document without additional factual statements....*

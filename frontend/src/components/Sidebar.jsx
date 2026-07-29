@@ -41,11 +41,13 @@ export default function Sidebar({ activeTab, setActiveTab }) {
     <aside className="sidebar">
       {/* Brand Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 4px 20px 4px', borderBottom: '1px solid var(--border-color)', marginBottom: '16px' }}>
-        <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#09090B', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Bot size={18} color="#FFFFFF" />
-        </div>
+        <img 
+          src="/logo-color.png" 
+          alt="WikiMind Logo" 
+          style={{ width: '36px', height: '36px', objectFit: 'contain', borderRadius: '6px' }} 
+        />
         <div>
-          <h2 style={{ fontSize: '17px', fontWeight: '700', lineHeight: '1.2' }}>WikiLLM</h2>
+          <h2 style={{ fontSize: '18px', fontWeight: '700', lineHeight: '1.2', color: '#09090B' }}>WikiMind</h2>
           <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Grounded Knowledge System</p>
         </div>
       </div>
@@ -89,7 +91,7 @@ export default function Sidebar({ activeTab, setActiveTab }) {
       {/* Bottom Status Card */}
       <div className="clean-card" style={{ padding: '12px', marginTop: 'auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-          <span style={{ fontSize: '12px', fontWeight: '600' }}>WikiLLM Engine</span>
+          <span style={{ fontSize: '12px', fontWeight: '600' }}>WikiMind Engine</span>
           <span className="badge-clean" style={{ fontSize: '10px' }}>v2.0</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--text-muted)' }}>

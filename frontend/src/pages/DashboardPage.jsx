@@ -102,9 +102,14 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
       )}
 
       {/* Top Header */}
-      <div style={{ textAlign: 'center', margin: '10px 0 0 0' }}>
-        <h1 style={{ fontSize: '32px', fontWeight: '700', color: '#09090B', marginBottom: '4px' }}>
-          WikiLLM System
+      <div style={{ textAlign: 'center', margin: '10px 0 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+        <img 
+          src="/logo-color.png" 
+          alt="WikiMind Logo" 
+          style={{ height: '48px', objectFit: 'contain' }} 
+        />
+        <h1 style={{ fontSize: '32px', fontWeight: '700', color: '#09090B', marginBottom: '2px' }}>
+          WikiMind System
         </h1>
         <p style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
           Grounded Knowledge Management & Graph-Aware QA System

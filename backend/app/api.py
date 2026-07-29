@@ -1,4 +1,4 @@
-"""FastAPI entry point for the WikiLLM System with Google OAuth 2.0 and Per-User Data Isolation."""
+"""FastAPI entry point for the WikiMind System with Google OAuth 2.0 and Per-User Data Isolation."""
 
 import uuid
 import json
@@ -23,7 +23,7 @@ class GoogleAuthRequest(BaseModel):
 
 
 app = FastAPI(
-    title="WikiLLM Intelligent Knowledge Management System",
+    title="WikiMind Intelligent Knowledge Management System",
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json"
@@ -464,7 +464,7 @@ async def health_check():
 async def root():
     """Root endpoint for basic API info."""
     return {
-        "name": "WikiLLM Intelligent Knowledge Management System",
+        "name": "WikiMind Intelligent Knowledge Management System",
         "version": "2.0.0",
         "endpoints": {
             "auth_google": "POST /auth/google",

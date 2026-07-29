@@ -5,13 +5,13 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('wikillm_token') || null);
+  const [token, setToken] = useState(localStorage.getItem('wikimind_token') || localStorage.getItem('wikillm_token') || null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   useEffect(() => {
     const initAuth = async () => {
-      const savedToken = localStorage.getItem('wikillm_token');
+      const savedToken = localStorage.getItem('wikimind_token') || localStorage.getItem('wikillm_token');
       if (savedToken) {
         try {
           const userData = await getCurrentUser();
@@ -20,12 +20,14 @@ export const AuthProvider = ({ children }) => {
             setToken(savedToken);
           } else {
             // Token invalid or returned guest
+            localStorage.removeItem('wikimind_token');
             localStorage.removeItem('wikillm_token');
             setUser(null);
             setToken(null);
           }
         } catch (err) {
           console.warn("Stored auth token validation failed:", err);
+          localStorage.removeItem('wikimind_token');
           localStorage.removeItem('wikillm_token');
           setUser(null);
           setToken(null);
@@ -41,7 +43,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await loginApi(credential);
       const { access_token, user: userData } = data;
-      localStorage.setItem('wikillm_token', access_token);
+      localStorage.setItem('wikimind_token', access_token);
       setToken(access_token);
       setUser(userData);
       setIsLoginModalOpen(false);
@@ -57,6 +59,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    localStorage.removeItem('wikimind_token');
     localStorage.removeItem('wikillm_token');
     setToken(null);
     setUser(null);
