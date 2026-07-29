@@ -157,3 +157,80 @@ This file maintains an append-only historical audit log of all document ingestio
 - **Contradictions Found (0)**: None
 
 ---
+
+## [2026-07-29T11:26:29.519390+00:00] Ingestion Run: `simple.pdf`
+
+- **Document Name**: `simple.pdf`
+- **Pages Created (0)**: None
+- **Pages Updated (1)**: `Simple`
+- **Entities Discovered (0)**: None
+- **Concepts Discovered (0)**: None
+- **Contradictions Found (0)**: None
+
+---
+
+## [2026-07-29T11:26:52.366318+00:00] Ingestion Run: `multipage.pdf`
+
+- **Document Name**: `multipage.pdf`
+- **Pages Created (0)**: None
+- **Pages Updated (3)**: `Knowledge Systems`, `Data Processing and Storage Architecture`, `Artificial Intelligence Knowledge Retrieval`
+- **Entities Discovered (3)**: `Knowledge Systems`, `Data Processing and Storage Architecture`, `Artificial Intelligence Knowledge Retrieval`
+- **Concepts Discovered (1)**: `Knowledge Systems`
+- **Contradictions Found (0)**: None
+
+---
+
+## [2026-07-29T11:27:09.113749+00:00] Ingestion Run: `image_doc.pdf`
+
+- **Document Name**: `image_doc.pdf`
+- **Pages Created (0)**: None
+- **Pages Updated (1)**: `Image Doc`
+- **Entities Discovered (0)**: None
+- **Concepts Discovered (0)**: None
+- **Contradictions Found (0)**: None
+
+---
+
+## [2026-07-29T11:27:27.286410+00:00] Ingestion Run: `table_doc.pdf`
+
+- **Document Name**: `table_doc.pdf`
+- **Pages Created (0)**: None
+- **Pages Updated (1)**: `Table Doc`
+- **Entities Discovered (0)**: None
+- **Concepts Discovered (0)**: None
+- **Contradictions Found (0)**: None
+
+---
+
+## [2026-07-29T11:27:45.238837+00:00] Ingestion Run: `spec.docx`
+
+- **Document Name**: `spec.docx`
+- **Pages Created (0)**: None
+- **Pages Updated (1)**: `Spec`
+- **Entities Discovered (0)**: None
+- **Concepts Discovered (0)**: None
+- **Contradictions Found (0)**: None
+
+---
+
+## [2026-07-29T11:27:57.272641+00:00] Ingestion Run: `knowledge.md`
+
+- **Document Name**: `knowledge.md`
+- **Pages Created (0)**: None
+- **Pages Updated (1)**: `Knowledge Base`
+- **Entities Discovered (0)**: None
+- **Concepts Discovered (1)**: `Knowledge Base`
+- **Contradictions Found (0)**: None
+
+---
+
+## [2026-07-29T11:28:15.498015+00:00] Ingestion Run: `cached.pdf`
+
+- **Document Name**: `cached.pdf`
+- **Pages Created (0)**: None
+- **Pages Updated (1)**: `Cached`
+- **Entities Discovered (0)**: None
+- **Concepts Discovered (0)**: None
+- **Contradictions Found (0)**: None
+
+---

@@ -62,9 +62,10 @@ export const getWikiGraph = async () => {
   return res.data;
 };
 
-export const askQuestion = async (question) => {
+export const askQuestion = async (question, history = []) => {
   const res = await api.post('/qa/ask', {
-    question
+    question,
+    history
   });
   return res.data;
 };

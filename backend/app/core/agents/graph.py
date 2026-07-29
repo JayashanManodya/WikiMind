@@ -45,23 +45,20 @@ def get_qa_graph() -> Any:
     return create_qa_graph()
 
 
-async def run_qa_flow(question: str, user_id: str = "guest_user") -> Dict[str, Any]:
+async def run_qa_flow(
+    question: str, 
+    user_id: str = "guest_user",
+    history: list[dict] | None = None
+) -> Dict[str, Any]:
     """Run the complete multi-agent QA flow for a question.
-
-    This is the main entry point for the QA system. It:
-    1. Initializes the graph state with the question and user_id
-    2. Executes the linear agent flow (Retrieval -> Summarization -> Verification)
-    3. Extracts and returns the final results
 
     Args:
         question: The user's question.
         user_id: The ID of the authenticated user.
+        history: Complete conversation history list.
 
     Returns:
-        Dictionary with keys:
-        - `answer`: Final verified answer
-        - `draft_answer`: Initial draft answer from summarization agent
-        - `context`: Retrieved context from vector store
+        Dictionary with final answer, context, and state metadata.
     """
     graph = get_qa_graph()
 
@@ -73,8 +70,11 @@ async def run_qa_flow(question: str, user_id: str = "guest_user") -> Dict[str, A
         "plan": None,
         "sub_questions": None,
         "user_id": user_id,
+        "history": history or [],
+        "messages": [],
     }
 
     final_state = await graph.ainvoke(initial_state)
 
     return final_state
+

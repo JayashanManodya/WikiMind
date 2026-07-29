@@ -27,32 +27,41 @@ def _extract_last_ai_content(messages: List[object]) -> str:
             return str(msg.content)
     return ""
 
+def _slice_latest_5(msgs: List[object]) -> List[object]:
+    """Ensure only the latest 5 messages are passed to the LLM context window."""
+    if len(msgs) <= 5:
+        return msgs
+    return msgs[-5:]
+
+
 def create_agent(model, tools, system_prompt):
-    """Wrapper to maintain the user's preferred coding structure while ensuring functionality."""
+    """Wrapper to maintain state history while sending only the latest 5 messages to the LLM."""
     if tools:
         model = model.bind_tools(tools)
     
     async def ainvoke(self, input_data, config=None, **kwargs):
-        # input_data can be a string (question) or a dict with messages
         if isinstance(input_data, str):
-            messages = [SystemMessage(content=system_prompt), HumanMessage(content=input_data)]
+            msgs = [HumanMessage(content=input_data)]
         else:
-            # Handle standard LangChain dict input if needed
             msgs = input_data.get("messages", [])
-            messages = [SystemMessage(content=system_prompt)] + msgs
+        
+        recent_msgs = _slice_latest_5(msgs)
+        messages = [SystemMessage(content=system_prompt)] + recent_msgs
             
         result = await model.ainvoke(messages, config=config, **kwargs)
-        return {"messages": messages + [result]}
+        return {"messages": msgs + [result]}
 
     def invoke(self, input_data, config=None, **kwargs):
         if isinstance(input_data, str):
-            messages = [SystemMessage(content=system_prompt), HumanMessage(content=input_data)]
+            msgs = [HumanMessage(content=input_data)]
         else:
             msgs = input_data.get("messages", [])
-            messages = [SystemMessage(content=system_prompt)] + msgs
+            
+        recent_msgs = _slice_latest_5(msgs)
+        messages = [SystemMessage(content=system_prompt)] + recent_msgs
             
         result = model.invoke(messages, config=config, **kwargs)
-        return {"messages": messages + [result]}
+        return {"messages": msgs + [result]}
     
     return type("Agent", (), {"invoke": invoke, "ainvoke": ainvoke})()
 
@@ -83,11 +92,32 @@ verification_agent = create_agent(
     system_prompt=VERIFICATION_SYSTEM_PROMPT,
 )
 
+def _build_history_messages(state: QAState, current_prompt: str) -> List[object]:
+    """Build full message history array from state and return accumulated messages."""
+    history = state.get("history") or []
+    msgs: List[object] = []
+    
+    for item in history:
+        if isinstance(item, dict):
+            role = item.get("role") or item.get("sender")
+            text = item.get("text") or item.get("content") or ""
+            if role in ["user", "human"]:
+                msgs.append(HumanMessage(content=text))
+            elif role in ["assistant", "bot", "ai"]:
+                msgs.append(AIMessage(content=text))
+        elif hasattr(item, "content"):
+            msgs.append(item)
+            
+    msgs.append(HumanMessage(content=current_prompt))
+    return msgs
+
+
 def planning_node(state: QAState) -> QAState:
     """Planning Agent node: detects ambiguity and generates sub-questions."""
     question = state["question"]
+    msgs = _build_history_messages(state, question)
     
-    result = planning_agent.invoke(question)
+    result = planning_agent.invoke({"messages": msgs})
     content = _extract_last_ai_content(result["messages"])
     
     # Parsing logic for plan and sub-questions
@@ -118,7 +148,8 @@ async def retrieval_node(state: QAState) -> QAState:
     user_id = state.get("user_id") or "guest_user"
     
     async def process_question(q):
-        result = await retrieval_agent.ainvoke({"messages": [HumanMessage(content=f"Retrieve context for: {q}")]})
+        msgs = _build_history_messages(state, f"Retrieve context for: {q}")
+        result = await retrieval_agent.ainvoke({"messages": msgs})
         
         last_msg = result["messages"][-1]
         if hasattr(last_msg, "tool_calls") and last_msg.tool_calls:
@@ -165,8 +196,9 @@ def summarization_node(state: QAState) -> QAState:
     context = state.get("context")
 
     user_content = f"Question: {question}\n\nContext:\n{context}"
+    msgs = _build_history_messages(state, user_content)
 
-    result = summarization_agent.invoke({"messages": [HumanMessage(content=user_content)]})
+    result = summarization_agent.invoke({"messages": msgs})
     draft_answer = _extract_last_ai_content(result["messages"])
 
     return {
@@ -190,9 +222,11 @@ Draft Answer:
 
 Please verify and correct the draft answer, removing any unsupported claims."""
 
-    result = verification_agent.invoke({"messages": [HumanMessage(content=user_content)]})
+    msgs = _build_history_messages(state, user_content)
+    result = verification_agent.invoke({"messages": msgs})
     answer = _extract_last_ai_content(result["messages"])
 
     return {
         "answer": answer,
     }
+

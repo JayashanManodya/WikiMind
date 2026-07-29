@@ -36,12 +36,13 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
     if (!inputQuery.trim() || isAsking) return;
 
     const userMessage = { sender: 'user', text: inputQuery };
-    setMessages(prev => [...prev, userMessage]);
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     setInputQuery('');
     setIsAsking(true);
 
     try {
-      const res = await askQuestion(userMessage.text, 3, 4000);
+      const res = await askQuestion(userMessage.text, updatedMessages);
       
       const botMessage = {
         sender: 'bot',

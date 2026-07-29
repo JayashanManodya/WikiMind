@@ -13,9 +13,8 @@
   "executive_summary": "The document contains a table with three headers and two rows of values.",
   "section_summaries": [],
   "important_facts": [
-    "The table has three headers: Header A, Header B, and Header C.",
-    "The first row contains values Val 1 and Val 2.",
-    "The second row contains values Val 3 and Val 4."
+    "The table contains three headers: Header A, Header B, and Header C.",
+    "The table contains two rows with values: Row 1 (Val 1, Val 2) and Row 2 (Val 3, Val 4)."
   ],
   "glossary_terms": [],
   "filename": "table_doc.pdf"

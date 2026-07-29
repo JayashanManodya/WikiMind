@@ -19,4 +19,7 @@ class QAState(TypedDict):
     plan: str | None
     sub_questions: list[str] | None
     user_id: str | None
+    history: list[dict] | None
+    messages: list[object] | None
+
 

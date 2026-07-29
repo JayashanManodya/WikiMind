@@ -381,7 +381,7 @@ async def qa_endpoint(
     """Expose the multi-agent WikiLLM QA flow via POST /qa or POST /qa/ask (Scoped to current user)."""
     user_id = current_user["user_id"]
     try:
-        result = await answer_question(request.question, user_id=user_id)
+        result = await answer_question(request.question, user_id=user_id, history=request.history)
         answer_text = result.get("answer", "No answer generated.")
         context_text = result.get("context", "No context retrieved.")
         
