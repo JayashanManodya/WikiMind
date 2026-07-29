@@ -9,18 +9,18 @@
 - Mentioned in: [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)
 
 ### Overview
-A real-time fuel availability and queue tracking platform with live monitoring and queue estimation features.
+A real-time fuel availability and queue tracking platform that provides live monitoring and user convenience features.
 
 ### Known Facts & Data
 - Mentioned in uploaded source document without additional factual statements.
 
 ## Related Entities
-None
+[[Jayashan Manodya]]
 
 ## Knowledge Graph Relationships
-- No explicit relationships defined in source text.
+- [[Jayashan Manodya]] --[`DEVELOPS`]--> [[Fuel Alert]]
 
 ## Backlinks
-- No backlinks recorded yet.
+- [[Jayashan Manodya]]
 ## Document Sources
 - [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)

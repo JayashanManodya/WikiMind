@@ -9,18 +9,18 @@
 - Mentioned in: [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)
 
 ### Overview
-An AI-powered license plate recognition system for real-time vehicle plate detection and automated text extraction.
+An AI-powered license plate recognition system designed for real-time vehicle plate detection and automated text extraction.
 
 ### Known Facts & Data
 - Mentioned in uploaded source document without additional factual statements.
 
 ## Related Entities
-[[PaddleOCR]]
+[[Jayashan Manodya]]
 
 ## Knowledge Graph Relationships
-- [[PlateX]] --[`USES_TECHNOLOGY`]--> [[PaddleOCR]]
+- [[Jayashan Manodya]] --[`DEVELOPS`]--> [[PlateX]]
 
 ## Backlinks
-- No backlinks recorded yet.
+- [[Jayashan Manodya]]
 ## Document Sources
 - [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)

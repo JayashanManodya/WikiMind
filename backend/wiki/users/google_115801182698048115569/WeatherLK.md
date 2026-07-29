@@ -9,18 +9,18 @@
 - Mentioned in: [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)
 
 ### Overview
-An ML-powered weather forecasting platform that predicts weather conditions using historical and environmental data.
+A machine learning-powered weather forecasting platform that predicts weather conditions using historical and environmental data.
 
 ### Known Facts & Data
 - Mentioned in uploaded source document without additional factual statements.
 
 ## Related Entities
-[[RandomForestRegressor]]
+[[Jayashan Manodya]]
 
 ## Knowledge Graph Relationships
-- [[WeatherLK]] --[`USES_TECHNOLOGY`]--> [[RandomForestRegressor]]
+- [[Jayashan Manodya]] --[`DEVELOPS`]--> [[WeatherLK]]
 
 ## Backlinks
-- No backlinks recorded yet.
+- [[Jayashan Manodya]]
 ## Document Sources
 - [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)

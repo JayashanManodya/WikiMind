@@ -9,18 +9,18 @@
 - Mentioned in: [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)
 
 ### Overview
-An AI-powered tea estate management platform that supports various operational aspects of tea plantations.
+An AI-powered tea estate management platform that integrates various operational features for modern tea plantation management.
 
 ### Known Facts & Data
 - Mentioned in uploaded source document without additional factual statements.
 
 ## Related Entities
-[[YoloV8]]
+[[Jayashan Manodya]]
 
 ## Knowledge Graph Relationships
-- [[TeaPlanter]] --[`USES_TECHNOLOGY`]--> [[YoloV8]]
+- [[Jayashan Manodya]] --[`DEVELOPS`]--> [[TeaPlanter]]
 
 ## Backlinks
-- No backlinks recorded yet.
+- [[Jayashan Manodya]]
 ## Document Sources
 - [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)

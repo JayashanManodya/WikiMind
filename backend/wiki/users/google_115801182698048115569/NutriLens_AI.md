@@ -9,18 +9,18 @@
 - Mentioned in: [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)
 
 ### Overview
-An AI-powered nutrition assistant that enables users to scan food packages and meals, analyze ingredients and nutrition labels, and receive personalized health recommendations.
+An AI-powered nutrition assistant being developed under the Ascentic AI Launch Pad mentorship program, enabling users to analyze food packages and receive personalized health recommendations.
 
 ### Known Facts & Data
 - Mentioned in uploaded source document without additional factual statements.
 
 ## Related Entities
-[[OCR and LLMs]]
+[[Jayashan Manodya]]
 
 ## Knowledge Graph Relationships
-- [[NutriLens AI]] --[`USES_TECHNOLOGY`]--> [[OCR and LLMs]]
+- [[Jayashan Manodya]] --[`DEVELOPS`]--> [[NutriLens AI]]
 
 ## Backlinks
-- No backlinks recorded yet.
+- [[Jayashan Manodya]]
 ## Document Sources
 - [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)

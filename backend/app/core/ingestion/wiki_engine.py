@@ -88,6 +88,18 @@ def update_or_create_wiki_pages(
                 "aliases": []
             }
 
+    # Ensure document people and authors (e.g. CV candidates) are registered as PERSON entities
+    people = knowledge_json.get("people", []) + knowledge_json.get("authors", [])
+    for p in people:
+        p_name = p.strip() if isinstance(p, str) else ""
+        if p_name and p_name not in all_entity_targets:
+            all_entity_targets[p_name] = {
+                "entity_name": p_name,
+                "entity_type": "PERSON",
+                "description": f"Primary subject/person extracted from source document {source_filename}.",
+                "aliases": []
+            }
+
     if not all_entity_targets:
         # Fallback if no entities extracted
         stem_name = Path(source_filename).stem.replace("_", " ").title()
@@ -104,6 +116,12 @@ def update_or_create_wiki_pages(
         page_path = target_dir / safe_filename
         
         entity_rels = rel_map.get(entity_name, [])
+        if not entity_rels:
+            doc_stem = Path(source_filename).stem.replace("_", " ").title()
+            hub_target = doc_stem if doc_stem != entity_name else (list(all_entity_targets.keys())[0] if list(all_entity_targets.keys())[0] != entity_name else "")
+            if hub_target:
+                entity_rels = [{"source": entity_name, "relation": "MENTIONED_IN", "target": hub_target}]
+
         related_entity_names = set()
         for r in entity_rels:
             if r["source"] == entity_name and r["target"]:

@@ -12,7 +12,7 @@
 Mentioned in uploaded source document without additional background details.
 
 ### Known Facts & Data
-- Mentioned in uploaded source document without additional factual statements.
+- GPA: 3.93/4.0 in most recent semester at Sri Lanka Institute of Information Technology. (Provenance: EDUCATION)
 
 ## Related Entities
 [[Jayashan Manodya]]
@@ -21,6 +21,6 @@ Mentioned in uploaded source document without additional background details.
 - [[Jayashan Manodya]] --[`ENROLLED_IN`]--> [[Sri Lanka Institute of Information Technology]]
 
 ## Backlinks
-- No backlinks recorded yet.
+- [[Jayashan Manodya]]
 ## Document Sources
 - [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)

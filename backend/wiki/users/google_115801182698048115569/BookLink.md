@@ -9,18 +9,18 @@
 - Mentioned in: [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)
 
 ### Overview
-A community-driven mobile platform for book exchanges, featuring user authentication and real-time chat.
+A community-driven mobile platform for book exchanges, featuring user authentication and real-time chat functionalities.
 
 ### Known Facts & Data
 - Mentioned in uploaded source document without additional factual statements.
 
 ## Related Entities
-None
+[[Jayashan Manodya]]
 
 ## Knowledge Graph Relationships
-- No explicit relationships defined in source text.
+- [[Jayashan Manodya]] --[`DEVELOPS`]--> [[BookLink]]
 
 ## Backlinks
-- No backlinks recorded yet.
+- [[Jayashan Manodya]]
 ## Document Sources
 - [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)

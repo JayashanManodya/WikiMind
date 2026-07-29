@@ -9,18 +9,18 @@
 - Mentioned in: [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)
 
 ### Overview
-A Retrieval-Augmented Generation document question-answering system that provides context-aware answers from uploaded PDFs.
+A Retrieval-Augmented Generation (RAG) document question-answering system that provides context-aware answers from uploaded PDFs.
 
 ### Known Facts & Data
 - Mentioned in uploaded source document without additional factual statements.
 
 ## Related Entities
-[[OpenAI GPT-4o]]
+[[Jayashan Manodya]]
 
 ## Knowledge Graph Relationships
-- [[IKMS]] --[`USES_TECHNOLOGY`]--> [[OpenAI GPT-4o]]
+- [[Jayashan Manodya]] --[`DEVELOPS`]--> [[IKMS]]
 
 ## Backlinks
-- No backlinks recorded yet.
+- [[Jayashan Manodya]]
 ## Document Sources
 - [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)

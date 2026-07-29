@@ -31,6 +31,11 @@
       "type": "PRODUCT"
     },
     {
+      "id": "Jayashan Manodya",
+      "label": "Jayashan Manodya",
+      "type": "PERSON"
+    },
+    {
       "id": "KIKO",
       "label": "KIKO",
       "type": "PRODUCT"
@@ -61,5 +66,66 @@
       "type": "PRODUCT"
     }
   ],
-  "edges": []
+  "edges": [
+    {
+      "source": "Jayashan Manodya",
+      "relation": "ENROLLED_IN",
+      "target": "Sri Lanka Institute of Information Technology"
+    },
+    {
+      "source": "Jayashan Manodya",
+      "relation": "SPECIALIZES_IN",
+      "target": "Artificial Intelligence"
+    },
+    {
+      "source": "Jayashan Manodya",
+      "relation": "DEVELOPS",
+      "target": "NutriLens AI"
+    },
+    {
+      "source": "Jayashan Manodya",
+      "relation": "DEVELOPS",
+      "target": "KIKO"
+    },
+    {
+      "source": "Jayashan Manodya",
+      "relation": "DEVELOPS",
+      "target": "IKMS"
+    },
+    {
+      "source": "Jayashan Manodya",
+      "relation": "DEVELOPS",
+      "target": "PlateX"
+    },
+    {
+      "source": "Jayashan Manodya",
+      "relation": "DEVELOPS",
+      "target": "WeatherLK"
+    },
+    {
+      "source": "Jayashan Manodya",
+      "relation": "DEVELOPS",
+      "target": "TeaPlanter"
+    },
+    {
+      "source": "Jayashan Manodya",
+      "relation": "DEVELOPS",
+      "target": "Fuel Alert"
+    },
+    {
+      "source": "Jayashan Manodya",
+      "relation": "DEVELOPS",
+      "target": "BookLink"
+    },
+    {
+      "source": "Jayashan Manodya",
+      "relation": "DEVELOPS",
+      "target": "Automated Room Comfort System"
+    },
+    {
+      "source": "Jayashan Manodya",
+      "relation": "WORKS_AT",
+      "target": "Glanz Digital (PVT) Ltd"
+    }
+  ]
 }

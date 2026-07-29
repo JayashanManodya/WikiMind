@@ -9,7 +9,7 @@
 - Mentioned in: [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)
 
 ### Overview
-A field of computer science focused on creating intelligent systems capable of performing tasks that typically require human intelligence.
+A field of computer science focused on creating systems capable of performing tasks that typically require human intelligence, such as understanding natural language and recognizing patterns.
 
 ### Known Facts & Data
 - Mentioned in uploaded source document without additional factual statements.
@@ -21,6 +21,6 @@ A field of computer science focused on creating intelligent systems capable of p
 - [[Jayashan Manodya]] --[`SPECIALIZES_IN`]--> [[Artificial Intelligence]]
 
 ## Backlinks
-- No backlinks recorded yet.
+- [[Jayashan Manodya]]
 ## Document Sources
 - [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)

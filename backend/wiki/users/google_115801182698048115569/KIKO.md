@@ -9,18 +9,18 @@
 - Mentioned in: [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)
 
 ### Overview
-An AI-powered conversational shopping assistant that allows users to browse products and manage orders through natural language conversations.
+An AI-powered conversational shopping assistant that allows users to interact and manage shopping tasks through natural language conversations.
 
 ### Known Facts & Data
 - Mentioned in uploaded source document without additional factual statements.
 
 ## Related Entities
-[[Open AI]]
+[[Jayashan Manodya]]
 
 ## Knowledge Graph Relationships
-- [[KIKO]] --[`USES_TECHNOLOGY`]--> [[Open AI]]
+- [[Jayashan Manodya]] --[`DEVELOPS`]--> [[KIKO]]
 
 ## Backlinks
-- No backlinks recorded yet.
+- [[Jayashan Manodya]]
 ## Document Sources
 - [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)

@@ -15,12 +15,12 @@ An IoT-based system that adjusts room temperature and lighting based on sensor d
 - Mentioned in uploaded source document without additional factual statements.
 
 ## Related Entities
-None
+[[Jayashan Manodya]]
 
 ## Knowledge Graph Relationships
-- No explicit relationships defined in source text.
+- [[Jayashan Manodya]] --[`DEVELOPS`]--> [[Automated Room Comfort System]]
 
 ## Backlinks
-- No backlinks recorded yet.
+- [[Jayashan Manodya]]
 ## Document Sources
 - [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)

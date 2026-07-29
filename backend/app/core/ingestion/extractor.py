@@ -43,6 +43,7 @@ CRITICAL GRAPH & KNOWLEDGE INTEGRATION RULES:
    - Entity -> Founder/Leader (e.g., `Tesla --[FOUNDED_BY]--> Martin Eberhard`)
 4. DO NOT SUMMARIZE AWAY SPECIFIC DETAILS. Extract EVERY numeric value, GPA, credit count, registration/ID number, date, grade, affiliation, score, module name, and specific claim present in the document.
 5. For each entity with rich document text, the `description` MUST be a comprehensive, in-depth multi-paragraph overview detailing full background context, qualifications, achievements, affiliations, and attributes strictly based on the text.
+6. ALWAYS EXTRACT THE PRIMARY SUBJECT / PERSON / AUTHOR / CANDIDATE NAME OF THE DOCUMENT (such as the person whose Resume/CV this is) AND INCLUDE THEM IN `entities` AS TYPE `PERSON` with a full description of their profile, skills, and qualifications. Ensure all projects, experience, education, and affiliations explicitly link to this primary person.
 
 Extract ONLY structured metadata and knowledge objects according to this exact JSON schema:
 
@@ -208,7 +209,84 @@ def extract_structured_knowledge(
         if k not in knowledge_json or not isinstance(knowledge_json[k], list):
             knowledge_json[k] = []
 
+    # Enforce graph connectivity: no entity or concept remains isolated
+    _enforce_no_isolated_entities(knowledge_json, filename, enrichment_metadata)
+
     return knowledge_json
+
+
+def _enforce_no_isolated_entities(knowledge_json: Dict[str, Any], filename: str, enrichment: Dict[str, Any]):
+    """Post-processing step guaranteeing every extracted entity/concept has at least 1 relationship triple
+    and registering any document person/author (such as CV candidate) as a primary PERSON entity.
+    """
+    entities = knowledge_json.get("entities", [])
+    concepts = knowledge_json.get("concepts", [])
+    relationships = knowledge_json.get("relationships", [])
+
+    # Register people and authors as PERSON entities if not present
+    people = knowledge_json.get("people", []) + knowledge_json.get("authors", [])
+    existing_entity_names = [e.get("name", "").strip() for e in entities if e.get("name")]
+    
+    person_hub_name = None
+    for person in people:
+        p_name = person.strip()
+        if p_name and p_name.lower() not in [n.lower() for n in existing_entity_names]:
+            entities.append({
+                "name": p_name,
+                "type": "PERSON",
+                "description": f"Primary subject/person extracted from {filename}.",
+                "aliases": []
+            })
+            existing_entity_names.append(p_name)
+            if not person_hub_name:
+                person_hub_name = p_name
+        elif p_name and not person_hub_name:
+            person_hub_name = p_name
+
+    # Determine primary hub entity (PERSON > Document title > main concept > first entity)
+    doc_stem = filename.replace("_", " ").split(".")[0].title()
+    primary_hub = person_hub_name or knowledge_json.get("title") or enrichment.get("title") or doc_stem
+
+    # Collect all node names
+    all_node_names = []
+    for ent in entities:
+        n = ent.get("name", "").strip()
+        if n and n not in all_node_names:
+            all_node_names.append(n)
+    for conc in concepts:
+        c = conc.get("name", "").strip()
+        if c and c not in all_node_names:
+            all_node_names.append(c)
+
+    if not all_node_names:
+        return
+
+    # Find connected nodes
+    connected_nodes = set()
+    for rel in relationships:
+        s = rel.get("source", "").strip()
+        t = rel.get("target", "").strip()
+        if s:
+            connected_nodes.add(s)
+        if t:
+            connected_nodes.add(t)
+
+    # Main target to connect isolated nodes to
+    target_hub = primary_hub if primary_hub in all_node_names else all_node_names[0]
+
+    for node in all_node_names:
+        if node not in connected_nodes:
+            if node != target_hub:
+                relationships.append({
+                    "source": node,
+                    "relation": "MENTIONED_IN",
+                    "target": target_hub,
+                    "evidence": f"Extracted entity from source document {filename}"
+                })
+                connected_nodes.add(node)
+                connected_nodes.add(target_hub)
+
+    knowledge_json["relationships"] = relationships
 
 
 def _fallback_knowledge_extraction(filename: str, enrichment: Dict[str, Any]) -> Dict[str, Any]:
@@ -223,6 +301,8 @@ def _fallback_knowledge_extraction(filename: str, enrichment: Dict[str, Any]) ->
         "aliases": []
     }]
 
+    relationships = []
+
     for concept in concepts[:5]:
         if concept != title:
             entities.append({
@@ -231,11 +311,17 @@ def _fallback_knowledge_extraction(filename: str, enrichment: Dict[str, Any]) ->
                 "description": f"Concept extracted from {filename}",
                 "aliases": []
             })
+            relationships.append({
+                "source": concept,
+                "relation": "PART_OF",
+                "target": title,
+                "evidence": f"Concept extracted from {filename}"
+            })
 
     return {
         "entities": entities,
         "concepts": [{"name": c, "definition": f"Concept in {filename}", "domain": "General"} for c in concepts[:5]],
-        "relationships": [],
+        "relationships": relationships,
         "facts": [{"subject": title, "statement": f"Document {filename} ingested.", "confidence": 1.0}],
         "claims": [],
         "timelines": [],

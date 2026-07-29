@@ -102,6 +102,30 @@ def update_wiki_index_catalog(
 
     nodes = [{"id": p["entity_name"], "label": p["entity_name"], "type": p["entity_type"]} for p in sorted_pages]
 
+    # Enforce degree >= 1 for all nodes (No independent/isolated nodes allowed)
+    if len(nodes) > 1:
+        connected_node_ids = set()
+        for e in all_edges:
+            connected_node_ids.add(e["source"])
+            connected_node_ids.add(e["target"])
+
+        # Determine best hub target (DOCUMENT > CONCEPT > first node)
+        hub_target = None
+        for n in nodes:
+            if n["type"] in ["DOCUMENT", "CONCEPT"] and n["id"] in connected_node_ids:
+                hub_target = n["id"]
+                break
+        if not hub_target:
+            hub_target = nodes[0]["id"]
+
+        for n in nodes:
+            nid = n["id"]
+            if nid not in connected_node_ids and nid != hub_target:
+                edge_key = (nid, "MENTIONED_IN", hub_target)
+                if edge_key not in edge_set:
+                    edge_set.add(edge_key)
+                    all_edges.append({"source": nid, "relation": "MENTIONED_IN", "target": hub_target})
+
     graph_data = {
         "nodes": nodes,
         "edges": all_edges

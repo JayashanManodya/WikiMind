@@ -21,6 +21,6 @@ Mentioned in uploaded source document without additional background details.
 - [[Jayashan Manodya]] --[`WORKS_AT`]--> [[Glanz Digital (PVT) Ltd]]
 
 ## Backlinks
-- No backlinks recorded yet.
+- [[Jayashan Manodya]]
 ## Document Sources
 - [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)

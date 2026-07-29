@@ -1,12 +1,12 @@
 {
-  "total_pages": 12,
-  "rebuilt_at": "2026-07-29T18:38:00.631128+00:00",
+  "total_pages": 13,
+  "rebuilt_at": "2026-07-29T18:54:37.639456+00:00",
   "pages": [
     {
       "entity_name": "Artificial Intelligence",
       "filename": "Artificial_Intelligence.md",
       "entity_type": "CONCEPT",
-      "summary": "A field of computer science focused on creating intelligent systems capable of performing tasks that typically require human intelligence.\n\n### Known Facts & Data\n- Mentioned in up...",
+      "summary": "A field of computer science focused on creating systems capable of performing tasks that typically require human intelligence, such as understanding natural language and recognizin...",
       "category": "Concept",
       "tags": [
         "concept"
@@ -14,7 +14,7 @@
       "related_entities": [
         "Jayashan Manodya"
       ],
-      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+      "updated_at": "2026-07-29T18:54:37.639456+00:00"
     },
     {
       "entity_name": "Automated Room Comfort System",
@@ -25,32 +25,38 @@
       "tags": [
         "product"
       ],
-      "related_entities": [],
-      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+      "related_entities": [
+        "Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-29T18:54:37.639456+00:00"
     },
     {
       "entity_name": "BookLink",
       "filename": "BookLink.md",
       "entity_type": "PRODUCT",
-      "summary": "A community-driven mobile platform for book exchanges, featuring user authentication and real-time chat.\n\n### Known Facts & Data\n- Mentioned in uploaded source document without add...",
+      "summary": "A community-driven mobile platform for book exchanges, featuring user authentication and real-time chat functionalities.\n\n### Known Facts & Data\n- Mentioned in uploaded source docu...",
       "category": "Product",
       "tags": [
         "product"
       ],
-      "related_entities": [],
-      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+      "related_entities": [
+        "Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-29T18:54:37.639456+00:00"
     },
     {
       "entity_name": "Fuel Alert",
       "filename": "Fuel_Alert.md",
       "entity_type": "PRODUCT",
-      "summary": "A real-time fuel availability and queue tracking platform with live monitoring and queue estimation features.\n\n### Known Facts & Data\n- Mentioned in uploaded source document withou...",
+      "summary": "A real-time fuel availability and queue tracking platform that provides live monitoring and user convenience features.\n\n### Known Facts & Data\n- Mentioned in uploaded source docume...",
       "category": "Product",
       "tags": [
         "product"
       ],
-      "related_entities": [],
-      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+      "related_entities": [
+        "Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-29T18:54:37.639456+00:00"
     },
     {
       "entity_name": "Glanz Digital (PVT) Ltd",
@@ -64,69 +70,94 @@
       "related_entities": [
         "Jayashan Manodya"
       ],
-      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+      "updated_at": "2026-07-29T18:54:37.639456+00:00"
     },
     {
       "entity_name": "IKMS",
       "filename": "IKMS.md",
       "entity_type": "PRODUCT",
-      "summary": "A Retrieval-Augmented Generation document question-answering system that provides context-aware answers from uploaded PDFs.\n\n### Known Facts & Data\n- Mentioned in uploaded source d...",
+      "summary": "A Retrieval-Augmented Generation (RAG) document question-answering system that provides context-aware answers from uploaded PDFs.\n\n### Known Facts & Data\n- Mentioned in uploaded so...",
       "category": "Product",
       "tags": [
         "product"
       ],
       "related_entities": [
-        "OpenAI GPT-4o"
+        "Jayashan Manodya"
       ],
-      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+      "updated_at": "2026-07-29T18:54:37.639456+00:00"
+    },
+    {
+      "entity_name": "Jayashan Manodya",
+      "filename": "Jayashan_Manodya.md",
+      "entity_type": "PERSON",
+      "summary": "Jayashan Manodya is an IT undergraduate specializing in Artificial Intelligence, with a strong focus on becoming an AI Engineer. He is engaged in various projects that leverage Gen...",
+      "category": "Person",
+      "tags": [
+        "person"
+      ],
+      "related_entities": [
+        "WeatherLK",
+        "Fuel Alert",
+        "IKMS",
+        "PlateX",
+        "BookLink",
+        "NutriLens AI",
+        "Glanz Digital (PVT) Ltd",
+        "KIKO",
+        "Automated Room Comfort System",
+        "TeaPlanter",
+        "Artificial Intelligence",
+        "Sri Lanka Institute of Information Technology"
+      ],
+      "updated_at": "2026-07-29T18:54:37.639456+00:00"
     },
     {
       "entity_name": "KIKO",
       "filename": "KIKO.md",
       "entity_type": "PRODUCT",
-      "summary": "An AI-powered conversational shopping assistant that allows users to browse products and manage orders through natural language conversations.\n\n### Known Facts & Data\n- Mentioned i...",
+      "summary": "An AI-powered conversational shopping assistant that allows users to interact and manage shopping tasks through natural language conversations.\n\n### Known Facts & Data\n- Mentioned ...",
       "category": "Product",
       "tags": [
         "product"
       ],
       "related_entities": [
-        "Open AI"
+        "Jayashan Manodya"
       ],
-      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+      "updated_at": "2026-07-29T18:54:37.639456+00:00"
     },
     {
       "entity_name": "NutriLens AI",
       "filename": "NutriLens_AI.md",
       "entity_type": "PRODUCT",
-      "summary": "An AI-powered nutrition assistant that enables users to scan food packages and meals, analyze ingredients and nutrition labels, and receive personalized health recommendations.\n\n##...",
+      "summary": "An AI-powered nutrition assistant being developed under the Ascentic AI Launch Pad mentorship program, enabling users to analyze food packages and receive personalized health recom...",
       "category": "Product",
       "tags": [
         "product"
       ],
       "related_entities": [
-        "OCR and LLMs"
+        "Jayashan Manodya"
       ],
-      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+      "updated_at": "2026-07-29T18:54:37.639456+00:00"
     },
     {
       "entity_name": "PlateX",
       "filename": "PlateX.md",
       "entity_type": "PRODUCT",
-      "summary": "An AI-powered license plate recognition system for real-time vehicle plate detection and automated text extraction.\n\n### Known Facts & Data\n- Mentioned in uploaded source document ...",
+      "summary": "An AI-powered license plate recognition system designed for real-time vehicle plate detection and automated text extraction.\n\n### Known Facts & Data\n- Mentioned in uploaded source ...",
       "category": "Product",
       "tags": [
         "product"
       ],
       "related_entities": [
-        "PaddleOCR"
+        "Jayashan Manodya"
       ],
-      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+      "updated_at": "2026-07-29T18:54:37.639456+00:00"
     },
     {
       "entity_name": "Sri Lanka Institute of Information Technology",
       "filename": "Sri_Lanka_Institute_of_Information_Technology.md",
       "entity_type": "ORGANIZATION",
-      "summary": "Mentioned in uploaded source document without additional background details.\n\n### Known Facts & Data\n- Mentioned in uploaded source document without additional factual statements....",
+      "summary": "Mentioned in uploaded source document without additional background details.\n\n### Known Facts & Data\n- GPA: 3.93/4.0 in most recent semester at Sri Lanka Institute of Information T...",
       "category": "Organization",
       "tags": [
         "organization"
@@ -134,35 +165,35 @@
       "related_entities": [
         "Jayashan Manodya"
       ],
-      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+      "updated_at": "2026-07-29T18:54:37.639456+00:00"
     },
     {
       "entity_name": "TeaPlanter",
       "filename": "TeaPlanter.md",
       "entity_type": "PRODUCT",
-      "summary": "An AI-powered tea estate management platform that supports various operational aspects of tea plantations.\n\n### Known Facts & Data\n- Mentioned in uploaded source document without a...",
+      "summary": "An AI-powered tea estate management platform that integrates various operational features for modern tea plantation management.\n\n### Known Facts & Data\n- Mentioned in uploaded sour...",
       "category": "Product",
       "tags": [
         "product"
       ],
       "related_entities": [
-        "YoloV8"
+        "Jayashan Manodya"
       ],
-      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+      "updated_at": "2026-07-29T18:54:37.639456+00:00"
     },
     {
       "entity_name": "WeatherLK",
       "filename": "WeatherLK.md",
       "entity_type": "PRODUCT",
-      "summary": "An ML-powered weather forecasting platform that predicts weather conditions using historical and environmental data.\n\n### Known Facts & Data\n- Mentioned in uploaded source document...",
+      "summary": "A machine learning-powered weather forecasting platform that predicts weather conditions using historical and environmental data.\n\n### Known Facts & Data\n- Mentioned in uploaded so...",
       "category": "Product",
       "tags": [
         "product"
       ],
       "related_entities": [
-        "RandomForestRegressor"
+        "Jayashan Manodya"
       ],
-      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+      "updated_at": "2026-07-29T18:54:37.639456+00:00"
     }
   ],
   "graph": {
@@ -198,6 +229,11 @@
         "type": "PRODUCT"
       },
       {
+        "id": "Jayashan Manodya",
+        "label": "Jayashan Manodya",
+        "type": "PERSON"
+      },
+      {
         "id": "KIKO",
         "label": "KIKO",
         "type": "PRODUCT"
@@ -228,6 +264,67 @@
         "type": "PRODUCT"
       }
     ],
-    "edges": []
+    "edges": [
+      {
+        "source": "Jayashan Manodya",
+        "relation": "ENROLLED_IN",
+        "target": "Sri Lanka Institute of Information Technology"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "SPECIALIZES_IN",
+        "target": "Artificial Intelligence"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "DEVELOPS",
+        "target": "NutriLens AI"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "DEVELOPS",
+        "target": "KIKO"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "DEVELOPS",
+        "target": "IKMS"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "DEVELOPS",
+        "target": "PlateX"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "DEVELOPS",
+        "target": "WeatherLK"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "DEVELOPS",
+        "target": "TeaPlanter"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "DEVELOPS",
+        "target": "Fuel Alert"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "DEVELOPS",
+        "target": "BookLink"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "DEVELOPS",
+        "target": "Automated Room Comfort System"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "WORKS_AT",
+        "target": "Glanz Digital (PVT) Ltd"
+      }
+    ]
   }
 }
