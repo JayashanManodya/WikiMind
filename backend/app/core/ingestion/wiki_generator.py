@@ -57,18 +57,18 @@ def run_ingestion_pipeline(
     # Stage 3 — Cleaning & Normalization
     cleaned_output = clean_and_normalize_markdown(parsed_output)
 
-    # Stage 4 — Content Enrichment (Structured Metadata & Summaries)
+    # Stage 5 & 4 — Unified Knowledge Extraction & Enrichment (Single LLM Call for Ultra-Low Latency)
+    knowledge_json = extract_structured_knowledge(
+        cleaned_markdown=cleaned_output["cleaned_markdown"],
+        enrichment_metadata={},
+        filename=filename
+    )
+
     enrichment_metadata = enrich_document(
         cleaned_markdown=cleaned_output["cleaned_markdown"],
         filename=filename,
-        output_dir=wiki_dir
-    )
-
-    # Stage 5 — Knowledge Extraction (Structured JSON representation before Wiki generation)
-    knowledge_json = extract_structured_knowledge(
-        cleaned_markdown=cleaned_output["cleaned_markdown"],
-        enrichment_metadata=enrichment_metadata,
-        filename=filename
+        output_dir=wiki_dir,
+        extracted_data=knowledge_json
     )
 
     # Stage 6 — Wiki Update Engine (Incremental update/create pages)

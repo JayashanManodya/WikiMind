@@ -4,21 +4,23 @@
 **Last Updated**: `2026-07-29`
 
 ## Overview
-Artificial Intelligence (AI) refers to the simulation of human intelligence in machines that are programmed to think and learn like humans. AI encompasses various subfields, including machine learning, natural language processing, robotics, and computer vision. The goal of AI is to create systems that can perform tasks that typically require human intelligence, such as understanding language, recognizing patterns, and making decisions. AI technologies are increasingly being integrated into various industries, enhancing efficiency and enabling new capabilities.
+Artificial Intelligence (AI) is a branch of computer science focused on creating systems capable of performing tasks that typically require human intelligence. This includes problem-solving, learning, understanding natural language, and perception. AI encompasses various subfields, including machine learning, neural networks, and robotics, and is applied across numerous industries, from healthcare to finance. The goal of AI research is to develop algorithms and models that enable machines to learn from data and improve their performance over time. As technology advances, AI continues to evolve, presenting new opportunities and challenges in ethical considerations, job displacement, and the future of human-computer interaction.
 
 ## Key Facts & Exhaustive Data
-- Currently pursuing a BSc (Hons) in IT specializing in Artificial Intelligence at SLIIT from 2024 to present. (Confidence: 0.95)
+- No granular facts recorded yet.
 
 ## Related Entities
-None
+[[Kendangamuwe Pathirannehelage Jayashan Manodya]], [[Sri Lanka Institute of Information Technology]]
 
 ## Knowledge Graph Relationships
-- No explicit relationships defined.
-
-## Timeline & Key Milestones
-- **2024 - Present**: Pursuing BSc (Hons) in IT - Jayashan Manodya is currently enrolled in the BSc (Hons) program specializing in Artificial Intelligence at the Sri Lanka Institute of Information Technology.
+- [[Jayashan Manodya]] --[`SPECIALIZES_IN`]--> [[Artificial Intelligence]]
+- [[Kendangamuwe Pathirannehelage Jayashan Manodya]] --[`SPECIALIZES_IN`]--> [[Artificial Intelligence]]
+- [[Sri Lanka Institute of Information Technology]] --[`SPECIALIZES_IN`]--> [[Artificial Intelligence]]
 
 ## Backlinks
-- No backlinks recorded yet.
+- [[Jayashan Manodya]]
+- [[Kendangamuwe Pathirannehelage Jayashan Manodya]]
+- [[Sri Lanka Institute of Information Technology]]
 ## Document Sources
-- [Jayashan Manodya (8).pdf](file://Jayashan Manodya (8).pdf)
+- [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)
+- [IT24102348_StudentPerformanceProfile.pdf](file://IT24102348_StudentPerformanceProfile.pdf)

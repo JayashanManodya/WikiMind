@@ -4,21 +4,23 @@
 **Last Updated**: `2026-07-29`
 
 ## Overview
-The Sri Lanka Institute of Information Technology (SLIIT) is a premier higher education institution in Sri Lanka, known for its focus on technology and engineering disciplines. It offers a range of undergraduate and postgraduate programs, particularly in IT and engineering fields. SLIIT is recognized for its commitment to providing quality education and fostering innovation among its students. The institute emphasizes practical learning and industry collaboration, preparing students for successful careers in technology and related sectors. SLIIT has a vibrant student community and actively engages in research and development initiatives, contributing to the advancement of technology in Sri Lanka.
+The Sri Lanka Institute of Information Technology (SLIIT) is a premier higher education institution in Sri Lanka, dedicated to providing quality education in the field of information technology and related disciplines. Established to cater to the growing demand for skilled professionals in the IT sector, SLIIT offers a range of undergraduate and postgraduate programs designed to equip students with the necessary skills and knowledge to excel in their careers. The institute emphasizes a practical approach to learning, integrating theoretical knowledge with real-world applications. SLIIT is recognized for its commitment to academic excellence and innovation, fostering an environment that encourages research and development in technology. The institution collaborates with various industry partners to ensure that its curriculum remains relevant and aligned with current market needs.
 
 ## Key Facts & Exhaustive Data
-- Currently pursuing a BSc (Hons) in IT specializing in Artificial Intelligence at SLIIT from 2024 to present. (Confidence: 0.95)
+- No granular facts recorded yet.
 
 ## Related Entities
-[[Jayashan Manodya]]
+[[Artificial Intelligence]], [[Kendangamuwe Pathirannehelage Jayashan Manodya]]
 
 ## Knowledge Graph Relationships
 - [[Jayashan Manodya]] --[`ENROLLED_IN`]--> [[Sri Lanka Institute of Information Technology]]
-
-## Timeline & Key Milestones
-- **2024 - Present**: Pursuing BSc (Hons) in IT - Jayashan Manodya is currently enrolled in the BSc (Hons) program specializing in Artificial Intelligence at the Sri Lanka Institute of Information Technology.
+- [[Kendangamuwe Pathirannehelage Jayashan Manodya]] --[`ENROLLED_IN`]--> [[Sri Lanka Institute of Information Technology]]
+- [[Sri Lanka Institute of Information Technology]] --[`SPECIALIZES_IN`]--> [[Artificial Intelligence]]
 
 ## Backlinks
+- [[Artificial Intelligence]]
 - [[Jayashan Manodya]]
+- [[Kendangamuwe Pathirannehelage Jayashan Manodya]]
 ## Document Sources
-- [Jayashan Manodya (8).pdf](file://Jayashan Manodya (8).pdf)
+- [Jayashan Manodya.pdf](file://Jayashan Manodya.pdf)
+- [IT24102348_StudentPerformanceProfile.pdf](file://IT24102348_StudentPerformanceProfile.pdf)

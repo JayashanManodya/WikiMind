@@ -1,0 +1,164 @@
+{
+  "total_pages": 9,
+  "rebuilt_at": "2026-07-29T09:44:52.042188+00:00",
+  "pages": [
+    {
+      "entity_name": "Artificial Intelligence Knowledge Retrieval",
+      "filename": "Artificial_Intelligence_Knowledge_Retrieval.md",
+      "entity_type": "CONCEPT",
+      "summary": "Mentioned in uploaded source document without additional background details.\n\n### Known Facts & Data\n- Mentioned in uploaded source document without additional factual statements....",
+      "category": "Concept",
+      "tags": [
+        "concept"
+      ],
+      "related_entities": [],
+      "updated_at": "2026-07-29T09:43:24.163075+00:00"
+    },
+    {
+      "entity_name": "Cached",
+      "filename": "Cached.md",
+      "entity_type": "DOCUMENT",
+      "summary": "Document entity for cached.pdf\n\n### Known Facts & Data\n- Mentioned in uploaded source document without additional factual statements....",
+      "category": "Document",
+      "tags": [
+        "document"
+      ],
+      "related_entities": [],
+      "updated_at": "2026-07-29T09:44:52.042188+00:00"
+    },
+    {
+      "entity_name": "Data Processing and Storage Architecture",
+      "filename": "Data_Processing_and_Storage_Architecture.md",
+      "entity_type": "CONCEPT",
+      "summary": "Mentioned in uploaded source document without additional background details.\n\n### Known Facts & Data\n- Mentioned in uploaded source document without additional factual statements....",
+      "category": "Concept",
+      "tags": [
+        "concept"
+      ],
+      "related_entities": [],
+      "updated_at": "2026-07-29T09:43:24.163075+00:00"
+    },
+    {
+      "entity_name": "Image Doc",
+      "filename": "Image_Doc.md",
+      "entity_type": "DOCUMENT",
+      "summary": "Document entity for image_doc.pdf\n\n### Known Facts & Data\n- Mentioned in uploaded source document without additional factual statements....",
+      "category": "Document",
+      "tags": [
+        "document"
+      ],
+      "related_entities": [],
+      "updated_at": "2026-07-29T09:43:43.576090+00:00"
+    },
+    {
+      "entity_name": "Knowledge Base",
+      "filename": "Knowledge_Base.md",
+      "entity_type": "CONCEPT",
+      "summary": "A structured repository of information that can be used for reference and knowledge sharing.\n\n### Known Facts & Data\n- Mentioned in uploaded source document without additional fact...",
+      "category": "Concept",
+      "tags": [
+        "concept"
+      ],
+      "related_entities": [],
+      "updated_at": "2026-07-29T09:44:40.015061+00:00"
+    },
+    {
+      "entity_name": "Knowledge Systems",
+      "filename": "Knowledge_Systems.md",
+      "entity_type": "CONCEPT",
+      "summary": "Mentioned in uploaded source document without additional background details.\n\n### Known Facts & Data\n- Mentioned in uploaded source document without additional factual statements....",
+      "category": "Concept",
+      "tags": [
+        "concept"
+      ],
+      "related_entities": [],
+      "updated_at": "2026-07-29T09:43:24.163075+00:00"
+    },
+    {
+      "entity_name": "Simple",
+      "filename": "Simple.md",
+      "entity_type": "DOCUMENT",
+      "summary": "Document entity for simple.pdf\n\n### Known Facts & Data\n- Mentioned in uploaded source document without additional factual statements....",
+      "category": "Document",
+      "tags": [
+        "document"
+      ],
+      "related_entities": [],
+      "updated_at": "2026-07-29T09:42:54.222817+00:00"
+    },
+    {
+      "entity_name": "Spec",
+      "filename": "Spec.md",
+      "entity_type": "DOCUMENT",
+      "summary": "Document entity for spec.docx\n\n### Known Facts & Data\n- Core document description. (Provenance: Paragraph 1)...",
+      "category": "Document",
+      "tags": [
+        "document"
+      ],
+      "related_entities": [],
+      "updated_at": "2026-07-29T09:44:27.155813+00:00"
+    },
+    {
+      "entity_name": "Table Doc",
+      "filename": "Table_Doc.md",
+      "entity_type": "DOCUMENT",
+      "summary": "Document entity for table_doc.pdf\n\n### Known Facts & Data\n- The table contains three headers: Header A, Header B, and Header C. (Provenance: Table content)\n- The table has two rows...",
+      "category": "Document",
+      "tags": [
+        "document"
+      ],
+      "related_entities": [],
+      "updated_at": "2026-07-29T09:44:03.296251+00:00"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "Artificial Intelligence Knowledge Retrieval",
+        "label": "Artificial Intelligence Knowledge Retrieval",
+        "type": "CONCEPT"
+      },
+      {
+        "id": "Cached",
+        "label": "Cached",
+        "type": "DOCUMENT"
+      },
+      {
+        "id": "Data Processing and Storage Architecture",
+        "label": "Data Processing and Storage Architecture",
+        "type": "CONCEPT"
+      },
+      {
+        "id": "Image Doc",
+        "label": "Image Doc",
+        "type": "DOCUMENT"
+      },
+      {
+        "id": "Knowledge Base",
+        "label": "Knowledge Base",
+        "type": "CONCEPT"
+      },
+      {
+        "id": "Knowledge Systems",
+        "label": "Knowledge Systems",
+        "type": "CONCEPT"
+      },
+      {
+        "id": "Simple",
+        "label": "Simple",
+        "type": "DOCUMENT"
+      },
+      {
+        "id": "Spec",
+        "label": "Spec",
+        "type": "DOCUMENT"
+      },
+      {
+        "id": "Table Doc",
+        "label": "Table Doc",
+        "type": "DOCUMENT"
+      }
+    ],
+    "edges": []
+  }
+}

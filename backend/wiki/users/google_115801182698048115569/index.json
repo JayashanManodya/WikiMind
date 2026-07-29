@@ -1,38 +1,176 @@
 {
-  "total_pages": 3,
-  "rebuilt_at": "2026-07-29T08:50:35.520515+00:00",
+  "total_pages": 40,
+  "rebuilt_at": "2026-07-29T09:50:42.165952+00:00",
   "pages": [
     {
       "entity_name": "Artificial Intelligence",
       "filename": "Artificial_Intelligence.md",
       "entity_type": "CONCEPT",
-      "summary": "Artificial Intelligence (AI) refers to the simulation of human intelligence in machines that are programmed to think and learn like humans. AI encompasses various subfields, includ...",
+      "summary": "Artificial Intelligence (AI) is a branch of computer science focused on creating systems capable of performing tasks that typically require human intelligence. This includes proble...",
       "category": "Concept",
       "tags": [
         "concept"
       ],
-      "related_entities": [],
-      "updated_at": "2026-07-29T08:50:35.520515+00:00"
+      "related_entities": [
+        "Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-29T09:29:42.019956+00:00"
     },
     {
-      "entity_name": "Jayashan Manodya",
-      "filename": "Jayashan_Manodya.md",
-      "entity_type": "PERSON",
-      "summary": "Jayashan Manodya is an IT undergraduate specializing in Artificial Intelligence at the Sri Lanka Institute of Information Technology (SLIIT). He is passionate about becoming an AI ...",
-      "category": "Person",
+      "entity_name": "Automated Room Comfort System",
+      "filename": "Automated_Room_Comfort_System.md",
+      "entity_type": "PRODUCT",
+      "summary": "The Automated Room Comfort System is an IoT-based solution developed by Jayashan that adjusts temperature and lighting based on sensor data.\n\n### Known Facts & Data\n- Mentioned in ...",
+      "category": "Product",
       "tags": [
-        "person"
+        "product"
       ],
       "related_entities": [
-        "Sri Lanka Institute of Information Technology"
+        "Jayashan Manodya"
       ],
-      "updated_at": "2026-07-29T08:50:35.520515+00:00"
+      "updated_at": "2026-07-29T09:29:42.019956+00:00"
     },
     {
-      "entity_name": "Sri Lanka Institute of Information Technology",
-      "filename": "Sri_Lanka_Institute_of_Information_Technology.md",
+      "entity_name": "BMW AG",
+      "filename": "BMW_AG.md",
       "entity_type": "ORGANIZATION",
-      "summary": "The Sri Lanka Institute of Information Technology (SLIIT) is a premier higher education institution in Sri Lanka, known for its focus on technology and engineering disciplines. It ...",
+      "summary": "BMW AG is a leading luxury automobile manufacturer that combines luxury with electric mobility. The company offers premium electric vehicles that emphasize comfort, performance, an...",
+      "category": "Organization",
+      "tags": [
+        "organization"
+      ],
+      "related_entities": [
+        "Germany",
+        "Electric Vehicles"
+      ],
+      "updated_at": "2026-07-29T09:15:30.704326+00:00"
+    },
+    {
+      "entity_name": "BookLink",
+      "filename": "BookLink.md",
+      "entity_type": "PRODUCT",
+      "summary": "BookLink is a community-driven mobile platform for book exchanges developed by Jayashan, featuring user authentication, real-time chat, wishlist management, and review systems.\n\n##...",
+      "category": "Product",
+      "tags": [
+        "product"
+      ],
+      "related_entities": [
+        "Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-29T09:29:42.019956+00:00"
+    },
+    {
+      "entity_name": "BYD Company Limited",
+      "filename": "BYD_Company_Limited.md",
+      "entity_type": "ORGANIZATION",
+      "summary": "BYD Company Limited, which stands for Build Your Dreams, is one of the largest electric vehicle manufacturers in the world, founded in 1995. Initially focused on producing recharge...",
+      "category": "Organization",
+      "tags": [
+        "organization"
+      ],
+      "related_entities": [
+        "China",
+        "Electric Vehicles"
+      ],
+      "updated_at": "2026-07-29T09:15:30.704326+00:00"
+    },
+    {
+      "entity_name": "Colombo",
+      "filename": "Colombo.md",
+      "entity_type": "LOCATION",
+      "summary": "Colombo is the capital city of Sri Lanka, where Jayashan Manodya is based.\n\n### Known Facts & Data\n- Mentioned in uploaded source document without additional factual statements....",
+      "category": "Location",
+      "tags": [
+        "location"
+      ],
+      "related_entities": [],
+      "updated_at": "2026-07-29T09:29:42.019956+00:00"
+    },
+    {
+      "entity_name": "Conversational Commerce",
+      "filename": "Conversational_Commerce.md",
+      "entity_type": "CONCEPT",
+      "summary": "Conversational commerce refers to the integration of conversational interfaces, such as chatbots and voice assistants, into the e-commerce experience, allowing users to interact an...",
+      "category": "Concept",
+      "tags": [
+        "concept"
+      ],
+      "related_entities": [
+        "KIKO"
+      ],
+      "updated_at": "2026-07-29T09:35:50.448269+00:00"
+    },
+    {
+      "entity_name": "Electric Vehicles",
+      "filename": "Electric_Vehicles.md",
+      "entity_type": "CONCEPT",
+      "summary": "Electric vehicles (EVs) are automobiles that are propelled by electric motors, using energy typically stored in rechargeable batteries. The electric vehicle industry encompasses a ...",
+      "category": "Concept",
+      "tags": [
+        "concept"
+      ],
+      "related_entities": [
+        "Tesla, Inc.",
+        "Ford Motor Company",
+        "NIO Inc.",
+        "BYD Company Limited",
+        "Rivian Automotive, Inc.",
+        "BMW AG",
+        "Mercedes-Benz",
+        "Hyundai Motor Company",
+        "Nissan Motor Corporation",
+        "Volkswagen AG"
+      ],
+      "updated_at": "2026-07-29T09:15:30.704326+00:00"
+    },
+    {
+      "entity_name": "FastAPI",
+      "filename": "FastAPI.md",
+      "entity_type": "TECHNOLOGY",
+      "summary": "FastAPI is a modern web framework for building APIs with Python 3.14+, used as the backend framework for KIKO, providing the necessary server-side functionality.\n\n### Known Facts &...",
+      "category": "Technology",
+      "tags": [
+        "technology"
+      ],
+      "related_entities": [
+        "IKMS RAG Agent System"
+      ],
+      "updated_at": "2026-07-29T09:50:42.165952+00:00"
+    },
+    {
+      "entity_name": "Ford Motor Company",
+      "filename": "Ford_Motor_Company.md",
+      "entity_type": "ORGANIZATION",
+      "summary": "Ford Motor Company is expanding its electric vehicle lineup by electrifying popular models and investing heavily in battery technology. The company is known for its strong reputati...",
+      "category": "Organization",
+      "tags": [
+        "organization"
+      ],
+      "related_entities": [
+        "United States",
+        "Electric Vehicles"
+      ],
+      "updated_at": "2026-07-29T09:15:30.704326+00:00"
+    },
+    {
+      "entity_name": "Fuel Alert",
+      "filename": "Fuel_Alert.md",
+      "entity_type": "PRODUCT",
+      "summary": "Fuel Alert is a real-time fuel availability and queue tracking platform built by Jayashan, featuring live station monitoring, queue estimation, and multilingual accessibility.\n\n###...",
+      "category": "Product",
+      "tags": [
+        "product"
+      ],
+      "related_entities": [
+        "Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-29T09:29:42.019956+00:00"
+    },
+    {
+      "entity_name": "Glanz Digital (PVT) Ltd",
+      "filename": "Glanz_Digital_(PVT)_Ltd.md",
+      "entity_type": "ORGANIZATION",
+      "summary": "Glanz Digital (PVT) Ltd is the company where Jayashan is currently working part-time as a Creative Designer, designing social media posts, promotional materials, and collaborating ...",
       "category": "Organization",
       "tags": [
         "organization"
@@ -40,7 +178,424 @@
       "related_entities": [
         "Jayashan Manodya"
       ],
-      "updated_at": "2026-07-29T08:50:35.520515+00:00"
+      "updated_at": "2026-07-29T09:29:42.019956+00:00"
+    },
+    {
+      "entity_name": "Hyundai Motor Company",
+      "filename": "Hyundai_Motor_Company.md",
+      "entity_type": "ORGANIZATION",
+      "summary": "Hyundai Motor Company has emerged as one of the fastest-growing electric vehicle manufacturers, known for producing reliable and affordable EVs. The company focuses on advanced tec...",
+      "category": "Organization",
+      "tags": [
+        "organization"
+      ],
+      "related_entities": [
+        "Electric Vehicles",
+        "South Korea"
+      ],
+      "updated_at": "2026-07-29T09:15:30.704326+00:00"
+    },
+    {
+      "entity_name": "IEEE Student Branch of SLIIT",
+      "filename": "IEEE_Student_Branch_of_SLIIT.md",
+      "entity_type": "ORGANIZATION",
+      "summary": "The IEEE Student Branch of SLIIT is an organization where Jayashan serves as an Editorial Sub-committee Team Member.\n\n### Known Facts & Data\n- Mentioned in uploaded source document...",
+      "category": "Organization",
+      "tags": [
+        "organization"
+      ],
+      "related_entities": [
+        "Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-29T09:29:42.019956+00:00"
+    },
+    {
+      "entity_name": "IKMS",
+      "filename": "IKMS.md",
+      "entity_type": "PRODUCT",
+      "summary": "IKMS is a Retrieval-Augmented Generation (RAG) document question-answering system developed by Jayashan that enables users to upload PDFs and receive accurate, context-aware answer...",
+      "category": "Product",
+      "tags": [
+        "product"
+      ],
+      "related_entities": [
+        "Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-29T09:29:42.019956+00:00"
+    },
+    {
+      "entity_name": "IKMS RAG Agent System",
+      "filename": "IKMS_RAG_Agent_System.md",
+      "entity_type": "SYSTEM",
+      "summary": "The IKMS RAG Agent System is a backend service that implements a multi-agent Retrieval-Augmented Generation (RAG) pipeline for intelligent document question-answering. It allows us...",
+      "category": "System",
+      "tags": [
+        "system"
+      ],
+      "related_entities": [
+        "OpenAI",
+        "Pinecone",
+        "LangGraph",
+        "Retrieval-Augmented Generation (RAG)",
+        "FastAPI"
+      ],
+      "updated_at": "2026-07-29T09:50:42.165952+00:00"
+    },
+    {
+      "entity_name": "Jayashan Manodya",
+      "filename": "Jayashan_Manodya.md",
+      "entity_type": "PERSON",
+      "summary": "Jayashan Manodya is an IT undergraduate specializing in Artificial Intelligence, with a strong passion for becoming an AI Engineer and building intelligent technologies that solve ...",
+      "category": "Person",
+      "tags": [
+        "person"
+      ],
+      "related_entities": [
+        "KIKO",
+        "Mozilla Campus Club of SLIIT",
+        "IEEE Student Branch of SLIIT",
+        "PlateX",
+        "WeatherLK",
+        "BookLink",
+        "Senior Prefect",
+        "TeaPlanter",
+        "Glanz Digital (PVT) Ltd",
+        "NutriLens AI",
+        "Fuel Alert",
+        "Sri Lanka Institute of Information Technology",
+        "Artificial Intelligence",
+        "IKMS",
+        "Automated Room Comfort System"
+      ],
+      "updated_at": "2026-07-29T09:29:42.019956+00:00"
+    },
+    {
+      "entity_name": "Kapruka",
+      "filename": "Kapruka.md",
+      "entity_type": "ORGANIZATION",
+      "summary": "Kapruka is Sri Lanka's leading e-commerce platform, which KIKO is built to serve. It provides a digital storefront and product catalog that KIKO interfaces with for various e-comme...",
+      "category": "Organization",
+      "tags": [
+        "organization"
+      ],
+      "related_entities": [
+        "KIKO"
+      ],
+      "updated_at": "2026-07-29T09:35:50.448269+00:00"
+    },
+    {
+      "entity_name": "Kapruka AI Shopping Agent (KIKO)",
+      "filename": "Kapruka_AI_Shopping_Agent_(KIKO).md",
+      "entity_type": "PRODUCT",
+      "summary": "KIKO (Kapruka Shopping Agent) is an advanced, production-grade conversational commerce engine built specifically for Kapruka, Sri Lanka's leading e-commerce platform. It converts t...",
+      "category": "Product",
+      "tags": [
+        "product"
+      ],
+      "related_entities": [],
+      "updated_at": "2026-07-29T09:35:50.448269+00:00"
+    },
+    {
+      "entity_name": "Kendangamuwe Pathirannehelage Jayashan Manodya",
+      "filename": "Kendangamuwe_Pathirannehelage_Jayashan_Manodya.md",
+      "entity_type": "PERSON",
+      "summary": "Kendangamuwe Pathirannehelage Jayashan Manodya is a student at the Sri Lanka Institute of Information Technology, specializing in Artificial Intelligence. With a strong academic re...",
+      "category": "Person",
+      "tags": [
+        "person"
+      ],
+      "related_entities": [
+        "Sri Lanka Institute of Information Technology",
+        "Artificial Intelligence"
+      ],
+      "updated_at": "2026-07-29T09:17:08.780965+00:00"
+    },
+    {
+      "entity_name": "KIKO",
+      "filename": "KIKO.md",
+      "entity_type": "PRODUCT",
+      "summary": "KIKO is an AI-powered conversational shopping assistant developed by Jayashan, featuring a 5-agent architecture using the Kapruka MCP. It allows users to browse categories, search ...",
+      "category": "Product",
+      "tags": [
+        "product"
+      ],
+      "related_entities": [
+        "Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-29T09:29:42.019956+00:00"
+    },
+    {
+      "entity_name": "LangGraph",
+      "filename": "LangGraph.md",
+      "entity_type": "TECHNOLOGY",
+      "summary": "LangGraph is a multi-agent orchestration technology utilized by KIKO to dynamically route intents between specialized worker agents (Search, Checkout, Tracking) using a Supervisor-...",
+      "category": "Technology",
+      "tags": [
+        "technology"
+      ],
+      "related_entities": [
+        "IKMS RAG Agent System"
+      ],
+      "updated_at": "2026-07-29T09:50:42.165952+00:00"
+    },
+    {
+      "entity_name": "Mercedes-Benz",
+      "filename": "Mercedes-Benz.md",
+      "entity_type": "ORGANIZATION",
+      "summary": "Mercedes-Benz is a renowned luxury automobile manufacturer that produces electric vehicles under its EQ brand. The company is known for its premium quality, advanced technology, an...",
+      "category": "Organization",
+      "tags": [
+        "organization"
+      ],
+      "related_entities": [
+        "Germany",
+        "Electric Vehicles"
+      ],
+      "updated_at": "2026-07-29T09:15:30.704326+00:00"
+    },
+    {
+      "entity_name": "Model Context Protocol (MCP)",
+      "filename": "Model_Context_Protocol_(MCP).md",
+      "entity_type": "TECHNOLOGY",
+      "summary": "The Model Context Protocol (MCP) is a direct streamable HTTP connection interfacing with Kapruka's internal product catalog, inventory, delivery, and order tracking systems, enabli...",
+      "category": "Technology",
+      "tags": [
+        "technology"
+      ],
+      "related_entities": [
+        "KIKO"
+      ],
+      "updated_at": "2026-07-29T09:35:50.448269+00:00"
+    },
+    {
+      "entity_name": "Mozilla Campus Club of SLIIT",
+      "filename": "Mozilla_Campus_Club_of_SLIIT.md",
+      "entity_type": "ORGANIZATION",
+      "summary": "The Mozilla Campus Club of SLIIT is an organization where Jayashan is a Subcommittee Member.\n\n### Known Facts & Data\n- Mentioned in uploaded source document without additional fact...",
+      "category": "Organization",
+      "tags": [
+        "organization"
+      ],
+      "related_entities": [
+        "Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-29T09:29:42.019956+00:00"
+    },
+    {
+      "entity_name": "Next.js",
+      "filename": "Next.js.md",
+      "entity_type": "TECHNOLOGY",
+      "summary": "Next.js is a React framework used for building the frontend of KIKO, specifically version 16, which supports dynamic JSON UI rendering.\n\n### Known Facts & Data\n- Mentioned in uploa...",
+      "category": "Technology",
+      "tags": [
+        "technology"
+      ],
+      "related_entities": [
+        "KIKO"
+      ],
+      "updated_at": "2026-07-29T09:35:50.448269+00:00"
+    },
+    {
+      "entity_name": "NIO Inc.",
+      "filename": "NIO_Inc..md",
+      "entity_type": "ORGANIZATION",
+      "summary": "NIO Inc. is a Chinese electric vehicle company recognized for its luxury electric SUVs and innovative battery-swapping technology. The company focuses on providing high-performance...",
+      "category": "Organization",
+      "tags": [
+        "organization"
+      ],
+      "related_entities": [
+        "China",
+        "Electric Vehicles"
+      ],
+      "updated_at": "2026-07-29T09:15:30.704326+00:00"
+    },
+    {
+      "entity_name": "Nissan Motor Corporation",
+      "filename": "Nissan_Motor_Corporation.md",
+      "entity_type": "ORGANIZATION",
+      "summary": "Nissan Motor Corporation is a pioneer in the electric vehicle market, having introduced the mass-market Nissan Leaf in 2010. The company has established a strong global presence wi...",
+      "category": "Organization",
+      "tags": [
+        "organization"
+      ],
+      "related_entities": [
+        "Japan",
+        "Electric Vehicles"
+      ],
+      "updated_at": "2026-07-29T09:15:30.704326+00:00"
+    },
+    {
+      "entity_name": "NutriLens AI",
+      "filename": "NutriLens_AI.md",
+      "entity_type": "PRODUCT",
+      "summary": "NutriLens AI is an AI-powered personalized nutrition and food health intelligence platform that Jayashan is building under the Ascentic AI Launch Pad mentorship program. It enables...",
+      "category": "Product",
+      "tags": [
+        "product"
+      ],
+      "related_entities": [
+        "Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-29T09:29:42.019956+00:00"
+    },
+    {
+      "entity_name": "OpenAI",
+      "filename": "OpenAI.md",
+      "entity_type": "TECHNOLOGY",
+      "summary": "OpenAI provides the language model integration for the IKMS RAG Agent System, specifically using the 'gpt-4o-mini' model for generating responses based on user queries.\n\n### Known ...",
+      "category": "Technology",
+      "tags": [
+        "technology"
+      ],
+      "related_entities": [
+        "IKMS RAG Agent System"
+      ],
+      "updated_at": "2026-07-29T09:50:42.165952+00:00"
+    },
+    {
+      "entity_name": "Pinecone",
+      "filename": "Pinecone.md",
+      "entity_type": "TECHNOLOGY",
+      "summary": "Pinecone is a vector database that is used in the IKMS RAG Agent System for storing and retrieving indexed PDF document embeddings, enabling efficient similarity searches.\n\n### Kno...",
+      "category": "Technology",
+      "tags": [
+        "technology"
+      ],
+      "related_entities": [
+        "IKMS RAG Agent System"
+      ],
+      "updated_at": "2026-07-29T09:50:42.165952+00:00"
+    },
+    {
+      "entity_name": "PlateX",
+      "filename": "PlateX.md",
+      "entity_type": "PRODUCT",
+      "summary": "PlateX is an AI-powered license plate recognition system developed by Jayashan, capable of real-time vehicle plate detection and automated text extraction from images.\n\n### Known F...",
+      "category": "Product",
+      "tags": [
+        "product"
+      ],
+      "related_entities": [
+        "Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-29T09:29:42.019956+00:00"
+    },
+    {
+      "entity_name": "Prince College",
+      "filename": "Prince_College.md",
+      "entity_type": "ORGANIZATION",
+      "summary": "Prince College is the educational institution where Jayashan served as a Senior Prefect from 2018 to 2020.\n\n### Known Facts & Data\n- G.C.E Advanced Level from Prince College - Ratn...",
+      "category": "Organization",
+      "tags": [
+        "organization"
+      ],
+      "related_entities": [],
+      "updated_at": "2026-07-29T09:29:42.019956+00:00"
+    },
+    {
+      "entity_name": "Retrieval-Augmented Generation (RAG)",
+      "filename": "Retrieval-Augmented_Generation_(RAG).md",
+      "entity_type": "CONCEPT",
+      "summary": "Retrieval-Augmented Generation (RAG) is a framework that combines retrieval of relevant documents with generative models to produce answers based on the retrieved information.\n\n###...",
+      "category": "Concept",
+      "tags": [
+        "concept"
+      ],
+      "related_entities": [
+        "IKMS RAG Agent System"
+      ],
+      "updated_at": "2026-07-29T09:50:42.165952+00:00"
+    },
+    {
+      "entity_name": "Rivian Automotive, Inc.",
+      "filename": "Rivian_Automotive,_Inc..md",
+      "entity_type": "ORGANIZATION",
+      "summary": "Rivian Automotive, Inc. specializes in electric pickup trucks and SUVs designed for adventure and outdoor activities. The company is known for its innovative vehicle design and str...",
+      "category": "Organization",
+      "tags": [
+        "organization"
+      ],
+      "related_entities": [
+        "United States",
+        "Electric Vehicles"
+      ],
+      "updated_at": "2026-07-29T09:15:30.704326+00:00"
+    },
+    {
+      "entity_name": "Sri Lanka Institute of Information Technology",
+      "filename": "Sri_Lanka_Institute_of_Information_Technology.md",
+      "entity_type": "ORGANIZATION",
+      "summary": "The Sri Lanka Institute of Information Technology (SLIIT) is a premier higher education institution in Sri Lanka, dedicated to providing quality education in the field of informati...",
+      "category": "Organization",
+      "tags": [
+        "organization"
+      ],
+      "related_entities": [
+        "Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-29T09:29:42.019956+00:00"
+    },
+    {
+      "entity_name": "TeaPlanter",
+      "filename": "TeaPlanter.md",
+      "entity_type": "PRODUCT",
+      "summary": "TeaPlanter is an AI-powered tea estate management platform developed by Jayashan for handling various operations within plantation environments, including workforce management, har...",
+      "category": "Product",
+      "tags": [
+        "product"
+      ],
+      "related_entities": [
+        "Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-29T09:29:42.019956+00:00"
+    },
+    {
+      "entity_name": "Tesla, Inc.",
+      "filename": "Tesla,_Inc..md",
+      "entity_type": "ORGANIZATION",
+      "summary": "Tesla, Inc. is the world's most recognized electric vehicle manufacturer, founded in 2003 by Martin Eberhard and Marc Tarpenning. Under the leadership of Elon Musk, Tesla has revol...",
+      "category": "Organization",
+      "tags": [
+        "organization"
+      ],
+      "related_entities": [
+        "Martin Eberhard",
+        "Autopilot",
+        "Marc Tarpenning",
+        "Electric Vehicles",
+        "United States"
+      ],
+      "updated_at": "2026-07-29T09:15:30.704326+00:00"
+    },
+    {
+      "entity_name": "Volkswagen AG",
+      "filename": "Volkswagen_AG.md",
+      "entity_type": "ORGANIZATION",
+      "summary": "Volkswagen AG is one of the largest automobile manufacturers globally, with significant investments in electric vehicle development, particularly through its ID series. The company...",
+      "category": "Organization",
+      "tags": [
+        "organization"
+      ],
+      "related_entities": [
+        "Germany",
+        "Electric Vehicles"
+      ],
+      "updated_at": "2026-07-29T09:15:30.704326+00:00"
+    },
+    {
+      "entity_name": "WeatherLK",
+      "filename": "WeatherLK.md",
+      "entity_type": "PRODUCT",
+      "summary": "WeatherLK is an ML-powered weather forecasting platform created by Jayashan, capable of predicting temperature, rainfall, and wind conditions using historical and environmental dat...",
+      "category": "Product",
+      "tags": [
+        "product"
+      ],
+      "related_entities": [
+        "Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-29T09:29:42.019956+00:00"
     }
   ],
   "graph": {
@@ -51,21 +606,391 @@
         "type": "CONCEPT"
       },
       {
+        "id": "Automated Room Comfort System",
+        "label": "Automated Room Comfort System",
+        "type": "PRODUCT"
+      },
+      {
+        "id": "BMW AG",
+        "label": "BMW AG",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "BookLink",
+        "label": "BookLink",
+        "type": "PRODUCT"
+      },
+      {
+        "id": "BYD Company Limited",
+        "label": "BYD Company Limited",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "Colombo",
+        "label": "Colombo",
+        "type": "LOCATION"
+      },
+      {
+        "id": "Conversational Commerce",
+        "label": "Conversational Commerce",
+        "type": "CONCEPT"
+      },
+      {
+        "id": "Electric Vehicles",
+        "label": "Electric Vehicles",
+        "type": "CONCEPT"
+      },
+      {
+        "id": "FastAPI",
+        "label": "FastAPI",
+        "type": "TECHNOLOGY"
+      },
+      {
+        "id": "Ford Motor Company",
+        "label": "Ford Motor Company",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "Fuel Alert",
+        "label": "Fuel Alert",
+        "type": "PRODUCT"
+      },
+      {
+        "id": "Glanz Digital (PVT) Ltd",
+        "label": "Glanz Digital (PVT) Ltd",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "Hyundai Motor Company",
+        "label": "Hyundai Motor Company",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "IEEE Student Branch of SLIIT",
+        "label": "IEEE Student Branch of SLIIT",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "IKMS",
+        "label": "IKMS",
+        "type": "PRODUCT"
+      },
+      {
+        "id": "IKMS RAG Agent System",
+        "label": "IKMS RAG Agent System",
+        "type": "SYSTEM"
+      },
+      {
         "id": "Jayashan Manodya",
         "label": "Jayashan Manodya",
         "type": "PERSON"
       },
       {
+        "id": "Kapruka",
+        "label": "Kapruka",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "Kapruka AI Shopping Agent (KIKO)",
+        "label": "Kapruka AI Shopping Agent (KIKO)",
+        "type": "PRODUCT"
+      },
+      {
+        "id": "Kendangamuwe Pathirannehelage Jayashan Manodya",
+        "label": "Kendangamuwe Pathirannehelage Jayashan Manodya",
+        "type": "PERSON"
+      },
+      {
+        "id": "KIKO",
+        "label": "KIKO",
+        "type": "PRODUCT"
+      },
+      {
+        "id": "LangGraph",
+        "label": "LangGraph",
+        "type": "TECHNOLOGY"
+      },
+      {
+        "id": "Mercedes-Benz",
+        "label": "Mercedes-Benz",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "Model Context Protocol (MCP)",
+        "label": "Model Context Protocol (MCP)",
+        "type": "TECHNOLOGY"
+      },
+      {
+        "id": "Mozilla Campus Club of SLIIT",
+        "label": "Mozilla Campus Club of SLIIT",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "Next.js",
+        "label": "Next.js",
+        "type": "TECHNOLOGY"
+      },
+      {
+        "id": "NIO Inc.",
+        "label": "NIO Inc.",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "Nissan Motor Corporation",
+        "label": "Nissan Motor Corporation",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "NutriLens AI",
+        "label": "NutriLens AI",
+        "type": "PRODUCT"
+      },
+      {
+        "id": "OpenAI",
+        "label": "OpenAI",
+        "type": "TECHNOLOGY"
+      },
+      {
+        "id": "Pinecone",
+        "label": "Pinecone",
+        "type": "TECHNOLOGY"
+      },
+      {
+        "id": "PlateX",
+        "label": "PlateX",
+        "type": "PRODUCT"
+      },
+      {
+        "id": "Prince College",
+        "label": "Prince College",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "Retrieval-Augmented Generation (RAG)",
+        "label": "Retrieval-Augmented Generation (RAG)",
+        "type": "CONCEPT"
+      },
+      {
+        "id": "Rivian Automotive, Inc.",
+        "label": "Rivian Automotive, Inc.",
+        "type": "ORGANIZATION"
+      },
+      {
         "id": "Sri Lanka Institute of Information Technology",
         "label": "Sri Lanka Institute of Information Technology",
         "type": "ORGANIZATION"
+      },
+      {
+        "id": "TeaPlanter",
+        "label": "TeaPlanter",
+        "type": "PRODUCT"
+      },
+      {
+        "id": "Tesla, Inc.",
+        "label": "Tesla, Inc.",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "Volkswagen AG",
+        "label": "Volkswagen AG",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "WeatherLK",
+        "label": "WeatherLK",
+        "type": "PRODUCT"
       }
     ],
     "edges": [
       {
+        "source": "Tesla, Inc.",
+        "relation": "CATEGORIZED_AS",
+        "target": "Electric Vehicles"
+      },
+      {
+        "source": "BYD Company Limited",
+        "relation": "CATEGORIZED_AS",
+        "target": "Electric Vehicles"
+      },
+      {
+        "source": "Volkswagen AG",
+        "relation": "CATEGORIZED_AS",
+        "target": "Electric Vehicles"
+      },
+      {
+        "source": "Hyundai Motor Company",
+        "relation": "CATEGORIZED_AS",
+        "target": "Electric Vehicles"
+      },
+      {
+        "source": "BMW AG",
+        "relation": "CATEGORIZED_AS",
+        "target": "Electric Vehicles"
+      },
+      {
+        "source": "Mercedes-Benz",
+        "relation": "CATEGORIZED_AS",
+        "target": "Electric Vehicles"
+      },
+      {
+        "source": "Nissan Motor Corporation",
+        "relation": "CATEGORIZED_AS",
+        "target": "Electric Vehicles"
+      },
+      {
+        "source": "Ford Motor Company",
+        "relation": "CATEGORIZED_AS",
+        "target": "Electric Vehicles"
+      },
+      {
+        "source": "NIO Inc.",
+        "relation": "CATEGORIZED_AS",
+        "target": "Electric Vehicles"
+      },
+      {
+        "source": "Rivian Automotive, Inc.",
+        "relation": "CATEGORIZED_AS",
+        "target": "Electric Vehicles"
+      },
+      {
+        "source": "Kendangamuwe Pathirannehelage Jayashan Manodya",
+        "relation": "ENROLLED_IN",
+        "target": "Sri Lanka Institute of Information Technology"
+      },
+      {
+        "source": "Kendangamuwe Pathirannehelage Jayashan Manodya",
+        "relation": "SPECIALIZES_IN",
+        "target": "Artificial Intelligence"
+      },
+      {
+        "source": "Sri Lanka Institute of Information Technology",
+        "relation": "SPECIALIZES_IN",
+        "target": "Artificial Intelligence"
+      },
+      {
         "source": "Jayashan Manodya",
         "relation": "ENROLLED_IN",
         "target": "Sri Lanka Institute of Information Technology"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "SPECIALIZES_IN",
+        "target": "Artificial Intelligence"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "DEVELOPS",
+        "target": "NutriLens AI"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "DEVELOPS",
+        "target": "KIKO"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "DEVELOPS",
+        "target": "IKMS"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "DEVELOPS",
+        "target": "PlateX"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "DEVELOPS",
+        "target": "WeatherLK"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "DEVELOPS",
+        "target": "TeaPlanter"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "DEVELOPS",
+        "target": "Fuel Alert"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "DEVELOPS",
+        "target": "BookLink"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "DEVELOPS",
+        "target": "Automated Room Comfort System"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "WORKS_AT",
+        "target": "Glanz Digital (PVT) Ltd"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "PART_OF",
+        "target": "IEEE Student Branch of SLIIT"
+      },
+      {
+        "source": "Jayashan Manodya",
+        "relation": "PART_OF",
+        "target": "Mozilla Campus Club of SLIIT"
+      },
+      {
+        "source": "KIKO",
+        "relation": "CATEGORIZED_AS",
+        "target": "Conversational Commerce"
+      },
+      {
+        "source": "KIKO",
+        "relation": "USES_TECHNOLOGY",
+        "target": "LangGraph"
+      },
+      {
+        "source": "KIKO",
+        "relation": "USES_TECHNOLOGY",
+        "target": "Model Context Protocol (MCP)"
+      },
+      {
+        "source": "KIKO",
+        "relation": "USES_TECHNOLOGY",
+        "target": "FastAPI"
+      },
+      {
+        "source": "KIKO",
+        "relation": "USES_TECHNOLOGY",
+        "target": "Next.js"
+      },
+      {
+        "source": "KIKO",
+        "relation": "PART_OF",
+        "target": "Kapruka"
+      },
+      {
+        "source": "IKMS RAG Agent System",
+        "relation": "CATEGORIZED_AS",
+        "target": "Retrieval-Augmented Generation (RAG)"
+      },
+      {
+        "source": "IKMS RAG Agent System",
+        "relation": "USES_TECHNOLOGY",
+        "target": "FastAPI"
+      },
+      {
+        "source": "IKMS RAG Agent System",
+        "relation": "USES_TECHNOLOGY",
+        "target": "Pinecone"
+      },
+      {
+        "source": "IKMS RAG Agent System",
+        "relation": "USES_TECHNOLOGY",
+        "target": "OpenAI"
+      },
+      {
+        "source": "IKMS RAG Agent System",
+        "relation": "USES_TECHNOLOGY",
+        "target": "LangGraph"
       }
     ]
   }

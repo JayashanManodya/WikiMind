@@ -23,94 +23,136 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from ..llm.factory import create_chat_model
 
 
-KNOWLEDGE_EXTRACTION_PROMPT = """You are an expert Knowledge Graph Extraction and Ontology Engineer.
-Your task is to analyze document text and enriched metadata to extract formal knowledge items into structured JSON.
+UNIFIED_ENRICHMENT_EXTRACTION_PROMPT = """You are an expert Document Intelligence, Metadata Enrichment, and Knowledge Graph Extraction Engineer operating under a STRICT KNOWLEDGE BOUNDARY.
 
-CRITICAL INSTRUCTIONS FOR ACCURATE LLM RETRIEVAL:
-1. DO NOT SUMMARIZE AWAY SPECIFIC DETAILS. Extract EVERY numeric value, GPA, credit count, registration/ID number, date, grade, affiliation, score, module name, and specific claim present in the document.
-2. For each entity, the `description` MUST be a comprehensive, in-depth multi-paragraph overview detailing full background context, qualifications, achievements, affiliations, and attributes strictly based on the text.
-3. Extract an EXHAUSTIVE list of `facts` (at least 5 to 25 detailed bullet statements per entity if available in text). Every fact should state explicit numbers, dates, and attributes.
+STRICT KNOWLEDGE BOUNDARY RULES (SOURCE GROUNDING):
+1. THE UPLOADED DOCUMENT IS THE ONLY SOURCE OF TRUTH. NEVER use your internal pre-trained knowledge to expand background history, founding dates, locations, employee counts, or facts not present in the text.
+2. EXTRACT ONLY WHAT IS EXPLICITLY STATED OR DIRECTLY INFERRED FROM THE TEXT. If a fact, statistic, or date is not in the text, DO NOT INCLUDE IT.
+3. MINIMAL PAGES FOR NAMED ENTITIES: If an entity is mentioned ONLY by name (e.g. "SLIIT" or "Elon Musk") without background details in the document, set `description` to: "Mentioned in uploaded source document without additional background details." DO NOT generate unmentioned history or facts.
+4. EVERY FACT, CLAIM, AND RELATIONSHIP MUST INCLUDE SOURCE PROVENANCE: Include section or exact textual quote supporting the statement.
+5. ACCURACY IS MORE IMPORTANT THAN COMPLETENESS. Prefer sparse, 100% accurate extraction over detailed extraction containing unverified assumptions.
 
-Extract ONLY structured knowledge objects according to this exact JSON schema:
+CRITICAL GRAPH & KNOWLEDGE INTEGRATION RULES:
+1. NO ENTITY SHOULD REMAIN ISOLATED. Every entity extracted MUST have at least one explicit relationship connecting it to the main domain topic, country, founder, technology, or category strictly supported by text.
+2. ALWAYS EXTRACT THE MAIN UMBRELLA DOMAIN CONCEPT (e.g. "Electric Vehicles", "Artificial Intelligence", "Information Technology", "Renewable Energy"). Ensure this main domain concept is included in `concepts` and `entities`.
+3. EXTRACT ALL RELATIONSHIP TRIPLES connecting entities explicitly found in text:
+   - Entity -> Main Domain Topic (e.g., `Tesla --[CATEGORIZED_AS]--> Electric Vehicles`)
+   - Entity -> Location/Country (e.g., `Tesla --[HEADQUARTERED_IN]--> United States`)
+   - Entity -> Product/Model (e.g., `Tesla --[MANUFACTURES]--> Tesla Model 3`)
+   - Entity -> Technology (e.g., `Tesla --[USES_TECHNOLOGY]--> Autopilot`)
+   - Entity -> Founder/Leader (e.g., `Tesla --[FOUNDED_BY]--> Martin Eberhard`)
+4. DO NOT SUMMARIZE AWAY SPECIFIC DETAILS. Extract EVERY numeric value, GPA, credit count, registration/ID number, date, grade, affiliation, score, module name, and specific claim present in the document.
+5. For each entity with rich document text, the `description` MUST be a comprehensive, in-depth multi-paragraph overview detailing full background context, qualifications, achievements, affiliations, and attributes strictly based on the text.
+
+Extract ONLY structured metadata and knowledge objects according to this exact JSON schema:
 
 {
+  "title": "Title of document as stated or inferred directly from main heading",
+  "authors": ["Author 1"],
+  "publication_date": "YYYY-MM-DD or year if mentioned, else null",
+  "organisations": ["Org 1"],
+  "people": ["Person 1"],
+  "locations": ["Location 1"],
+  "products": ["Product 1"],
+  "keywords": ["Keyword 1"],
+  "citations": ["Citation 1"],
+  "references": ["Reference 1"],
+  "executive_summary": "Concise executive summary strictly based on document text",
+  "section_summaries": [
+    {
+      "section_title": "Section Title",
+      "summary": "Strictly source-grounded section summary"
+    }
+  ],
+  "important_facts": [
+    "Key factual statement strictly stated in document text"
+  ],
+  "glossary_terms": [
+    {
+      "term": "Term",
+      "definition": "Definition explicitly provided in text"
+    }
+  ],
   "entities": [
     {
       "name": "Entity Full Name or Title",
       "type": "ORGANIZATION | PERSON | LOCATION | PRODUCT | CONCEPT | EVENT | SYSTEM | TECHNOLOGY",
-      "description": "Comprehensive, highly detailed multi-paragraph overview with full context and background details.",
-      "aliases": ["Alias 1", "Abbreviation 1"]
+      "description": "Comprehensive multi-paragraph overview strictly grounded in text, OR 'Mentioned in uploaded source document without additional background details.' if only mentioned by name.",
+      "aliases": ["Alias 1"]
     }
   ],
   "concepts": [
     {
-      "name": "Concept Name",
-      "definition": "Detailed conceptual definition explaining key principles",
-      "domain": "Domain or context"
+      "name": "Umbrella Concept or Domain Topic Name",
+      "definition": "Detailed conceptual definition strictly based on document text",
+      "domain": "Domain context mentioned in document"
     }
   ],
   "relationships": [
     {
       "source": "Subject Entity/Concept",
-      "relation": "RELATION_TYPE (e.g. ENROLLED_IN, SPECIALIZES_IN, FOUNDED_BY, PRODUCES, APPLIES_TO, PART_OF, CREATED, USES)",
+      "relation": "RELATION_TYPE (e.g. CATEGORIZED_AS, ENROLLED_IN, SPECIALIZES_IN, HEADQUARTERED_IN, MANUFACTURES, FOUNDED_BY, PRODUCES, APPLIES_TO, PART_OF, CREATED, USES_TECHNOLOGY)",
       "target": "Object Entity/Concept",
-      "evidence": "Quoted line or textual evidence supporting relationship"
+      "evidence": "Exact quoted textual evidence supporting relationship"
     }
   ],
   "facts": [
     {
       "subject": "Subject name",
-      "statement": "Granular factual statement with exact numbers/metrics/dates",
-      "confidence": 0.95
+      "statement": "Granular factual statement strictly stated in text (preserving exact numbers/metrics/dates)",
+      "provenance": "Section title or context sentence",
+      "confidence": 1.0
     }
   ],
   "claims": [
     {
-      "claim": "Claim text",
-      "source_reference": "Document section/citation reference",
-      "evidence": "Exact quoted evidence supporting claim"
+      "claim": "Claim text explicitly in text",
+      "source_reference": "Section or paragraph reference",
+      "evidence": "Exact quoted evidence"
     }
   ],
   "timelines": [
     {
-      "date_or_period": "YYYY or Period description",
+      "date_or_period": "Date or period explicitly in text",
       "event_title": "Event title",
-      "description": "Exhaustive event detail"
+      "description": "Event detail from text"
     }
   ],
   "events": [
     {
-      "event_name": "Event name",
-      "participants": ["Entity 1", "Entity 2"],
-      "description": "Detailed event description"
+      "event_name": "Event name in text",
+      "participants": ["Entity 1"],
+      "description": "Event detail from text"
     }
   ],
   "definitions": [
     {
-      "term": "Term",
-      "definition": "Comprehensive definition"
+      "term": "Term in text",
+      "definition": "Definition explicitly provided in text"
     }
   ],
   "comparisons": [
     {
       "subject_a": "Subject A",
       "subject_b": "Subject B",
-      "comparison_aspect": "Aspect being compared",
-      "finding": "Detailed comparison conclusion"
+      "comparison_aspect": "Aspect",
+      "finding": "Comparison conclusion explicitly stated"
     }
   ],
   "contradictions": [
     {
       "subject": "Topic or Entity",
-      "conflicting_statement_a": "First statement",
-      "conflicting_statement_b": "Second conflicting statement",
-      "explanation": "Why statements conflict"
+      "conflicting_statement_a": "First statement in text",
+      "conflicting_statement_b": "Second statement in text",
+      "explanation": "Why statements conflict based strictly on text"
     }
   ]
 }
 
 Return ONLY valid JSON. No markdown code blocks, no preamble, no trailing text.
 """
+
+KNOWLEDGE_EXTRACTION_PROMPT = UNIFIED_ENRICHMENT_EXTRACTION_PROMPT
 
 
 def extract_structured_knowledge(

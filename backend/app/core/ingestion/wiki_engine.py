@@ -227,29 +227,36 @@ def _create_new_page_content(
     timelines: List[Dict[str, Any]],
     contradictions: List[Dict[str, Any]]
 ) -> str:
-    """Format markdown content for a new Wiki page."""
+    """Format markdown content for a new Wiki page adhering strictly to source knowledge boundaries."""
     entity_name = entity_info["entity_name"]
     entity_type = entity_info["entity_type"]
-    overview = entity_info["description"] or "Detailed background context accumulated from ingested document sources."
+    overview = entity_info["description"] or "Mentioned in uploaded source document without additional background details."
 
-    facts_md = "\n".join(f"- {f.get('statement', '')} (Confidence: {f.get('confidence', 0.95)})" for f in facts) if facts else "- No granular facts recorded yet."
+    fact_items = []
+    for f in facts:
+        stmt = f.get('statement', '')
+        prov = f.get('provenance')
+        prov_str = f" (Provenance: {prov})" if prov else ""
+        fact_items.append(f"- {stmt}{prov_str}")
+    
+    facts_md = "\n".join(fact_items) if fact_items else "- Mentioned in uploaded source document without additional factual statements."
     
     claims_md = ""
     if claims:
         claim_lines = [f"- **Claim**: {c.get('claim')}  \n  *Evidence*: {c.get('evidence', 'None')}" for c in claims]
-        claims_md = "\n\n### Claims & Verified Evidence\n" + "\n".join(claim_lines)
+        claims_md = "\n\n### Verified Claims & Evidence\n" + "\n".join(claim_lines)
 
     rel_lines = []
     for r in relationships:
         rel_lines.append(f"- [[{r['source']}]] --[`{r['relation']}`]--> [[{r['target']}]]")
-    rel_md = "\n".join(rel_lines) if rel_lines else "- No explicit relationships defined."
+    rel_md = "\n".join(rel_lines) if rel_lines else "- No explicit relationships defined in source text."
 
     related_md = ", ".join(f"[[{r}]]" for r in sorted(related)) if related else "None"
 
     timeline_md = ""
     if timelines:
         timeline_lines = [f"- **{t.get('date_or_period', 'Event')}**: {t.get('event_title')} - {t.get('description')}" for t in timelines]
-        timeline_md = "\n\n## Timeline & Key Milestones\n" + "\n".join(timeline_lines)
+        timeline_md = "\n\n## Timeline & Events\n" + "\n".join(timeline_lines)
 
     contradiction_md = ""
     if contradictions:
@@ -261,10 +268,15 @@ def _create_new_page_content(
 **Entity Type**: `{entity_type}`  
 **Last Updated**: `{today_str}`
 
-## Overview
+## Information from Uploaded Sources
+
+### Document Provenance
+- Mentioned in: [{source_filename}](file://{source_filename})
+
+### Overview
 {overview}
 
-## Key Facts & Exhaustive Data
+### Known Facts & Data
 {facts_md}{claims_md}
 
 ## Related Entities

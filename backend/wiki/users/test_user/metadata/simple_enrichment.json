@@ -1,0 +1,25 @@
+{
+  "title": "WikiMind Simple PDF Test Page Content",
+  "authors": [],
+  "publication_date": null,
+  "organisations": [],
+  "people": [],
+  "locations": [],
+  "products": [],
+  "concepts": [],
+  "keywords": [],
+  "citations": [],
+  "references": [],
+  "executive_summary": "The document contains a simple test page content.",
+  "section_summaries": [
+    {
+      "section_title": "Test Page Content",
+      "summary": "The section contains basic content for testing purposes."
+    }
+  ],
+  "important_facts": [
+    "The document contains a simple test page content."
+  ],
+  "glossary_terms": [],
+  "filename": "simple.pdf"
+}

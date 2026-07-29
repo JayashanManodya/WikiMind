@@ -1,0 +1,50 @@
+{
+  "nodes": [
+    {
+      "id": "Artificial Intelligence Knowledge Retrieval",
+      "label": "Artificial Intelligence Knowledge Retrieval",
+      "type": "CONCEPT"
+    },
+    {
+      "id": "Cached",
+      "label": "Cached",
+      "type": "DOCUMENT"
+    },
+    {
+      "id": "Data Processing and Storage Architecture",
+      "label": "Data Processing and Storage Architecture",
+      "type": "CONCEPT"
+    },
+    {
+      "id": "Image Doc",
+      "label": "Image Doc",
+      "type": "DOCUMENT"
+    },
+    {
+      "id": "Knowledge Base",
+      "label": "Knowledge Base",
+      "type": "CONCEPT"
+    },
+    {
+      "id": "Knowledge Systems",
+      "label": "Knowledge Systems",
+      "type": "CONCEPT"
+    },
+    {
+      "id": "Simple",
+      "label": "Simple",
+      "type": "DOCUMENT"
+    },
+    {
+      "id": "Spec",
+      "label": "Spec",
+      "type": "DOCUMENT"
+    },
+    {
+      "id": "Table Doc",
+      "label": "Table Doc",
+      "type": "DOCUMENT"
+    }
+  ],
+  "edges": []
+}

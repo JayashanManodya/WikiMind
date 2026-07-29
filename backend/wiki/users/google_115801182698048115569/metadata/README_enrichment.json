@@ -1,0 +1,40 @@
+{
+  "title": "IKMS RAG Agent System \u2014 Backend",
+  "authors": [],
+  "publication_date": null,
+  "organisations": [],
+  "people": [],
+  "locations": [],
+  "products": [],
+  "concepts": [
+    "Retrieval-Augmented Generation (RAG)"
+  ],
+  "keywords": [],
+  "citations": [],
+  "references": [],
+  "executive_summary": "The IKMS RAG Agent System is a backend service that implements a multi-agent Retrieval-Augmented Generation (RAG) pipeline for intelligent document question-answering, allowing users to upload PDF documents, ask natural language questions, and receive verified answers through a structured agentic process.",
+  "section_summaries": [
+    {
+      "section_title": "Project Overview",
+      "summary": "The IKMS RAG Agent System is designed for intelligent document question-answering, enabling users to upload PDF documents for indexing and ask questions to receive grounded answers through a multi-stage agent pipeline."
+    },
+    {
+      "section_title": "Architecture Overview",
+      "summary": "The architecture consists of a FastAPI API that interacts with a LangGraph QA Graph, which includes planning, retrieval, summarization, and verification agents, culminating in a final verified answer."
+    },
+    {
+      "section_title": "Tech Stack",
+      "summary": "The system utilizes a variety of technologies including Python, FastAPI, LangGraph, OpenAI, and Pinecone, with specific version requirements for each component."
+    },
+    {
+      "section_title": "Core Components",
+      "summary": "The core components include the API layer, multi-agent pipeline, LangGraph orchestration, vector store and retrieval, LLM factory, and configuration management."
+    }
+  ],
+  "important_facts": [
+    "The system processes PDFs entirely in-memory with no disk writes.",
+    "The multi-agent pipeline consists of four stages: Planning, Retrieval, Summarization, and Verification."
+  ],
+  "glossary_terms": [],
+  "filename": "README.md"
+}
