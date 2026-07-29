@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import LoginPage from './components/LoginPage';
 import LoginModal from './components/LoginModal';
 import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
@@ -8,9 +9,41 @@ import UploadPage from './pages/UploadPage';
 import WikiPage from './pages/WikiPage';
 import ChatPage from './pages/ChatPage';
 
-function MainAppContent() {
+function AppGate() {
+  const { isAuthenticated, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedWikiEntity, setSelectedWikiEntity] = useState(null);
+
+  if (isLoading) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: '#0f172a',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#94a3b8',
+        fontFamily: 'sans-serif',
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            width: '40px',
+            height: '40px',
+            border: '3px solid #334155',
+            borderTopColor: '#3b82f6',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 16px auto',
+          }} />
+          <p style={{ margin: 0, fontSize: '0.9rem' }}>Initializing WikiMind...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
 
   return (
     <div className="app-layout">
@@ -55,7 +88,7 @@ function MainAppContent() {
 export default function App() {
   return (
     <AuthProvider>
-      <MainAppContent />
+      <AppGate />
     </AuthProvider>
   );
 }

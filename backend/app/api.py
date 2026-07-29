@@ -418,7 +418,10 @@ class DebugWikiRequest(BaseModel):
 
 
 @app.post("/debug/parse")
-async def debug_parse_endpoint(file: UploadFile = File(...)):
+async def debug_parse_endpoint(
+    file: UploadFile = File(...),
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
     """Standalone debug endpoint to test Document Parser individually."""
     try:
         file_bytes = await file.read()

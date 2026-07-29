@@ -1,0 +1,65 @@
+{
+  "nodes": [
+    {
+      "id": "Artificial Intelligence",
+      "label": "Artificial Intelligence",
+      "type": "CONCEPT"
+    },
+    {
+      "id": "Automated Room Comfort System",
+      "label": "Automated Room Comfort System",
+      "type": "PRODUCT"
+    },
+    {
+      "id": "BookLink",
+      "label": "BookLink",
+      "type": "PRODUCT"
+    },
+    {
+      "id": "Fuel Alert",
+      "label": "Fuel Alert",
+      "type": "PRODUCT"
+    },
+    {
+      "id": "Glanz Digital (PVT) Ltd",
+      "label": "Glanz Digital (PVT) Ltd",
+      "type": "ORGANIZATION"
+    },
+    {
+      "id": "IKMS",
+      "label": "IKMS",
+      "type": "PRODUCT"
+    },
+    {
+      "id": "KIKO",
+      "label": "KIKO",
+      "type": "PRODUCT"
+    },
+    {
+      "id": "NutriLens AI",
+      "label": "NutriLens AI",
+      "type": "PRODUCT"
+    },
+    {
+      "id": "PlateX",
+      "label": "PlateX",
+      "type": "PRODUCT"
+    },
+    {
+      "id": "Sri Lanka Institute of Information Technology",
+      "label": "Sri Lanka Institute of Information Technology",
+      "type": "ORGANIZATION"
+    },
+    {
+      "id": "TeaPlanter",
+      "label": "TeaPlanter",
+      "type": "PRODUCT"
+    },
+    {
+      "id": "WeatherLK",
+      "label": "WeatherLK",
+      "type": "PRODUCT"
+    }
+  ],
+  "edges": []
+}

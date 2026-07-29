@@ -45,7 +45,7 @@ def test_user_scoped_wiki_generation(tmp_path):
     sample_text = "WikiLLM provides user data isolation in multi-agent RAG systems."
     pages = generate_wiki_pages_from_text(
         cleaned_text=sample_text,
-        filename="isolation_doc.pdf",
+        filename="isolation_doc.txt",
         wiki_dir=str(user_wiki_dir)
     )
 
@@ -88,3 +88,31 @@ def test_user_isolated_retrieval(tmp_path, monkeypatch):
     assert len(docs_b) == 1
     assert "Bob" in docs_b[0]
     assert "Alice" not in docs_b[0]
+
+
+def test_unauthenticated_requests_raise_401():
+    """Test that unauthenticated requests to protected endpoints return HTTP 401 Unauthorized."""
+    from fastapi.testclient import TestClient
+    from backend.app.api import app
+
+    client = TestClient(app)
+
+    # Protected endpoints without Bearer token
+    res_me = client.get("/auth/me")
+    assert res_me.status_code == 401
+    assert "Authentication required" in res_me.json()["detail"]
+
+    res_wiki = client.get("/wiki/index")
+    assert res_wiki.status_code == 401
+
+    res_graph = client.get("/wiki/graph")
+    assert res_graph.status_code == 401
+
+    res_debug = client.post("/debug/parse")
+    assert res_debug.status_code == 401
+
+    # Public endpoints should still work
+    res_health = client.get("/health")
+    assert res_health.status_code == 200
+    assert res_health.json()["status"] == "ok"
+

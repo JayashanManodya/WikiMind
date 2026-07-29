@@ -117,26 +117,16 @@ async def verify_google_token(credential: str) -> Dict[str, Any]:
 async def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Security(security)) -> Dict[str, Any]:
     """FastAPI dependency to extract and validate the authenticated current user."""
     if not credentials or not credentials.credentials:
-        # Return default guest user for unauthenticated requests
-        return {
-            "user_id": "guest_user",
-            "email": "guest@wikillm.local",
-            "name": "Guest User",
-            "picture": "",
-            "is_guest": True,
-        }
-
-    token = credentials.credentials
-    user = decode_access_token(token)
-    user["is_guest"] = False
-    return user
-
-
-async def require_authenticated_user(user: Dict[str, Any] = Depends(get_current_user)) -> Dict[str, Any]:
-    """Dependency enforcing that request must be from a logged-in Google user."""
-    if user.get("is_guest"):
         raise HTTPException(
             status_code=401,
             detail="Authentication required. Please log in with your Google account."
         )
+
+    token = credentials.credentials
+    user = decode_access_token(token)
+    return user
+
+
+async def require_authenticated_user(user: Dict[str, Any] = Depends(get_current_user)) -> Dict[str, Any]:
+    """Dependency enforcing that request must be from a logged-in user."""
     return user

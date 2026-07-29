@@ -52,54 +52,20 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       
       {/* User Scoped Auth Banner */}
-      {!isAuthenticated ? (
-        <div style={{
-          backgroundColor: '#eff6ff',
-          border: '1px solid #bfdbfe',
-          borderRadius: '12px',
-          padding: '16px 20px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '16px'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ padding: '10px', backgroundColor: '#dbeafe', borderRadius: '50%', color: '#2563eb' }}>
-              <Lock size={20} />
-            </div>
-            <div>
-              <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '600', color: '#1e3a8a' }}>
-                Per-User Private Knowledge Vault
-              </h4>
-              <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: '#3b82f6' }}>
-                Sign in with Google to create your isolated Knowledge Base where every document, Wiki page, and QA context is private to you.
-              </p>
-            </div>
-          </div>
-          <button 
-            onClick={openLoginModal}
-            className="btn"
-            style={{ backgroundColor: '#2563eb', color: '#fff', fontSize: '13px', whiteSpace: 'nowrap' }}
-          >
-            Sign In with Google
-          </button>
-        </div>
-      ) : (
-        <div style={{
-          backgroundColor: '#f0fdf4',
-          border: '1px solid #bbf7d0',
-          borderRadius: '12px',
-          padding: '12px 18px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          color: '#166534',
-          fontSize: '13px'
-        }}>
-          <UserCheck size={18} color="#16a34a" />
-          <span>Logged in as <strong>{user?.name} ({user?.email})</strong>. Viewing your private knowledge repository.</span>
-        </div>
-      )}
+      <div style={{
+        backgroundColor: '#f0fdf4',
+        border: '1px solid #bbf7d0',
+        borderRadius: '12px',
+        padding: '12px 18px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        color: '#166534',
+        fontSize: '13px'
+      }}>
+        <UserCheck size={18} color="#16a34a" />
+        <span>Logged in as <strong>{user?.name} ({user?.email})</strong>. Viewing your private knowledge repository.</span>
+      </div>
 
       {/* Top Header */}
       <div style={{ textAlign: 'center', margin: '10px 0 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>

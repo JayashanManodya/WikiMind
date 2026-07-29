@@ -15,16 +15,8 @@ export const AuthProvider = ({ children }) => {
       if (savedToken) {
         try {
           const userData = await getCurrentUser();
-          if (!userData.is_guest) {
-            setUser(userData);
-            setToken(savedToken);
-          } else {
-            // Token invalid or returned guest
-            localStorage.removeItem('wikimind_token');
-            localStorage.removeItem('wikillm_token');
-            setUser(null);
-            setToken(null);
-          }
+          setUser(userData);
+          setToken(savedToken);
         } catch (err) {
           console.warn("Stored auth token validation failed:", err);
           localStorage.removeItem('wikimind_token');

@@ -1,0 +1,233 @@
+{
+  "total_pages": 12,
+  "rebuilt_at": "2026-07-29T18:38:00.631128+00:00",
+  "pages": [
+    {
+      "entity_name": "Artificial Intelligence",
+      "filename": "Artificial_Intelligence.md",
+      "entity_type": "CONCEPT",
+      "summary": "A field of computer science focused on creating intelligent systems capable of performing tasks that typically require human intelligence.\n\n### Known Facts & Data\n- Mentioned in up...",
+      "category": "Concept",
+      "tags": [
+        "concept"
+      ],
+      "related_entities": [
+        "Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+    },
+    {
+      "entity_name": "Automated Room Comfort System",
+      "filename": "Automated_Room_Comfort_System.md",
+      "entity_type": "PRODUCT",
+      "summary": "An IoT-based system that adjusts room temperature and lighting based on sensor data.\n\n### Known Facts & Data\n- Mentioned in uploaded source document without additional factual stat...",
+      "category": "Product",
+      "tags": [
+        "product"
+      ],
+      "related_entities": [],
+      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+    },
+    {
+      "entity_name": "BookLink",
+      "filename": "BookLink.md",
+      "entity_type": "PRODUCT",
+      "summary": "A community-driven mobile platform for book exchanges, featuring user authentication and real-time chat.\n\n### Known Facts & Data\n- Mentioned in uploaded source document without add...",
+      "category": "Product",
+      "tags": [
+        "product"
+      ],
+      "related_entities": [],
+      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+    },
+    {
+      "entity_name": "Fuel Alert",
+      "filename": "Fuel_Alert.md",
+      "entity_type": "PRODUCT",
+      "summary": "A real-time fuel availability and queue tracking platform with live monitoring and queue estimation features.\n\n### Known Facts & Data\n- Mentioned in uploaded source document withou...",
+      "category": "Product",
+      "tags": [
+        "product"
+      ],
+      "related_entities": [],
+      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+    },
+    {
+      "entity_name": "Glanz Digital (PVT) Ltd",
+      "filename": "Glanz_Digital_(PVT)_Ltd.md",
+      "entity_type": "ORGANIZATION",
+      "summary": "Mentioned in uploaded source document without additional background details.\n\n### Known Facts & Data\n- Mentioned in uploaded source document without additional factual statements....",
+      "category": "Organization",
+      "tags": [
+        "organization"
+      ],
+      "related_entities": [
+        "Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+    },
+    {
+      "entity_name": "IKMS",
+      "filename": "IKMS.md",
+      "entity_type": "PRODUCT",
+      "summary": "A Retrieval-Augmented Generation document question-answering system that provides context-aware answers from uploaded PDFs.\n\n### Known Facts & Data\n- Mentioned in uploaded source d...",
+      "category": "Product",
+      "tags": [
+        "product"
+      ],
+      "related_entities": [
+        "OpenAI GPT-4o"
+      ],
+      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+    },
+    {
+      "entity_name": "KIKO",
+      "filename": "KIKO.md",
+      "entity_type": "PRODUCT",
+      "summary": "An AI-powered conversational shopping assistant that allows users to browse products and manage orders through natural language conversations.\n\n### Known Facts & Data\n- Mentioned i...",
+      "category": "Product",
+      "tags": [
+        "product"
+      ],
+      "related_entities": [
+        "Open AI"
+      ],
+      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+    },
+    {
+      "entity_name": "NutriLens AI",
+      "filename": "NutriLens_AI.md",
+      "entity_type": "PRODUCT",
+      "summary": "An AI-powered nutrition assistant that enables users to scan food packages and meals, analyze ingredients and nutrition labels, and receive personalized health recommendations.\n\n##...",
+      "category": "Product",
+      "tags": [
+        "product"
+      ],
+      "related_entities": [
+        "OCR and LLMs"
+      ],
+      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+    },
+    {
+      "entity_name": "PlateX",
+      "filename": "PlateX.md",
+      "entity_type": "PRODUCT",
+      "summary": "An AI-powered license plate recognition system for real-time vehicle plate detection and automated text extraction.\n\n### Known Facts & Data\n- Mentioned in uploaded source document ...",
+      "category": "Product",
+      "tags": [
+        "product"
+      ],
+      "related_entities": [
+        "PaddleOCR"
+      ],
+      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+    },
+    {
+      "entity_name": "Sri Lanka Institute of Information Technology",
+      "filename": "Sri_Lanka_Institute_of_Information_Technology.md",
+      "entity_type": "ORGANIZATION",
+      "summary": "Mentioned in uploaded source document without additional background details.\n\n### Known Facts & Data\n- Mentioned in uploaded source document without additional factual statements....",
+      "category": "Organization",
+      "tags": [
+        "organization"
+      ],
+      "related_entities": [
+        "Jayashan Manodya"
+      ],
+      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+    },
+    {
+      "entity_name": "TeaPlanter",
+      "filename": "TeaPlanter.md",
+      "entity_type": "PRODUCT",
+      "summary": "An AI-powered tea estate management platform that supports various operational aspects of tea plantations.\n\n### Known Facts & Data\n- Mentioned in uploaded source document without a...",
+      "category": "Product",
+      "tags": [
+        "product"
+      ],
+      "related_entities": [
+        "YoloV8"
+      ],
+      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+    },
+    {
+      "entity_name": "WeatherLK",
+      "filename": "WeatherLK.md",
+      "entity_type": "PRODUCT",
+      "summary": "An ML-powered weather forecasting platform that predicts weather conditions using historical and environmental data.\n\n### Known Facts & Data\n- Mentioned in uploaded source document...",
+      "category": "Product",
+      "tags": [
+        "product"
+      ],
+      "related_entities": [
+        "RandomForestRegressor"
+      ],
+      "updated_at": "2026-07-29T18:38:00.631128+00:00"
+    }
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "id": "Artificial Intelligence",
+        "label": "Artificial Intelligence",
+        "type": "CONCEPT"
+      },
+      {
+        "id": "Automated Room Comfort System",
+        "label": "Automated Room Comfort System",
+        "type": "PRODUCT"
+      },
+      {
+        "id": "BookLink",
+        "label": "BookLink",
+        "type": "PRODUCT"
+      },
+      {
+        "id": "Fuel Alert",
+        "label": "Fuel Alert",
+        "type": "PRODUCT"
+      },
+      {
+        "id": "Glanz Digital (PVT) Ltd",
+        "label": "Glanz Digital (PVT) Ltd",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "IKMS",
+        "label": "IKMS",
+        "type": "PRODUCT"
+      },
+      {
+        "id": "KIKO",
+        "label": "KIKO",
+        "type": "PRODUCT"
+      },
+      {
+        "id": "NutriLens AI",
+        "label": "NutriLens AI",
+        "type": "PRODUCT"
+      },
+      {
+        "id": "PlateX",
+        "label": "PlateX",
+        "type": "PRODUCT"
+      },
+      {
+        "id": "Sri Lanka Institute of Information Technology",
+        "label": "Sri Lanka Institute of Information Technology",
+        "type": "ORGANIZATION"
+      },
+      {
+        "id": "TeaPlanter",
+        "label": "TeaPlanter",
+        "type": "PRODUCT"
+      },
+      {
+        "id": "WeatherLK",
+        "label": "WeatherLK",
+        "type": "PRODUCT"
+      }
+    ],
+    "edges": []
+  }
+}
