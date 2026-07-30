@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { DataProvider } from './context/DataContext';
 import LoginPage from './components/LoginPage';
 import LoginModal from './components/LoginModal';
 import Sidebar from './components/Sidebar';
@@ -86,7 +87,10 @@ function AppGate() {
 export default function App() {
   return (
     <AuthProvider>
-      <AppGate />
+      <DataProvider>
+        <AppGate />
+      </DataProvider>
     </AuthProvider>
   );
 }
+

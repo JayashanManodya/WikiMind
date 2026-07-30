@@ -15,7 +15,8 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-import { askQuestion, getChatSessions, getSessionMessages, deleteChatSession } from '../api/client';
+import { askQuestion, getSessionMessages, deleteChatSession } from '../api/client';
+import { useData } from '../context/DataContext';
 
 const INITIAL_WELCOME_MESSAGE = [
   {
@@ -35,6 +36,7 @@ const createDefaultSession = () => ({
 });
 
 export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
+  const { chatSessions: cachedSessions, loadChatSessions } = useData();
   const [sessions, setSessions] = useState([createDefaultSession()]);
   const [activeSessionId, setActiveSessionId] = useState(sessions[0]?.id);
   const [inputQuery, setInputQuery] = useState('');
@@ -43,13 +45,13 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
 
   const chatEndRef = useRef(null);
 
-  // Load chat sessions from Turso Cloud DB on mount
+  // Load chat sessions from DataContext cache/fetch on mount
   useEffect(() => {
     const loadRemoteSessions = async () => {
       try {
-        const res = await getChatSessions();
-        if (res.sessions && res.sessions.length > 0) {
-          const formatted = res.sessions.map(s => ({
+        const resSessions = await loadChatSessions();
+        if (resSessions && resSessions.length > 0) {
+          const formatted = resSessions.map(s => ({
             id: s.id,
             title: s.title,
             createdAt: s.created_at,
@@ -63,7 +65,8 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
       }
     };
     loadRemoteSessions();
-  }, []);
+  }, [loadChatSessions]);
+
 
   // Fetch messages for active session when activeSessionId changes
   useEffect(() => {

@@ -16,46 +16,29 @@ import {
   FileText,
   ExternalLink
 } from 'lucide-react';
-import { getWikiIndex, getWikiGraph } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { useData } from '../context/DataContext';
 
 export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
   const { user } = useAuth();
-  const [stats, setStats] = useState({ wikiPages: 0, graphNodes: 0, graphEdges: 0 });
-  const [allWikiPages, setAllWikiPages] = useState([]);
+  const { wikiPages, wikiGraph, loadWikiPages, loadWikiGraph, isLoadingWiki, isLoadingGraph } = useData();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('ALL');
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const [wikiRes, graphRes] = await Promise.all([
-          getWikiIndex().catch(() => ({ total_pages: 0, pages: [] })),
-          getWikiGraph().catch(() => ({ nodes: [], edges: [] }))
-        ]);
+    loadWikiPages();
+    loadWikiGraph();
+  }, [user, loadWikiPages, loadWikiGraph]);
 
-        setStats({
-          wikiPages: wikiRes.total_pages || (wikiRes.pages ? wikiRes.pages.length : 0),
-          graphNodes: graphRes.nodes ? graphRes.nodes.length : 0,
-          graphEdges: graphRes.edges ? graphRes.edges.length : 0
-        });
+  const allWikiPages = wikiPages || [];
+  const stats = {
+    wikiPages: allWikiPages.length,
+    graphNodes: wikiGraph.nodes ? wikiGraph.nodes.length : 0,
+    graphEdges: wikiGraph.edges ? wikiGraph.edges.length : 0
+  };
+  const isLoading = isLoadingWiki || isLoadingGraph;
 
-        if (wikiRes.pages) {
-          setAllWikiPages(wikiRes.pages);
-        } else {
-          setAllWikiPages([]);
-        }
-      } catch (err) {
-        console.error("Dashboard fetch error:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [user]);
 
   const categories = ['ALL', 'SYSTEM', 'PERSON', 'CONCEPT', 'PRODUCT', 'COMPONENT', 'HARDWARE'];
 

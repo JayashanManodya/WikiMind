@@ -11,8 +11,10 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { uploadDocument } from '../api/client';
+import { useData } from '../context/DataContext';
 
 export default function UploadPage({ setActiveTab }) {
+  const { invalidateAll } = useData();
   const [file, setFile] = useState(null);
   const [autoProcess, setAutoProcess] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
@@ -63,6 +65,7 @@ export default function UploadPage({ setActiveTab }) {
       clearInterval(stepTimer);
       setCurrentStep(5);
       setPipelineResult(res);
+      invalidateAll();
     } catch (err) {
       clearInterval(stepTimer);
       setCurrentStep(0);
