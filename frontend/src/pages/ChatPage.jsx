@@ -230,7 +230,7 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
   };
 
   return (
-    <div style={{ display: 'flex', height: 'calc(100vh - 120px)', maxWidth: '1100px', margin: '0 auto', gap: '16px' }}>
+    <div style={{ display: 'flex', height: 'calc(100vh - 90px)', width: '100%', maxWidth: '100%', gap: '16px' }}>
       
       {/* Sessions Left Panel / Sidebar */}
       {showSidebar && (
@@ -326,7 +326,7 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
               <Bot size={18} color="#FFFFFF" />
             </div>
             <div>
-              <h3 style={{ fontSize: '15.5px', fontWeight: '600' }}>{activeSession?.title || 'ChatGPT Grounded Engine'}</h3>
+              <h3 style={{ fontSize: '15.5px', fontWeight: '600' }}>{activeSession?.title || 'WikiMind Grounded Engine'}</h3>
               <p style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>Zero-hallucination factual answer model</p>
             </div>
           </div>
@@ -341,7 +341,7 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
               <Trash2 size={13} color="#71717A" />
               <span>Clear Current</span>
             </button>
-            <span className="badge-clean">Ver 4.0 Mar 14</span>
+            <span className="badge-clean">WikiMind v1.0</span>
           </div>
         </div>
 
@@ -366,7 +366,7 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
                   )}
                   
                   <span style={{ fontSize: '12px', fontWeight: '600' }}>
-                    {isUser ? 'You' : 'ChatGPT Assistant'}
+                    {isUser ? 'You' : 'WikiMind Assistant'}
                   </span>
 
                   {!isUser && msg.grounded !== undefined && (

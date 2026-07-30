@@ -9,6 +9,7 @@ import DashboardPage from './pages/DashboardPage';
 import UploadPage from './pages/UploadPage';
 import WikiPage from './pages/WikiPage';
 import ChatPage from './pages/ChatPage';
+import GuidePage from './pages/GuidePage';
 
 function AppGate() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -75,6 +76,10 @@ function AppGate() {
               setActiveTab={setActiveTab} 
               setSelectedWikiEntity={setSelectedWikiEntity} 
             />
+          )}
+
+          {activeTab === 'guide' && (
+            <GuidePage setActiveTab={setActiveTab} />
           )}
         </div>
       </div>

@@ -16,6 +16,7 @@ from .core.ingestion.parser import parse_document_bytes
 from .core.ingestion.wiki_generator import generate_wiki_pages_from_text, run_ingestion_pipeline
 from .core.retrieval.vector_store import index_wiki_documents, index_documents_from_bytes
 from .core.auth import get_current_user, verify_google_token, create_access_token
+from .core.config import get_settings
 
 
 class GoogleAuthRequest(BaseModel):
@@ -29,10 +30,14 @@ app = FastAPI(
     openapi_url="/openapi.json"
 )
 
-# Configure CORS
+# Configure CORS from settings
+sys_settings = get_settings()
+raw_origins = sys_settings.cors_origins.split(",") if sys_settings.cors_origins else ["*"]
+allowed_origins = [o.strip() for o in raw_origins if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins if allowed_origins else ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

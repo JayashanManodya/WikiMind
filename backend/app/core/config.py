@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     turso_database_url: str = ""
     turso_auth_token: str = ""
 
+    # CORS Configuration
+    cors_origins: str = "*"
+
     # Auth Configuration
     google_client_id: str = ""
     jwt_secret_key: str = "wikillm_super_secret_jwt_key_2026_change_in_production"

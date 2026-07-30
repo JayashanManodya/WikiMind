@@ -84,7 +84,7 @@ export default function WikiPage({ selectedEntity, setSelectedEntity }) {
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '20px', minHeight: 'calc(100vh - 140px)' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '20px', width: '100%', maxWidth: '100%', minHeight: 'calc(100vh - 90px)' }}>
       
       {/* Compact Near-Node Popover Dialog */}
       {modalNode && (

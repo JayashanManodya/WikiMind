@@ -50,11 +50,11 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
   });
 
   const cardGradients = [
-    'linear-gradient(135deg, #0EA5E9 0%, #2563EB 100%)',
-    'linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)',
-    'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-    'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
-    'linear-gradient(135deg, #EC4899 0%, #DB2777 100%)',
+    'linear-gradient(135deg, #09090B 0%, #18181B 100%)',
+    'linear-gradient(135deg, #18181B 0%, #27272A 100%)',
+    'linear-gradient(135deg, #000000 0%, #171717 100%)',
+    'linear-gradient(135deg, #27272A 0%, #09090B 100%)',
+    'linear-gradient(135deg, #111827 0%, #030712 100%)',
   ];
 
   return (
@@ -63,10 +63,14 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
       {/* Memora Hero Header Section matching Reference Image */}
       <div className="memora-hero-container">
 
-        {/* Launch Pill Badge */}
-        <div className="memora-pill-badge" style={{ marginBottom: '20px' }}>
-          <Sparkles size={14} color="#2563EB" />
-          <span>⚡ Powered by AI & Graph RAG</span>
+        {/* Brand Logo Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
+          <img 
+            src="/logo-color.png" 
+            alt="WikiMind Logo" 
+            style={{ width: '42px', height: '42px', objectFit: 'contain', borderRadius: '10px', boxShadow: '0 4px 12px rgba(37, 99, 235, 0.15)' }} 
+          />
+          <span style={{ fontSize: '22px', fontWeight: '800', color: '#09090B', letterSpacing: '-0.5px' }}>WikiMind</span>
         </div>
 
         {/* Big Bold Memora Headline */}
@@ -112,29 +116,29 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
           </button>
         </div>
 
-        {/* Social Proof Strip matching Reference Image */}
+        {/* Social Proof Strip with Real Face Person Avatar Photos */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: '#64748B' }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            {['#2563eb', '#10b981', '#f59e0b', '#8b5cf6'].map((col, i) => (
-              <div
+            {[
+              'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80',
+              'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80',
+              'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+              'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80'
+            ].map((imgUrl, i) => (
+              <img
                 key={i}
+                src={imgUrl}
+                alt={`Person ${i + 1}`}
                 style={{
-                  width: '24px',
-                  height: '24px',
+                  width: '28px',
+                  height: '28px',
                   borderRadius: '50%',
-                  backgroundColor: col,
+                  objectFit: 'cover',
                   border: '2px solid #FFFFFF',
                   marginLeft: i === 0 ? 0 : '-8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justify: 'center',
-                  fontSize: '10px',
-                  color: '#FFF',
-                  fontWeight: '700'
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                 }}
-              >
-                {String.fromCharCode(65 + i)}
-              </div>
+              />
             ))}
           </div>
           <span>Join <strong style={{ color: '#0F172A' }}>{stats.wikiPages > 0 ? stats.wikiPages : 24}+ knowledge topics</strong> indexed & ready</span>
@@ -142,14 +146,14 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
       </div>
 
       {/* Metrics Bar */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
         <div className="memora-card" style={{ padding: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
             <span style={{ fontSize: '12.5px', color: '#64748B', fontWeight: '500' }}>Stored Wiki Pages</span>
             <BookOpen size={18} color="#2563EB" />
           </div>
           <h2 style={{ fontSize: '32px', fontWeight: '800', color: '#0F172A' }}>{stats.wikiPages}</h2>
-          <p style={{ fontSize: '11.5px', color: '#10B981', marginTop: '4px', fontWeight: '500' }}>Saved in SQL Database</p>
+          <p style={{ fontSize: '11.5px', color: '#10B981', marginTop: '4px', fontWeight: '500' }}>Saved in Cloud Database</p>
         </div>
 
         <div className="memora-card" style={{ padding: '20px' }}>
@@ -168,15 +172,6 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
           </div>
           <h2 style={{ fontSize: '32px', fontWeight: '800', color: '#0F172A' }}>{stats.graphEdges}</h2>
           <p style={{ fontSize: '11.5px', color: '#64748B', marginTop: '4px' }}>Traversable Graph Edges</p>
-        </div>
-
-        <div className="memora-card" style={{ padding: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-            <span style={{ fontSize: '12.5px', color: '#64748B', fontWeight: '500' }}>Security Engine</span>
-            <Shield size={18} color="#10B981" />
-          </div>
-          <h2 style={{ fontSize: '18px', fontWeight: '700', color: '#10B981', marginTop: '6px' }}>Pinecone Namespace</h2>
-          <p style={{ fontSize: '11.5px', color: '#64748B', marginTop: '4px' }}>User Isolated Storage</p>
         </div>
       </div>
 
@@ -254,62 +249,101 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
             No matching Wiki topics found. Upload a document to generate topic pages!
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
-            {filteredPages.map((page, idx) => {
-              const bgGrad = cardGradients[idx % cardGradients.length];
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '18px' }}>
+            {filteredPages.slice(0, 4).map((page, idx) => {
               return (
                 <div
                   key={idx}
                   className="memora-card"
-                  style={{ cursor: 'pointer' }}
+                  style={{
+                    cursor: 'pointer',
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid #E2E8F0',
+                    borderRadius: '14px',
+                    padding: '20px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    gap: '14px',
+                    transition: 'all 0.2s ease'
+                  }}
                   onClick={() => {
                     if (setSelectedWikiEntity) setSelectedWikiEntity(page.entity_name);
                     setActiveTab('wiki');
                   }}
                 >
-                  {/* Card Cover Header */}
-                  <div style={{
-                    height: '110px',
-                    background: bgGrad,
-                    padding: '14px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justify: 'space-between',
-                    color: '#FFFFFF'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  {/* Top Header: Entity Name & Badge */}
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
                       <span style={{
-                        backgroundColor: 'rgba(255,255,255,0.2)',
-                        backdropFilter: 'blur(4px)',
-                        padding: '2px 10px',
+                        backgroundColor: '#F1F5F9',
+                        color: '#09090B',
+                        padding: '3px 10px',
                         borderRadius: '9999px',
                         fontSize: '11px',
-                        fontWeight: '600'
+                        fontWeight: '600',
+                        border: '1px solid #E2E8F0'
                       }}>
                         {page.entity_type || 'CONCEPT'}
                       </span>
-                      <ExternalLink size={14} color="#FFFFFF" style={{ opacity: 0.8 }} />
+                      <ExternalLink size={14} color="#71717A" />
                     </div>
 
-                    <h4 style={{ fontSize: '16px', fontWeight: '700', textShadow: '0 1px 2px rgba(0,0,0,0.2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <h4 style={{ fontSize: '16.5px', fontWeight: '700', color: '#09090B', lineHeight: '1.3' }}>
                       {page.entity_name}
                     </h4>
                   </div>
 
-                  {/* Card Body */}
-                  <div style={{ padding: '16px' }}>
-                    <p style={{ fontSize: '12px', color: '#64748B', marginBottom: '12px', height: '36px', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                      {page.summary || `Exhaustive grounded knowledge article for ${page.entity_name}.`}
-                    </p>
+                  {/* Summary Text */}
+                  <p style={{
+                    fontSize: '13px',
+                    color: '#64748B',
+                    lineHeight: '1.5',
+                    height: '38px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    margin: 0
+                  }}>
+                    {page.summary || `Exhaustive grounded knowledge article for ${page.entity_name}.`}
+                  </p>
 
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #F1F5F9', paddingTop: '10px', fontSize: '11.5px', color: '#94A3B8' }}>
-                      <span>📄 {page.filename || 'Ingested Knowledge'}</span>
-                      <span style={{ color: '#2563EB', fontWeight: '600' }}>Read Page →</span>
-                    </div>
+                  {/* Card Footer Link */}
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    borderTop: '1px solid #F1F5F9',
+                    paddingTop: '12px',
+                    fontSize: '12px',
+                    color: '#94A3B8'
+                  }}>
+                    <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '170px' }}>
+                      📄 {page.filename || 'Ingested Document'}
+                    </span>
+                    <span style={{ color: '#09090B', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      Read Page →
+                    </span>
                   </div>
                 </div>
               );
             })}
+          </div>
+        )}
+
+        {/* View All Topics Button below 1st Row */}
+        {allWikiPages.length > 4 && (
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '24px' }}>
+            <button
+              className="memora-btn-secondary"
+              onClick={() => setActiveTab('wiki')}
+              style={{ fontSize: '13px', padding: '8px 20px', gap: '8px' }}
+            >
+              <span>View All {allWikiPages.length} Knowledge Topics</span>
+              <ArrowRight size={15} color="#09090B" />
+            </button>
           </div>
         )}
       </div>

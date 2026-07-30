@@ -6,6 +6,7 @@ import {
   BookOpen, 
   UploadCloud, 
   LayoutDashboard,
+  HelpCircle,
   LogIn, 
   LogOut, 
   History
@@ -21,11 +22,14 @@ export default function Navbar({ activeTab, setActiveTab }) {
     { id: 'chat', label: 'Chat', icon: MessageSquare },
     { id: 'upload', label: 'Upload', icon: UploadCloud },
     { id: 'wiki', label: 'Knowledge Base', icon: BookOpen },
+    { id: 'guide', label: 'Guide', icon: HelpCircle },
   ];
 
   return (
     <header style={{ 
-      backgroundColor: '#FFFFFF', 
+      backgroundColor: 'rgba(255, 255, 255, 0.85)', 
+      backdropFilter: 'blur(12px)',
+      WebkitBackdropFilter: 'blur(12px)',
       borderBottom: '1px solid var(--border-color)', 
       padding: '8px 36px',
       display: 'flex',
