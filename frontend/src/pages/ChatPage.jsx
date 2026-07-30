@@ -383,21 +383,30 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
                 {!isUser && msg.citations && msg.citations.length > 0 && (
                   <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                     <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Citations:</span>
-                    {msg.citations.map((cite, cIdx) => (
-                      <span 
-                        key={cIdx} 
-                        className="badge-clean" 
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => {
-                          const entityName = cite.replace('.md', '').replace(/_/g, ' ');
-                          if (setSelectedWikiEntity) setSelectedWikiEntity(entityName);
-                          setActiveTab('wiki');
-                        }}
-                      >
-                        <BookOpen size={10} />
-                        {cite}
-                      </span>
-                    ))}
+                    {msg.citations.map((cite, cIdx) => {
+                      const citeStr = typeof cite === 'string' 
+                        ? cite 
+                        : (cite.file || cite.name || cite.source || (cite.snippet ? (cite.snippet.substring(0, 35) + '...') : 'Source Document'));
+                      const entityName = citeStr.replace('.md', '').replace(/_/g, ' ');
+
+                      return (
+                        <span 
+                          key={cIdx} 
+                          className="badge-clean" 
+                          style={{ cursor: 'pointer' }}
+                          title={typeof cite === 'object' && cite.snippet ? cite.snippet : citeStr}
+                          onClick={() => {
+                            if (setSelectedWikiEntity && entityName && !entityName.includes('...')) {
+                              setSelectedWikiEntity(entityName);
+                              setActiveTab('wiki');
+                            }
+                          }}
+                        >
+                          <BookOpen size={10} />
+                          {citeStr}
+                        </span>
+                      );
+                    })}
                   </div>
                 )}
               </div>
