@@ -1,0 +1,216 @@
+/* LoginPage.css - WikiMind Google OAuth & Logo Art Login Page */
+
+.login-page-container {
+  min-height: 100vh;
+  width: 100%;
+  background: #0f172a;
+  background: radial-gradient(circle at top center, #1e293b 0%, #0f172a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+.login-card-wrapper {
+  display: flex;
+  width: 100%;
+  max-width: 1040px;
+  min-height: 620px;
+  background: #ffffff;
+  border-radius: 28px;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.4), 0 10px 25px -10px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+/* Left Form Panel */
+.login-left-panel {
+  flex: 1;
+  padding: 48px 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #ffffff;
+  position: relative;
+  min-width: 0;
+}
+
+.login-brand-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.login-brand-logo-img {
+  height: 48px;
+  object-fit: contain;
+}
+
+.login-form-content {
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.login-heading {
+  font-size: 1.95rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.login-subheading {
+  font-size: 0.9rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin-bottom: 32px;
+}
+
+/* Single Google OAuth Box Container */
+.login-google-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  margin-bottom: 28px;
+  transition: all 0.2s ease;
+}
+
+.login-google-container:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.login-google-badge-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 16px;
+}
+
+/* Feature Bullet Points */
+.login-feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+  margin-bottom: 28px;
+  padding: 16px;
+  background: #f1f5f9;
+  border-radius: 14px;
+}
+
+.login-feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.825rem;
+  color: #334155;
+  line-height: 1.4;
+}
+
+.login-feature-icon {
+  color: #2563eb;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Footer Copy */
+.login-footer-copy {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  line-height: 1.55;
+  text-align: center;
+}
+
+/* Right Blue Panel with WikiMind Logo Artwork */
+.login-right-panel {
+  flex: 1;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0369a1 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 40px;
+}
+
+/* Animated Glowing Orbs */
+.login-graph-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(50px);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.login-orb-1 {
+  width: 240px;
+  height: 240px;
+  background: #38bdf8;
+  top: -40px;
+  right: -40px;
+  animation: orbPulse 6s ease-in-out infinite alternate;
+}
+
+.login-orb-2 {
+  width: 280px;
+  height: 280px;
+  background: #0284c7;
+  bottom: -60px;
+  left: -40px;
+  animation: orbPulse 8s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes orbPulse {
+  0% { transform: scale(1) translateY(0); opacity: 0.3; }
+  100% { transform: scale(1.2) translateY(-20px); opacity: 0.6; }
+}
+
+/* Full WikiMind Logo Artwork Styling */
+.login-logo-artwork {
+  max-width: 82%;
+  max-height: 380px;
+  object-fit: contain;
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.4));
+  animation: logoFloat 6s ease-in-out infinite;
+  z-index: 2;
+}
+
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-8px) scale(1.015); }
+}
+
+/* Responsive Breakdown */
+@media (max-width: 840px) {
+  .login-card-wrapper {
+    flex-direction: column;
+    max-width: 480px;
+    min-height: auto;
+  }
+
+  .login-right-panel {
+    min-height: 240px;
+    padding: 24px;
+  }
+
+  .login-left-panel {
+    padding: 36px 24px;
+  }
+
+  .login-logo-artwork {
+    max-height: 180px;
+  }
+}

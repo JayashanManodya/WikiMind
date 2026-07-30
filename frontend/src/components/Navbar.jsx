@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import { 
-  ArrowLeft, 
-  ChevronDown, 
   MessageSquare, 
   BookOpen, 
   UploadCloud, 
   LayoutDashboard,
   HelpCircle,
   LogIn, 
-  LogOut, 
-  History
+  LogOut
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -27,18 +24,22 @@ export default function Navbar({ activeTab, setActiveTab }) {
 
   return (
     <header style={{ 
-      backgroundColor: 'rgba(255, 255, 255, 0.85)', 
-      backdropFilter: 'blur(12px)',
-      WebkitBackdropFilter: 'blur(12px)',
-      borderBottom: '1px solid var(--border-color)', 
-      padding: '8px 36px',
+      backgroundColor: 'rgba(255, 255, 255, 0.9)', 
+      backdropFilter: 'blur(16px)',
+      WebkitBackdropFilter: 'blur(16px)',
+      border: '1px solid #E2E8F0', 
+      borderRadius: '9999px',
+      padding: '8px 24px',
+      margin: '12px auto 0 auto',
+      width: 'calc(100% - 48px)',
+      maxWidth: '1280px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
       position: 'sticky',
-      top: 0,
-      zIndex: 10,
-      minHeight: '52px'
+      top: '12px',
+      zIndex: 50,
+      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.04)'
     }}>
       {/* Brand Logo */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => setActiveTab('dashboard')}>
@@ -50,16 +51,8 @@ export default function Navbar({ activeTab, setActiveTab }) {
         <span style={{ fontSize: '15px', fontWeight: '700', color: '#09090B' }}>WikiMind</span>
       </div>
 
-      {/* Center: Direct Top Navigation Pills */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        backgroundColor: '#F4F4F5',
-        borderRadius: '9999px',
-        padding: '3px',
-        border: '1px solid #E4E4E7',
-        gap: '2px'
-      }}>
+      {/* Center: Navigation Buttons */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
         {topTabs.map((tb) => {
           const Icon = tb.icon;
           const isActive = activeTab === tb.id;
@@ -71,19 +64,18 @@ export default function Navbar({ activeTab, setActiveTab }) {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                padding: '6px 16px',
+                padding: '7px 16px',
                 borderRadius: '9999px',
                 border: 'none',
-                backgroundColor: isActive ? '#FFFFFF' : 'transparent',
-                color: isActive ? '#09090B' : '#71717A',
+                backgroundColor: isActive ? '#F4F4F5' : 'transparent',
+                color: isActive ? '#09090B' : '#64748B',
                 fontSize: '13px',
                 fontWeight: isActive ? '600' : '500',
                 cursor: 'pointer',
-                boxShadow: isActive ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
                 transition: 'all 0.15s ease'
               }}
             >
-              <Icon size={14} color={isActive ? '#09090B' : '#71717A'} />
+              <Icon size={14} color={isActive ? '#09090B' : '#64748B'} />
               <span>{tb.label}</span>
             </button>
           );
@@ -92,11 +84,6 @@ export default function Navbar({ activeTab, setActiveTab }) {
 
       {/* Right: Auth / Actions */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <button className="btn btn-outline" style={{ display: 'flex', alignItems: 'center', padding: '5px 12px', fontSize: '12.5px', gap: '6px', cursor: 'pointer' }}>
-          <History size={13} color="#71717A" />
-          <span>Versions</span>
-        </button>
-
         {isAuthenticated && user ? (
           <div style={{ position: 'relative' }}>
             <button
