@@ -425,6 +425,39 @@ async def get_wiki_page(
     }
 
 
+@app.get("/api/chat/sessions")
+async def get_chat_sessions(current_user: Dict[str, Any] = Depends(get_current_user)):
+    """Retrieve all saved chat sessions for current authenticated user."""
+    from .core.db import get_user_chat_sessions_db
+    user_id = current_user["user_id"]
+    sessions = get_user_chat_sessions_db(user_id)
+    return {"sessions": sessions}
+
+
+@app.get("/api/chat/sessions/{session_id}/messages")
+async def get_session_messages(
+    session_id: str,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Retrieve message history for a specific chat session."""
+    from .core.db import get_session_messages_db
+    user_id = current_user["user_id"]
+    messages = get_session_messages_db(user_id, session_id)
+    return {"session_id": session_id, "messages": messages}
+
+
+@app.delete("/api/chat/sessions/{session_id}")
+async def delete_chat_session(
+    session_id: str,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Delete a chat session and all its messages."""
+    from .core.db import delete_chat_session_db
+    user_id = current_user["user_id"]
+    success = delete_chat_session_db(user_id, session_id)
+    return {"status": "deleted", "session_id": session_id, "success": success}
+
+
 @app.post("/qa", response_model=QAResponse)
 @app.post("/qa/ask")
 async def qa_endpoint(
@@ -433,11 +466,36 @@ async def qa_endpoint(
 ):
     """Expose the multi-agent WikiLLM QA flow via POST /qa or POST /qa/ask (Scoped to current user)."""
     user_id = current_user["user_id"]
+    from .core.db import save_chat_message_db
+    session_id = request.session_id or str(uuid.uuid4())
+
     try:
+        # Save user question to DB
+        save_chat_message_db(
+            user_id=user_id,
+            session_id=session_id,
+            role="user",
+            content=request.question
+        )
+
         result = await answer_question(request.question, user_id=user_id, history=request.history)
         answer_text = result.get("answer", "No answer generated.")
         context_text = result.get("context", "No context retrieved.")
-        
+
+        # Extract cited sources
+        sources = []
+        if context_text and context_text != "No context retrieved.":
+            sources = [{"snippet": context_text[:300]}]
+
+        # Save assistant response to DB
+        save_chat_message_db(
+            user_id=user_id,
+            session_id=session_id,
+            role="assistant",
+            content=answer_text,
+            sources=sources
+        )
+
         return {
             "answer": answer_text,
             "context": context_text,
@@ -445,6 +503,7 @@ async def qa_endpoint(
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 @app.post("/index-pdf")

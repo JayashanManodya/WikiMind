@@ -4,6 +4,7 @@ class QuestionRequest(BaseModel):
     """Request body for the `/qa` endpoint."""
     question: str
     history: list[dict] | None = None
+    session_id: str | None = None
 
 class QAResponse(BaseModel):
     """Response body for the `/qa` endpoint.

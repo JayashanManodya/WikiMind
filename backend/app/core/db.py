@@ -155,6 +155,28 @@ def init_db() -> None:
         );
 
         CREATE INDEX IF NOT EXISTS idx_raw_docs_user ON raw_documents(user_id);
+
+        CREATE TABLE IF NOT EXISTS chat_sessions (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            title TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_chat_sessions_user ON chat_sessions(user_id);
+
+        CREATE TABLE IF NOT EXISTS chat_messages (
+            id TEXT PRIMARY KEY,
+            session_id TEXT NOT NULL,
+            user_id TEXT NOT NULL,
+            role TEXT NOT NULL,
+            content TEXT NOT NULL,
+            sources TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_chat_messages_session ON chat_messages(user_id, session_id);
     """)
 
     conn.commit()
@@ -288,3 +310,110 @@ def get_user_graph_edges_db(user_id: str) -> List[Dict[str, Any]]:
     conn.close()
 
     return [dict(r) for r in rows]
+
+
+
+def save_chat_message_db(
+    user_id: str,
+    session_id: str,
+    role: str,
+    content: str,
+    sources: Optional[List[Dict[str, Any]]] = None,
+    title: Optional[str] = None
+) -> Dict[str, Any]:
+    """Save a chat message and update/create the parent chat session in database."""
+    import uuid
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    now_str = datetime.now().isoformat()
+    msg_id = str(uuid.uuid4())
+
+    # Ensure session exists or create it
+    cursor.execute("""
+        SELECT title FROM chat_sessions WHERE user_id = ? AND id = ?
+    """, (user_id, session_id))
+    session_row = cursor.fetchone()
+
+    if not session_row:
+        sess_title = title or (content[:35] + '...' if len(content) > 35 else content) or "New Chat"
+        cursor.execute("""
+            INSERT INTO chat_sessions (id, user_id, title, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?)
+        """, (session_id, user_id, sess_title, now_str, now_str))
+    else:
+        cursor.execute("""
+            UPDATE chat_sessions SET updated_at = ? WHERE user_id = ? AND id = ?
+        """, (now_str, user_id, session_id))
+
+    # Insert message
+    sources_json = json.dumps(sources or [])
+    cursor.execute("""
+        INSERT INTO chat_messages (id, session_id, user_id, role, content, sources, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (msg_id, session_id, user_id, role, content, sources_json, now_str))
+
+    conn.commit()
+    conn.close()
+
+    return {
+        "id": msg_id,
+        "session_id": session_id,
+        "user_id": user_id,
+        "role": role,
+        "content": content,
+        "sources": sources or [],
+        "created_at": now_str
+    }
+
+
+def get_user_chat_sessions_db(user_id: str) -> List[Dict[str, Any]]:
+    """Retrieve all chat sessions for a user ordered by last update."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id, user_id, title, created_at, updated_at 
+        FROM chat_sessions 
+        WHERE user_id = ? 
+        ORDER BY updated_at DESC
+    """, (user_id,))
+    rows = cursor.fetchall()
+    conn.close()
+
+    return [dict(r) for r in rows]
+
+
+def get_session_messages_db(user_id: str, session_id: str) -> List[Dict[str, Any]]:
+    """Retrieve all messages for a specific chat session."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id, session_id, user_id, role, content, sources, created_at 
+        FROM chat_messages 
+        WHERE user_id = ? AND session_id = ? 
+        ORDER BY created_at ASC
+    """, (user_id, session_id))
+    rows = cursor.fetchall()
+    conn.close()
+
+    messages = []
+    for r in rows:
+        d = dict(r)
+        d["sources"] = json.loads(d.get("sources") or "[]")
+        messages.append(d)
+    return messages
+
+
+def delete_chat_session_db(user_id: str, session_id: str) -> bool:
+    """Delete a chat session and all its messages."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM chat_messages WHERE user_id = ? AND session_id = ?", (user_id, session_id))
+    cursor.execute("DELETE FROM chat_sessions WHERE user_id = ? AND id = ?", (user_id, session_id))
+
+    conn.commit()
+    conn.close()
+    return True
+

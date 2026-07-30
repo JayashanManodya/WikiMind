@@ -15,7 +15,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-import { askQuestion } from '../api/client';
+import { askQuestion, getChatSessions, getSessionMessages, deleteChatSession } from '../api/client';
 
 const INITIAL_WELCOME_MESSAGE = [
   {
@@ -35,43 +35,75 @@ const createDefaultSession = () => ({
 });
 
 export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
-  // Multi-chat sessions state loaded from localStorage
-  const [sessions, setSessions] = useState(() => {
-    try {
-      const saved = localStorage.getItem('wikimind_multi_chat_sessions_v1');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
-        }
-      }
-    } catch (e) {
-      console.error("Failed to load multi-chat sessions from localStorage", e);
-    }
-    return [createDefaultSession()];
-  });
-
-  const [activeSessionId, setActiveSessionId] = useState(() => {
-    try {
-      const savedActive = localStorage.getItem('wikimind_active_session_id');
-      if (savedActive && sessions.some(s => s.id === savedActive)) {
-        return savedActive;
-      }
-    } catch (e) {
-      console.error("Failed to load active session ID", e);
-    }
-    return sessions[0]?.id || `session_${Date.now()}`;
-  });
-
+  const [sessions, setSessions] = useState([createDefaultSession()]);
+  const [activeSessionId, setActiveSessionId] = useState(sessions[0]?.id);
   const [inputQuery, setInputQuery] = useState('');
   const [isAsking, setIsAsking] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
 
   const chatEndRef = useRef(null);
 
+  // Load chat sessions from Turso Cloud DB on mount
+  useEffect(() => {
+    const loadRemoteSessions = async () => {
+      try {
+        const res = await getChatSessions();
+        if (res.sessions && res.sessions.length > 0) {
+          const formatted = res.sessions.map(s => ({
+            id: s.id,
+            title: s.title,
+            createdAt: s.created_at,
+            messages: []
+          }));
+          setSessions(formatted);
+          setActiveSessionId(formatted[0].id);
+        }
+      } catch (err) {
+        console.warn("Using local fallback sessions", err);
+      }
+    };
+    loadRemoteSessions();
+  }, []);
+
+  // Fetch messages for active session when activeSessionId changes
+  useEffect(() => {
+    if (!activeSessionId) return;
+    const loadMessages = async () => {
+      try {
+        const res = await getSessionMessages(activeSessionId);
+        if (res.messages && res.messages.length > 0) {
+          const formattedMsgs = res.messages.map(m => ({
+            sender: m.role === 'user' ? 'user' : 'bot',
+            text: m.content,
+            grounded: true,
+            citations: m.sources || []
+          }));
+          setSessions(prev => prev.map(s => {
+            if (s.id === activeSessionId) {
+              return { ...s, messages: formattedMsgs };
+            }
+            return s;
+          }));
+        } else {
+          setSessions(prev => prev.map(s => {
+            if (s.id === activeSessionId && s.messages.length === 0) {
+              return { ...s, messages: INITIAL_WELCOME_MESSAGE };
+            }
+            return s;
+          }));
+        }
+      } catch (err) {
+        console.warn("Failed to load messages for session", activeSessionId, err);
+      }
+    };
+    loadMessages();
+  }, [activeSessionId]);
+
   // Active session object
-  const activeSession = sessions.find(s => s.id === activeSessionId) || sessions[0];
-  const messages = activeSession ? activeSession.messages : INITIAL_WELCOME_MESSAGE;
+  const activeSession = sessions.find(s => s.id === activeSessionId) || sessions[0] || createDefaultSession();
+  const messages = activeSession.messages && activeSession.messages.length > 0 
+    ? activeSession.messages 
+    : INITIAL_WELCOME_MESSAGE;
 
   // Auto-scroll on new message
   useEffect(() => {
@@ -89,18 +121,6 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
     } catch (e) {}
   }, []);
 
-  // Persist sessions and active session ID to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('wikimind_multi_chat_sessions_v1', JSON.stringify(sessions));
-      if (activeSessionId) {
-        localStorage.setItem('wikimind_active_session_id', activeSessionId);
-      }
-    } catch (e) {
-      console.error("Failed to save sessions to localStorage", e);
-    }
-  }, [sessions, activeSessionId]);
-
   // Create new chat session
   const handleNewChat = () => {
     const newSess = createDefaultSession();
@@ -110,8 +130,12 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
   };
 
   // Delete chat session
-  const handleDeleteSession = (sessionId, e) => {
+  const handleDeleteSession = async (sessionId, e) => {
     e.stopPropagation();
+    try {
+      await deleteChatSession(sessionId);
+    } catch (err) {}
+
     setSessions(prev => {
       const filtered = prev.filter(s => s.id !== sessionId);
       if (filtered.length === 0) {
@@ -146,14 +170,12 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
     setInputQuery('');
     setIsAsking(true);
 
-    // Auto-generate chat title from first user query
     const isFirstUserMsg = !activeSession.messages.some(m => m.sender === 'user');
     const autoTitle = isFirstUserMsg 
       ? (queryText.length > 28 ? queryText.slice(0, 28) + '...' : queryText) 
       : activeSession.title;
 
-    // Update active session messages with user query
-    const updatedMessages = [...activeSession.messages, userMessage];
+    const updatedMessages = [...(activeSession.messages || []), userMessage];
     setSessions(prev => prev.map(s => {
       if (s.id === activeSessionId) {
         return { 
@@ -166,7 +188,7 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
     }));
 
     try {
-      const res = await askQuestion(userMessage.text, updatedMessages);
+      const res = await askQuestion(userMessage.text, updatedMessages, activeSessionId);
       
       const botMessage = {
         sender: 'bot',
@@ -198,6 +220,7 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
         }
         return s;
       }));
+
     } finally {
       setIsAsking(false);
     }

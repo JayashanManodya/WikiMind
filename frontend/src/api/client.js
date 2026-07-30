@@ -62,12 +62,29 @@ export const getWikiGraph = async () => {
   return res.data;
 };
 
-export const askQuestion = async (question, history = []) => {
+export const askQuestion = async (question, history = [], sessionId = null) => {
   const res = await api.post('/qa/ask', {
     question,
-    history
+    history,
+    session_id: sessionId
   });
   return res.data;
 };
 
+export const getChatSessions = async () => {
+  const res = await api.get('/api/chat/sessions');
+  return res.data;
+};
+
+export const getSessionMessages = async (sessionId) => {
+  const res = await api.get(`/api/chat/sessions/${sessionId}/messages`);
+  return res.data;
+};
+
+export const deleteChatSession = async (sessionId) => {
+  const res = await api.get(`/api/chat/sessions/${sessionId}`);
+  return res.data;
+};
+
 export default api;
+
