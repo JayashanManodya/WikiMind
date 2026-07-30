@@ -8,7 +8,9 @@ import {
   Brain,
   Database,
   Zap,
-  ArrowRight
+  ArrowRight,
+  Sparkles,
+  ShieldCheck
 } from 'lucide-react';
 import { uploadDocument } from '../api/client';
 import { useData } from '../context/DataContext';
@@ -84,87 +86,136 @@ export default function UploadPage({ setActiveTab }) {
   ];
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%', maxWidth: '100%' }}>
       
-      {/* Header */}
-      <div>
-        <h2 style={{ fontSize: '22px', fontWeight: '700', marginBottom: '4px' }}>Document Ingestion</h2>
-        <p style={{ color: 'var(--text-muted)', fontSize: '13.5px' }}>
-          Upload PDF, DOCX, TXT, or MD documents to automatically extract knowledge, generate structured Wiki pages, and index vector embeddings for grounded QA.
-        </p>
+      {/* Overview Bento Theme Header Card */}
+      <div style={{
+        backgroundColor: '#FFFFFF',
+        borderRadius: '32px',
+        padding: '36px 40px',
+        border: '1px solid #E2E8F0',
+        boxShadow: '0 10px 40px rgba(0,0,0,0.03)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '24px'
+      }}>
+        <div style={{ maxWidth: '580px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+            <span style={{ backgroundColor: '#EFF6FF', color: '#2563EB', fontSize: '12px', fontWeight: '700', padding: '4px 12px', borderRadius: '9999px', border: '1px solid #BFDBFE' }}>
+              Multi-Format Parser
+            </span>
+            <span style={{ backgroundColor: '#ECFDF5', color: '#047857', fontSize: '12px', fontWeight: '700', padding: '4px 12px', borderRadius: '9999px', border: '1px solid #A7F3D0' }}>
+              Zero Hallucination
+            </span>
+          </div>
+          <h1 style={{ fontSize: '32px', fontWeight: '800', color: '#09090B', letterSpacing: '-0.8px', margin: '0 0 8px 0' }}>
+            Document Ingestion & Pipeline
+          </h1>
+          <p style={{ fontSize: '14.5px', color: '#64748B', lineHeight: '1.6', margin: 0 }}>
+            Upload PDF, DOCX, XLSX, CSV, or TXT files to automatically extract entities, generate interlinked Wiki pages, and index vector embeddings for grounded QA.
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '12px', fontWeight: '700', padding: '6px 14px', borderRadius: '10px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', color: '#DC2626' }}>
+            PDF
+          </span>
+          <span style={{ fontSize: '12px', fontWeight: '700', padding: '6px 14px', borderRadius: '10px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', color: '#2563EB' }}>
+            WORD
+          </span>
+          <span style={{ fontSize: '12px', fontWeight: '700', padding: '6px 14px', borderRadius: '10px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', color: '#059669' }}>
+            EXCEL
+          </span>
+          <span style={{ fontSize: '12px', fontWeight: '700', padding: '6px 14px', borderRadius: '10px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', color: '#0EA5E9' }}>
+            CSV
+          </span>
+        </div>
       </div>
 
-      {/* Upload Drag & Drop Area matching Reference Image */}
+      {/* Main Drag & Drop Bento Card */}
       <div 
-        className="clean-card"
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
         style={{
-          padding: '44px 24px',
-          textAlign: 'center',
-          border: '2px dashed #E4E4E7',
           backgroundColor: '#FFFFFF',
-          borderRadius: '12px',
-          cursor: 'pointer'
+          borderRadius: '28px',
+          padding: '48px 32px',
+          textAlign: 'center',
+          border: '2px dashed #CBD5E1',
+          boxShadow: '0 8px 30px rgba(0,0,0,0.02)',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease'
         }}
       >
         <input 
           type="file" 
           id="fileInput" 
           onChange={handleFileChange} 
-          accept=".pdf,.docx,.txt,.md" 
+          accept=".pdf,.docx,.txt,.md,.csv,.xlsx" 
           style={{ display: 'none' }} 
         />
         
         <label htmlFor="fileInput" style={{ cursor: 'pointer', display: 'block' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#F4F4F5', margin: '0 auto 12px auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <UploadCloud color="#09090B" size={22} />
+          <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: '#EFF6FF', margin: '0 auto 16px auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <UploadCloud color="#2563EB" size={26} />
           </div>
           
           {file ? (
             <div>
-              <p style={{ fontSize: '15px', fontWeight: '600', color: '#09090B' }}>{file.name}</p>
-              <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>
+              <p style={{ fontSize: '17px', fontWeight: '700', color: '#09090B' }}>{file.name}</p>
+              <p style={{ fontSize: '13px', color: '#64748B', marginTop: '6px' }}>
                 {(file.size / 1024 / 1024).toFixed(2)} MB • Ready to process
               </p>
             </div>
           ) : (
             <div>
-              <p style={{ fontSize: '14.5px', fontWeight: '500', color: '#09090B' }}>
-                Drag & drop or <span style={{ color: '#2563EB', fontWeight: '600' }}>choose files</span> to upload.
+              <p style={{ fontSize: '16px', fontWeight: '600', color: '#09090B' }}>
+                Drag & drop or <span style={{ color: '#2563EB', fontWeight: '700' }}>browse files</span> to upload
               </p>
-              <p style={{ fontSize: '11.5px', color: '#71717A', marginTop: '6px' }}>
-                Support formats: .csv, .json, .pdf, .xlsx, .txt, .md, .docx, .pptx • Max 25MB per file
+              <p style={{ fontSize: '13px', color: '#64748B', marginTop: '8px' }}>
+                Supported: PDF, DOCX, XLSX, CSV, TXT, MD • Max 25MB per file
               </p>
             </div>
           )}
         </label>
       </div>
 
-      {/* Option Pills matching Reference Design */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', flexWrap: 'wrap' }}>
-        <button className="btn btn-outline" style={{ fontSize: '12px', padding: '6px 12px', borderRadius: '8px', color: '#09090B' }}>
-          <span style={{ color: '#4285F4', fontWeight: '700' }}>G</span> Add Google Drive
-        </button>
-        <button className="btn btn-outline" style={{ fontSize: '12px', padding: '6px 12px', borderRadius: '8px', color: '#09090B' }}>
-          Add existing knowledge
-        </button>
-        <button className="btn btn-outline" style={{ fontSize: '12px', padding: '6px 12px', borderRadius: '8px', color: '#09090B' }}>
-          Import website
-        </button>
-        <button className="btn btn-outline" style={{ fontSize: '12px', padding: '6px 12px', borderRadius: '8px', color: '#09090B' }}>
-          Blank table
-        </button>
-        <button className="btn btn-outline" style={{ fontSize: '12px', padding: '6px 12px', borderRadius: '8px', color: '#09090B' }}>
-          Markdown/Text
-        </button>
-      </div>
+      {/* Submit Action Button */}
+      {!isUploading && (
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <button 
+            onClick={handleUpload} 
+            disabled={!file || isUploading}
+            style={{
+              backgroundColor: '#09090B',
+              color: '#FFFFFF',
+              border: 'none',
+              padding: '14px 32px',
+              borderRadius: '9999px',
+              fontSize: '15px',
+              fontWeight: '700',
+              cursor: file ? 'pointer' : 'not-allowed',
+              opacity: file ? 1 : 0.6,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              boxShadow: '0 4px 14px rgba(9, 9, 11, 0.2)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <UploadCloud size={18} />
+            <span>Start Document Ingestion Pipeline</span>
+          </button>
+        </div>
+      )}
 
       {/* Dynamic Ingestion Stepper Card */}
       {isUploading && (
-        <div className="clean-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: '#FAFAFA' }}>
-          <h3 style={{ fontSize: '15px', fontWeight: '600', color: '#09090B' }}>
-            Ingesting Document: <span style={{ fontWeight: '500' }}>{file?.name}</span>
+        <div style={{ backgroundColor: '#FFFFFF', borderRadius: '28px', padding: '32px', border: '1px solid #E2E8F0', boxShadow: '0 8px 30px rgba(0,0,0,0.03)' }}>
+          <h3 style={{ fontSize: '17px', fontWeight: '700', color: '#09090B', marginBottom: '20px' }}>
+            Ingesting Document: <span style={{ color: '#2563EB' }}>{file?.name}</span>
           </h3>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -174,35 +225,35 @@ export default function UploadPage({ setActiveTab }) {
               const isCurrent = currentStep === st.id;
 
               return (
-                <div key={st.id} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '10px 14px', borderRadius: '8px', backgroundColor: isCurrent ? '#FFFFFF' : 'transparent', border: isCurrent ? '1px solid #E4E4E7' : '1px solid transparent', transition: 'all 0.3s ease' }}>
+                <div key={st.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '14px 18px', borderRadius: '16px', backgroundColor: isCurrent ? '#F8FAFC' : 'transparent', border: isCurrent ? '1px solid #E2E8F0' : '1px solid transparent', transition: 'all 0.2s ease' }}>
                   <div style={{ 
-                    width: '32px', 
-                    height: '32px', 
+                    width: '36px', 
+                    height: '36px', 
                     borderRadius: '50%', 
-                    backgroundColor: isDone ? '#10B981' : isCurrent ? '#09090B' : '#E4E4E7',
+                    backgroundColor: isDone ? '#10B981' : isCurrent ? '#2563EB' : '#F1F5F9',
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'center',
                     color: '#FFFFFF'
                   }}>
                     {isDone ? (
-                      <CheckCircle2 size={18} />
+                      <CheckCircle2 size={20} />
                     ) : isCurrent ? (
-                      <Loader2 size={16} className="spin" style={{ animation: 'spin 1s linear infinite' }} />
+                      <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
                     ) : (
-                      <Icon size={16} color="#71717A" />
+                      <Icon size={18} color="#94A3B8" />
                     )}
                   </div>
 
                   <div style={{ flex: 1 }}>
-                    <p style={{ fontSize: '13.5px', fontWeight: isCurrent ? '600' : '500', color: isCurrent ? '#09090B' : isDone ? '#10B981' : '#71717A' }}>
+                    <p style={{ fontSize: '14px', fontWeight: isCurrent ? '700' : '600', color: isCurrent ? '#09090B' : isDone ? '#10B981' : '#64748B', margin: 0 }}>
                       {st.label}
                     </p>
-                    <p style={{ fontSize: '11.5px', color: '#71717A' }}>{st.desc}</p>
+                    <p style={{ fontSize: '12px', color: '#64748B', margin: '2px 0 0 0' }}>{st.desc}</p>
                   </div>
 
-                  {isDone && <span style={{ fontSize: '12px', fontWeight: '600', color: '#10B981' }}>Done</span>}
-                  {isCurrent && <span style={{ fontSize: '12px', fontWeight: '600', color: '#09090B' }}>Processing...</span>}
+                  {isDone && <span style={{ fontSize: '13px', fontWeight: '700', color: '#10B981' }}>Done</span>}
+                  {isCurrent && <span style={{ fontSize: '13px', fontWeight: '700', color: '#2563EB' }}>Processing...</span>}
                 </div>
               );
             })}
@@ -210,44 +261,37 @@ export default function UploadPage({ setActiveTab }) {
         </div>
       )}
 
-      {/* Submit Button */}
-      {!isUploading && (
-        <button 
-          className="btn btn-black" 
-          onClick={handleUpload} 
-          disabled={!file || isUploading}
-          style={{ padding: '12px 24px', fontSize: '14px', justifyContent: 'center' }}
-        >
-          <UploadCloud size={16} />
-          <span>Start Document Ingestion</span>
-        </button>
-      )}
-
       {/* Error Card */}
       {error && (
-        <div className="clean-card" style={{ padding: '14px', backgroundColor: '#FEF2F2', borderColor: '#FCA5A5', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <AlertCircle color="#DC2626" size={18} />
-          <p style={{ fontSize: '13px', color: '#DC2626' }}>{error}</p>
+        <div style={{ backgroundColor: '#FEF2F2', borderRadius: '20px', padding: '18px 24px', border: '1px solid #FCA5A5', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <AlertCircle color="#DC2626" size={20} />
+          <p style={{ fontSize: '14px', color: '#DC2626', margin: 0, fontWeight: '500' }}>{error}</p>
         </div>
       )}
 
       {/* Success Result Card */}
       {pipelineResult && !isUploading && (
-        <div className="clean-card" style={{ padding: '20px', borderLeft: '4px solid #10B981' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-            <CheckCircle2 color="#10B981" size={20} />
+        <div style={{ backgroundColor: '#FFFFFF', borderRadius: '28px', padding: '32px', border: '1px solid #A7F3D0', borderLeft: '6px solid #10B981', boxShadow: '0 8px 30px rgba(16, 185, 129, 0.08)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
+            <CheckCircle2 color="#10B981" size={24} />
             <div>
-              <h3 style={{ fontSize: '16px', fontWeight: '600' }}>Document Successfully Ingested</h3>
-              <p style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>{pipelineResult.message}</p>
+              <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#064E3B', margin: 0 }}>Document Successfully Ingested</h3>
+              <p style={{ fontSize: '13.5px', color: '#047857', margin: '4px 0 0 0' }}>{pipelineResult.message}</p>
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-            <button className="btn btn-black" onClick={() => setActiveTab('wiki')}>
-              <span>Browse Wiki Pages</span>
+          <div style={{ display: 'flex', gap: '12px', marginTop: '20px', flexWrap: 'wrap' }}>
+            <button 
+              onClick={() => setActiveTab('wiki')}
+              style={{ backgroundColor: '#09090B', color: '#FFFFFF', border: 'none', padding: '12px 24px', borderRadius: '9999px', fontSize: '13.5px', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+            >
+              <span>Browse Knowledge Graph</span>
               <ArrowRight size={14} />
             </button>
-            <button className="btn btn-outline" onClick={() => setActiveTab('chat')}>
+            <button 
+              onClick={() => setActiveTab('chat')}
+              style={{ backgroundColor: '#FFFFFF', color: '#09090B', border: '1px solid #E2E8F0', padding: '12px 24px', borderRadius: '9999px', fontSize: '13.5px', fontWeight: '700', cursor: 'pointer' }}
+            >
               <span>Ask Questions in Chat</span>
             </button>
           </div>

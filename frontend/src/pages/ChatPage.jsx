@@ -13,7 +13,9 @@ import {
   Plus,
   MessageSquare,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Pencil,
+  Search
 } from 'lucide-react';
 import { askQuestion, getSessionMessages, deleteChatSession } from '../api/client';
 import { useData } from '../context/DataContext';
@@ -42,6 +44,10 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
   const [inputQuery, setInputQuery] = useState('');
   const [isAsking, setIsAsking] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [searchConv, setSearchConv] = useState('');
+  const [showSearchInput, setShowSearchInput] = useState(false);
+  const [editingSessionId, setEditingSessionId] = useState(null);
+  const [editingTitle, setEditingTitle] = useState('');
 
   const chatEndRef = useRef(null);
 
@@ -153,6 +159,23 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
     });
   };
 
+  // Clear all conversation sessions
+  const handleClearAllSessions = () => {
+    if (window.confirm('Are you sure you want to clear all chat conversations?')) {
+      const fresh = createDefaultSession();
+      setSessions([fresh]);
+      setActiveSessionId(fresh.id);
+    }
+  };
+
+  // Rename session title
+  const handleSaveRename = (sessionId) => {
+    if (!editingTitle.trim()) return;
+    setSessions(prev => prev.map(s => s.id === sessionId ? { ...s, title: editingTitle.trim() } : s));
+    setEditingSessionId(null);
+    setEditingTitle('');
+  };
+
   // Clear messages in current session
   const handleClearCurrentSession = () => {
     setSessions(prev => prev.map(s => {
@@ -229,39 +252,129 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
     }
   };
 
+  const filteredSessions = sessions.filter(s => s.title.toLowerCase().includes(searchConv.toLowerCase()));
+
   return (
-    <div style={{ display: 'flex', height: 'calc(100vh - 90px)', width: '100%', maxWidth: '100%', gap: '16px' }}>
+    <div style={{ display: 'flex', minHeight: 'calc(100vh - 100px)', width: '100%', gap: '20px' }}>
       
-      {/* Sessions Left Panel / Sidebar */}
+      {/* Sessions Left Panel / Sidebar (Matching Screenshot UI) */}
       {showSidebar && (
         <div style={{
-          width: '260px',
+          width: '290px',
           display: 'flex',
           flexDirection: 'column',
           backgroundColor: '#FFFFFF',
-          border: '1px solid var(--border-color)',
-          borderRadius: 'var(--radius-lg)',
-          padding: '14px',
-          gap: '12px'
+          border: '1px solid #E2E8F0',
+          borderRadius: '28px',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.03)',
+          padding: '24px 20px',
+          gap: '18px'
         }}>
-          {/* New Chat Button */}
-          <button 
-            className="btn btn-black" 
-            onClick={handleNewChat}
-            style={{ width: '100%', justifyContent: 'center', fontSize: '13px', padding: '10px 14px' }}
-          >
-            <Plus size={16} />
-            <span>New Chat</span>
-          </button>
+          {/* Top Actions Row: New Chat Pill + Circular Search Button */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <button 
+              onClick={handleNewChat}
+              style={{
+                flex: 1,
+                backgroundColor: '#4F46E5', // Indigo blue matching screenshot
+                color: '#FFFFFF',
+                border: 'none',
+                padding: '12px 20px',
+                borderRadius: '9999px',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 14px rgba(79, 70, 229, 0.25)',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <Plus size={18} />
+              <span>New chat</span>
+            </button>
 
-          <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', textTransform: 'uppercase', tracking: '0.5px', marginTop: '4px' }}>
-            Recent Conversations ({sessions.length})
+            <button
+              onClick={() => setShowSearchInput(!showSearchInput)}
+              title="Search Conversations"
+              style={{
+                width: '42px',
+                height: '42px',
+                padding: 0,
+                margin: 0,
+                borderRadius: '50%',
+                backgroundColor: '#09090B',
+                border: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                flexShrink: 0,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+              }}
+            >
+              <Search size={17} color="#FFFFFF" />
+            </button>
           </div>
 
-          {/* Sessions List */}
-          <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {sessions.map((sess) => {
+          {/* Collapsible Search Input */}
+          {showSearchInput && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: '#F8FAFC',
+              border: '1px solid #E2E8F0',
+              borderRadius: '12px',
+              padding: '8px 12px',
+              gap: '8px'
+            }}>
+              <Search size={14} color="#64748B" />
+              <input 
+                type="text" 
+                placeholder="Search conversations..." 
+                value={searchConv}
+                onChange={(e) => setSearchConv(e.target.value)}
+                style={{
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  outline: 'none',
+                  fontSize: '12.5px',
+                  color: '#09090B',
+                  width: '100%'
+                }}
+              />
+            </div>
+          )}
+
+          {/* Subheader: Your conversations + Clear All */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #F1F5F9', paddingBottom: '12px' }}>
+            <span style={{ fontSize: '13px', fontWeight: '500', color: '#64748B' }}>
+              Your conversations
+            </span>
+            <button
+              onClick={handleClearAllSessions}
+              style={{
+                backgroundColor: 'transparent',
+                border: 'none',
+                color: '#4F46E5',
+                fontSize: '13px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                padding: 0
+              }}
+            >
+              Clear All
+            </button>
+          </div>
+
+          {/* Conversations List (Matching Screenshot UI) */}
+          <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px', paddingRight: '2px' }}>
+            {filteredSessions.map((sess) => {
               const isActive = sess.id === activeSessionId;
+              const isEditing = editingSessionId === sess.id;
+
               return (
                 <div 
                   key={sess.id}
@@ -270,36 +383,81 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
                     display: 'flex',
                     alignItems: 'center',
                     justify: 'space-between',
-                    padding: '10px 12px',
-                    borderRadius: '8px',
-                    backgroundColor: isActive ? '#09090B' : '#F4F4F5',
-                    color: isActive ? '#FFFFFF' : '#09090B',
+                    padding: '12px 14px',
+                    borderRadius: '16px',
+                    backgroundColor: isActive ? '#EEF2FF' : 'transparent',
+                    color: isActive ? '#4F46E5' : '#0F172A',
                     cursor: 'pointer',
-                    transition: 'all 0.15s ease'
+                    transition: 'all 0.15s ease',
+                    position: 'relative'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                    <MessageSquare size={14} color={isActive ? '#FFFFFF' : '#71717A'} style={{ shrink: 0 }} />
-                    <span style={{ fontSize: '13px', fontWeight: isActive ? '600' : '500', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                      {sess.title}
-                    </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden', flex: 1, paddingRight: '6px' }}>
+                    <MessageSquare size={16} color={isActive ? '#4F46E5' : '#0F172A'} style={{ flexShrink: 0 }} />
+                    
+                    {isEditing ? (
+                      <input 
+                        type="text"
+                        value={editingTitle}
+                        onChange={(e) => setEditingTitle(e.target.value)}
+                        onBlur={() => handleSaveRename(sess.id)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleSaveRename(sess.id); }}
+                        autoFocus
+                        style={{
+                          backgroundColor: '#FFFFFF',
+                          border: '1px solid #4F46E5',
+                          borderRadius: '4px',
+                          fontSize: '13px',
+                          padding: '2px 6px',
+                          color: '#09090B',
+                          width: '100%',
+                          outline: 'none'
+                        }}
+                      />
+                    ) : (
+                      <span style={{ fontSize: '13.5px', fontWeight: isActive ? '600' : '500', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                        {sess.title}
+                      </span>
+                    )}
                   </div>
 
-                  <button 
-                    onClick={(e) => handleDeleteSession(sess.id, e)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: '2px',
-                      color: isActive ? '#A1A1AA' : '#A1A1AA',
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}
-                    title="Delete Chat"
-                  >
-                    <Trash2 size={13} />
-                  </button>
+                  {/* Actions & Active Blue Indicator Dot */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                    {isActive && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#FFFFFF', padding: '4px 8px', borderRadius: '12px', boxShadow: '0 2px 6px rgba(0,0,0,0.05)' }}>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingSessionId(sess.id);
+                            setEditingTitle(sess.title);
+                          }}
+                          title="Rename Chat"
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}
+                        >
+                          <Pencil size={13} color="#64748B" />
+                        </button>
+
+                        <button 
+                          onClick={(e) => handleDeleteSession(sess.id, e)}
+                          title="Delete Chat"
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}
+                        >
+                          <Trash2 size={13} color="#64748B" />
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Active Indicator Blue Dot */}
+                    {isActive && (
+                      <div style={{
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        backgroundColor: '#4F46E5',
+                        boxShadow: '0 0 8px rgba(79, 70, 229, 0.6)'
+                      }} />
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -308,7 +466,7 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
       )}
 
       {/* Main Chat Interface */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#FFFFFF', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)', padding: '20px' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '28px', boxShadow: '0 8px 30px rgba(0,0,0,0.02)', padding: '28px' }}>
         
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '14px', borderBottom: '1px solid var(--border-color)', marginBottom: '16px' }}>

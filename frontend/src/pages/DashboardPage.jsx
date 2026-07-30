@@ -127,11 +127,14 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
                 height: '32px',
                 borderRadius: '50%',
                 backgroundColor: '#09090B',
-                display: 'flex',
+                display: 'inline-flex',
                 alignItems: 'center',
-                justify: 'center'
+                justifyContent: 'center',
+                flexShrink: 0,
+                padding: 0,
+                margin: 0
               }}>
-                <ArrowUpRight size={18} color="#FFFFFF" />
+                <ArrowUpRight size={18} color="#FFFFFF" style={{ display: 'block' }} />
               </div>
             </button>
 
@@ -189,24 +192,32 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 {[
-                  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80',
-                  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80',
-                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80'
-                ].map((imgUrl, i) => (
-                  <img
+                  { label: 'PDF', bg: '#EF4444', text: '#FFFFFF' },
+                  { label: 'DOC', bg: '#2563EB', text: '#FFFFFF' },
+                  { label: 'XLS', bg: '#10B981', text: '#FFFFFF' }
+                ].map((badge, i) => (
+                  <div
                     key={i}
-                    src={imgUrl}
-                    alt={`Avatar ${i + 1}`}
                     style={{
-                      width: '32px',
-                      height: '32px',
+                      width: '34px',
+                      height: '34px',
                       borderRadius: '50%',
-                      objectFit: 'cover',
+                      backgroundColor: badge.bg,
+                      color: badge.text,
+                      fontSize: '10px',
+                      fontWeight: '800',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                       border: '2px solid #FFFFFF',
                       marginLeft: i === 0 ? 0 : '-10px',
-                      boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
+                      letterSpacing: '-0.3px',
+                      lineHeight: 1
                     }}
-                  />
+                  >
+                    {badge.label}
+                  </div>
                 ))}
               </div>
               <div>
@@ -245,6 +256,191 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
           <HeroNodeGraph isLight={false} onNodeClick={() => setActiveTab('wiki')} />
         </div>
 
+      </div>
+
+      {/* ANIMATED FILE FORMAT MARQUEE TICKER BANNER */}
+      <style>{`
+        @keyframes marqueeTicker {
+          0% { transform: translateX(0%); }
+          100% { transform: translateX(-50%); }
+        }
+      `}</style>
+
+      <div style={{
+        backgroundColor: '#FFFFFF',
+        borderRadius: '24px',
+        border: '1px solid #E2E8F0',
+        boxShadow: '0 8px 30px rgba(0,0,0,0.02)',
+        padding: '14px 20px',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        position: 'relative'
+      }}>
+        {/* Left Label Badge */}
+        <div style={{
+          backgroundColor: '#F8FAFC',
+          border: '1px solid #E2E8F0',
+          borderRadius: '12px',
+          padding: '6px 14px',
+          fontSize: '11px',
+          fontWeight: '800',
+          color: '#09090B',
+          letterSpacing: '0.5px',
+          textTransform: 'uppercase',
+          zIndex: 2,
+          marginRight: '16px',
+          flexShrink: 0,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+        }}>
+          Supported Formats
+        </div>
+
+        {/* Marquee Track Container */}
+        <div style={{ overflow: 'hidden', flex: 1, position: 'relative' }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            width: 'max-content',
+            animation: 'marqueeTicker 28s linear infinite'
+          }}>
+            {[
+              { 
+                name: 'PDF Documents', ext: '.pdf', color: '#EF4444',
+                svg: (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#DC2626"/>
+                    <path d="M14 2V8H20L14 2Z" fill="#FCA5A5"/>
+                    <text x="7" y="17" fill="white" fontSize="7" fontWeight="900" fontFamily="sans-serif">PDF</text>
+                  </svg>
+                )
+              },
+              { 
+                name: 'Word Documents', ext: '.docx, .doc', color: '#2563EB',
+                svg: (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#1D4ED8"/>
+                    <path d="M14 2V8H20L14 2Z" fill="#93C5FD"/>
+                    <text x="7" y="17" fill="white" fontSize="7" fontWeight="900" fontFamily="sans-serif">DOC</text>
+                  </svg>
+                )
+              },
+              { 
+                name: 'Excel Spreadsheets', ext: '.xlsx, .xls', color: '#10B981',
+                svg: (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#047857"/>
+                    <path d="M14 2V8H20L14 2Z" fill="#6EE7B7"/>
+                    <text x="7.5" y="17" fill="white" fontSize="7" fontWeight="900" fontFamily="sans-serif">XLS</text>
+                  </svg>
+                )
+              },
+              { 
+                name: 'CSV Datasets', ext: '.csv', color: '#0EA5E9',
+                svg: (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#0284C7"/>
+                    <path d="M14 2V8H20L14 2Z" fill="#7DD3FC"/>
+                    <text x="7" y="17" fill="white" fontSize="7" fontWeight="900" fontFamily="sans-serif">CSV</text>
+                  </svg>
+                )
+              },
+              { 
+                name: 'Text Files', ext: '.txt', color: '#334155',
+                svg: (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#1E293B"/>
+                    <path d="M14 2V8H20L14 2Z" fill="#94A3B8"/>
+                    <text x="7.5" y="17" fill="white" fontSize="7" fontWeight="900" fontFamily="sans-serif">TXT</text>
+                  </svg>
+                )
+              },
+              { 
+                name: 'Markdown Docs', ext: '.md', color: '#8B5CF6',
+                svg: (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#6D28D9"/>
+                    <path d="M14 2V8H20L14 2Z" fill="#C4B5FD"/>
+                    <text x="8" y="17" fill="white" fontSize="7" fontWeight="900" fontFamily="sans-serif">MD</text>
+                  </svg>
+                )
+              },
+              { 
+                name: 'PowerPoint Slides', ext: '.pptx, .ppt', color: '#F97316',
+                svg: (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#EA580C"/>
+                    <path d="M14 2V8H20L14 2Z" fill="#FDBA74"/>
+                    <text x="7.5" y="17" fill="white" fontSize="7" fontWeight="900" fontFamily="sans-serif">PPT</text>
+                  </svg>
+                )
+              },
+              { 
+                name: 'HTML Web Pages', ext: '.html, .htm', color: '#F59E0B',
+                svg: (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#D97706"/>
+                    <path d="M14 2V8H20L14 2Z" fill="#FDE68A"/>
+                    <text x="6" y="17" fill="white" fontSize="6.5" fontWeight="900" fontFamily="sans-serif">HTML</text>
+                  </svg>
+                )
+              },
+              { 
+                name: 'PNG Images', ext: '.png', color: '#06B6D4',
+                svg: (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#0891B2"/>
+                    <path d="M14 2V8H20L14 2Z" fill="#67E8F9"/>
+                    <text x="7" y="17" fill="white" fontSize="7" fontWeight="900" fontFamily="sans-serif">PNG</text>
+                  </svg>
+                )
+              },
+              { 
+                name: 'JPEG Images', ext: '.jpg, .jpeg', color: '#F43F5E',
+                svg: (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#E11D48"/>
+                    <path d="M14 2V8H20L14 2Z" fill="#FDA4AF"/>
+                    <text x="7" y="17" fill="white" fontSize="7" fontWeight="900" fontFamily="sans-serif">JPG</text>
+                  </svg>
+                )
+              }
+            ].concat([
+              { name: 'PDF Documents', ext: '.pdf', color: '#EF4444', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#DC2626"/><path d="M14 2V8H20L14 2Z" fill="#FCA5A5"/><text x="7" y="17" fill="white" fontSize="7" fontWeight="900">PDF</text></svg> },
+              { name: 'Word Documents', ext: '.docx, .doc', color: '#2563EB', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#1D4ED8"/><path d="M14 2V8H20L14 2Z" fill="#93C5FD"/><text x="7" y="17" fill="white" fontSize="7" fontWeight="900">DOC</text></svg> },
+              { name: 'Excel Spreadsheets', ext: '.xlsx, .xls', color: '#10B981', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#047857"/><path d="M14 2V8H20L14 2Z" fill="#6EE7B7"/><text x="7.5" y="17" fill="white" fontSize="7" fontWeight="900">XLS</text></svg> },
+              { name: 'CSV Datasets', ext: '.csv', color: '#0EA5E9', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#0284C7"/><path d="M14 2V8H20L14 2Z" fill="#7DD3FC"/><text x="7" y="17" fill="white" fontSize="7" fontWeight="900">CSV</text></svg> },
+              { name: 'Text Files', ext: '.txt', color: '#334155', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#1E293B"/><path d="M14 2V8H20L14 2Z" fill="#94A3B8"/><text x="7.5" y="17" fill="white" fontSize="7" fontWeight="900">TXT</text></svg> },
+              { name: 'Markdown Docs', ext: '.md', color: '#8B5CF6', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#6D28D9"/><path d="M14 2V8H20L14 2Z" fill="#C4B5FD"/><text x="8" y="17" fill="white" fontSize="7" fontWeight="900">MD</text></svg> },
+              { name: 'PowerPoint Slides', ext: '.pptx, .ppt', color: '#F97316', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#EA580C"/><path d="M14 2V8H20L14 2Z" fill="#FDBA74"/><text x="7.5" y="17" fill="white" fontSize="7" fontWeight="900">PPT</text></svg> },
+              { name: 'HTML Web Pages', ext: '.html, .htm', color: '#F59E0B', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#D97706"/><path d="M14 2V8H20L14 2Z" fill="#FDE68A"/><text x="6" y="17" fill="white" fontSize="6.5" fontWeight="900">HTML</text></svg> },
+              { name: 'PNG Images', ext: '.png', color: '#06B6D4', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#0891B2"/><path d="M14 2V8H20L14 2Z" fill="#67E8F9"/><text x="7" y="17" fill="white" fontSize="7" fontWeight="900">PNG</text></svg> },
+              { name: 'JPEG Images', ext: '.jpg, .jpeg', color: '#F43F5E', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#E11D48"/><path d="M14 2V8H20L14 2Z" fill="#FDA4AF"/><text x="7" y="17" fill="white" fontSize="7" fontWeight="900">JPG</text></svg> }
+            ]).map((fmt, i) => (
+              <div
+                key={i}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  backgroundColor: '#F8FAFC',
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '9999px',
+                  padding: '6px 14px 6px 8px',
+                  flexShrink: 0,
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  {fmt.svg}
+                </div>
+                <span style={{ fontSize: '12.5px', fontWeight: '700', color: '#09090B' }}>{fmt.name}</span>
+                <span style={{ fontSize: '11px', color: '#64748B', fontWeight: '600' }}>({fmt.ext})</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* BOTTOM BENTO ROW: 3 Distinct Bento Cards (Ref Image Layout) */}

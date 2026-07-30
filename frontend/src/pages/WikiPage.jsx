@@ -4,7 +4,8 @@ import {
   Search, 
   Loader2,
   Share2,
-  FileText
+  FileText,
+  Network
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { getWikiPage } from '../api/client';
@@ -84,7 +85,7 @@ export default function WikiPage({ selectedEntity, setSelectedEntity }) {
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '20px', width: '100%', maxWidth: '100%', minHeight: 'calc(100vh - 90px)' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: '290px 1fr', gap: '24px', width: '100%', minHeight: 'calc(100vh - 100px)' }}>
       
       {/* Compact Near-Node Popover Dialog */}
       {modalNode && (
@@ -97,46 +98,71 @@ export default function WikiPage({ selectedEntity, setSelectedEntity }) {
         />
       )}
 
-      {/* Left Sidebar: Entity Topic List */}
-      <div className="clean-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '14px', maxHeight: '800px', overflowY: 'auto' }}>
+      {/* Left Sidebar: Entity Topic List (Home Theme Bento Box) */}
+      <div style={{
+        backgroundColor: '#FFFFFF',
+        borderRadius: '28px',
+        border: '1px solid #E2E8F0',
+        boxShadow: '0 10px 40px rgba(0,0,0,0.03)',
+        padding: '24px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '18px',
+        maxHeight: '820px',
+        overflowY: 'auto'
+      }}>
         <div>
           <h3 style={{ fontSize: '15px', fontWeight: '600' }}>Wiki Knowledge Base</h3>
           <p style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>{wikiPages.length} topic pages</p>
         </div>
 
-        {/* View Mode Switcher */}
-        <div style={{ display: 'flex', backgroundColor: '#F4F4F5', padding: '3px', borderRadius: '6px' }}>
+        {/* View Mode Switcher (Home Theme Segmented Pill Tabs) */}
+        <div style={{ display: 'flex', backgroundColor: '#F1F5F9', padding: '4px', borderRadius: '14px', gap: '4px' }}>
           <button
             onClick={() => setViewMode('article')}
             style={{
               flex: 1,
-              padding: '6px',
+              padding: '8px 12px',
               border: 'none',
-              borderRadius: '4px',
-              fontSize: '11.5px',
-              fontWeight: '600',
-              backgroundColor: viewMode === 'article' ? '#09090B' : 'transparent',
-              color: viewMode === 'article' ? '#FFFFFF' : '#71717A',
-              cursor: 'pointer'
+              borderRadius: '10px',
+              fontSize: '12px',
+              fontWeight: viewMode === 'article' ? '700' : '600',
+              backgroundColor: viewMode === 'article' ? '#FFFFFF' : 'transparent',
+              color: viewMode === 'article' ? '#0F172A' : '#64748B',
+              boxShadow: viewMode === 'article' ? '0 2px 8px rgba(0, 0, 0, 0.08)' : 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              transition: 'all 0.2s ease'
             }}
           >
-            Article View
+            <FileText size={14} color={viewMode === 'article' ? '#2563EB' : '#64748B'} />
+            <span>Article View</span>
           </button>
           <button
             onClick={() => setViewMode('graph')}
             style={{
               flex: 1,
-              padding: '6px',
+              padding: '8px 12px',
               border: 'none',
-              borderRadius: '4px',
-              fontSize: '11.5px',
-              fontWeight: '600',
-              backgroundColor: viewMode === 'graph' ? '#09090B' : 'transparent',
-              color: viewMode === 'graph' ? '#FFFFFF' : '#71717A',
-              cursor: 'pointer'
+              borderRadius: '10px',
+              fontSize: '12px',
+              fontWeight: viewMode === 'graph' ? '700' : '600',
+              backgroundColor: viewMode === 'graph' ? '#FFFFFF' : 'transparent',
+              color: viewMode === 'graph' ? '#0F172A' : '#64748B',
+              boxShadow: viewMode === 'graph' ? '0 2px 8px rgba(0, 0, 0, 0.08)' : 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              transition: 'all 0.2s ease'
             }}
           >
-            Knowledge Graph
+            <Network size={14} color={viewMode === 'graph' ? '#2563EB' : '#64748B'} />
+            <span>Graph View</span>
           </button>
         </div>
 
@@ -228,7 +254,7 @@ export default function WikiPage({ selectedEntity, setSelectedEntity }) {
       </div>
 
       {/* Main Panel */}
-      <div className="clean-card" style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ backgroundColor: '#FFFFFF', borderRadius: '28px', border: '1px solid #E2E8F0', boxShadow: '0 8px 30px rgba(0,0,0,0.02)', padding: '32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         
         {viewMode === 'graph' ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -248,28 +274,43 @@ export default function WikiPage({ selectedEntity, setSelectedEntity }) {
             {/* Interactive Force-Directed Canvas */}
             <KnowledgeGraphCanvas 
               graphData={graphData} 
+              wikiPages={wikiPages}
               onSelectNode={handleNodeClickFromCanvas} 
             />
 
-            {/* Relationship Triples List */}
+            {/* Compact Relationship Triples List */}
             {graphData.edges && graphData.edges.length > 0 && (
-              <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <h3 style={{ fontSize: '14px', fontWeight: '600' }}>Extracted Relationship Triples ({graphData.edges.length})</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '10px' }}>
+              <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px', backgroundColor: '#F8FAFC', padding: '14px 16px', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <h3 style={{ fontSize: '12.5px', fontWeight: '700', color: '#09090B', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Extracted Relationship Triples ({graphData.edges.length})
+                  </h3>
+                  <span style={{ fontSize: '11px', color: '#64748B', fontWeight: '600' }}>Scroll for all triples</span>
+                </div>
+
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', maxHeight: '140px', overflowY: 'auto', paddingRight: '4px' }}>
                   {graphData.edges.map((edge, idx) => (
                     <div 
                       key={idx}
-                      className="clean-card" 
-                      style={{ padding: '12px 14px', borderLeft: '4px solid #0284C7', cursor: 'pointer' }}
                       onClick={(e) => handleNodeClickFromCanvas(edge.source, 'CONCEPT', { x: e.clientX, y: e.clientY })}
+                      style={{ 
+                        padding: '6px 12px', 
+                        backgroundColor: '#FFFFFF',
+                        border: '1px solid #E2E8F0',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
+                        transition: 'all 0.15s ease'
+                      }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12.5px' }}>
-                        <span style={{ fontWeight: '700', color: '#09090B' }}>{edge.source}</span>
-                        <span className="badge-clean" style={{ fontSize: '9.5px', textTransform: 'uppercase' }}>
-                          {edge.relation}
-                        </span>
-                        <span style={{ fontWeight: '700', color: '#09090B' }}>{edge.target}</span>
-                      </div>
+                      <span style={{ fontSize: '11.5px', fontWeight: '700', color: '#09090B' }}>{edge.source}</span>
+                      <span style={{ fontSize: '9px', fontWeight: '800', backgroundColor: '#EFF6FF', color: '#2563EB', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase', border: '1px solid #BFDBFE' }}>
+                        {edge.relation}
+                      </span>
+                      <span style={{ fontSize: '11.5px', fontWeight: '700', color: '#09090B' }}>{edge.target}</span>
                     </div>
                   ))}
                 </div>

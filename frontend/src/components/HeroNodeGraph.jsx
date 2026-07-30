@@ -12,6 +12,14 @@ export default function HeroNodeGraph({ onNodeClick, isLight = true }) {
     let width = (canvas.width = canvas.parentElement.clientWidth || 450);
     let height = (canvas.height = 360);
 
+    // Preload WikiMind Logo for Central Hub Node
+    const logoImg = new Image();
+    let logoLoaded = false;
+    logoImg.src = '/logo-color.png';
+    logoImg.onload = () => {
+      logoLoaded = true;
+    };
+
     const handleResize = () => {
       if (canvas.parentElement) {
         width = canvas.width = canvas.parentElement.clientWidth;
@@ -20,7 +28,7 @@ export default function HeroNodeGraph({ onNodeClick, isLight = true }) {
     };
     window.addEventListener('resize', handleResize);
 
-    // 4 Primary File Format Nodes + Central Hub + Auxiliary Graph Nodes
+    // 4 Primary File Format Nodes + Central WikiMind Hub + Auxiliary Graph Nodes
     const initialNodes = [
       // 4 Main File Format Nodes
       { x: width * 0.22, y: height * 0.28, r: 34, vx: 0.25, vy: 0.15, label: 'PDF', subtext: 'DOC', format: 'pdf', gradient: ['#F87171', '#EF4444', '#DC2626'] },
@@ -28,8 +36,8 @@ export default function HeroNodeGraph({ onNodeClick, isLight = true }) {
       { x: width * 0.22, y: height * 0.72, r: 34, vx: 0.15, vy: -0.2, label: 'EXCEL', subtext: 'XLSX', format: 'excel', gradient: ['#34D399', '#10B981', '#047857'] },
       { x: width * 0.78, y: height * 0.72, r: 34, vx: -0.25, vy: -0.15, label: 'CSV', subtext: 'DATA', format: 'csv', gradient: ['#38BDF8', '#0EA5E9', '#0369A1'] },
       
-      // Central WikiMind Knowledge Engine Hub
-      { x: width * 0.50, y: height * 0.48, r: 38, vx: 0.1, vy: -0.1, label: 'WikiMind', subtext: 'GRAPH', format: 'hub', gradient: ['#A78BFA', '#7C3AED', '#5B21B6'] },
+      // Central WikiMind Knowledge Engine Hub (Features Logo Inside)
+      { x: width * 0.50, y: height * 0.48, r: 42, vx: 0.1, vy: -0.1, label: 'WikiMind', subtext: 'GRAPH', format: 'hub', gradient: ['#FFFFFF', '#FFFFFF', '#F8FAFC'] },
       
       // Supporting Feature Nodes
       { x: width * 0.50, y: height * 0.18, r: 20, vx: -0.15, vy: 0.1, label: 'Vectors', format: 'aux', gradient: ['#93C5FD', '#3B82F6', '#1D4ED8'] },
@@ -129,28 +137,39 @@ export default function HeroNodeGraph({ onNodeClick, isLight = true }) {
 
         // Border Glow Stroke
         ctx.lineWidth = isHovered ? 4 : 2.5;
-        ctx.strokeStyle = isHovered ? '#FFFFFF' : colors[0];
-        ctx.shadowColor = colors[1];
-        ctx.shadowBlur = isHovered ? 18 : 8;
+        ctx.strokeStyle = node.format === 'hub' ? '#2563EB' : (isHovered ? '#FFFFFF' : colors[0]);
+        ctx.shadowColor = node.format === 'hub' ? 'rgba(37, 99, 235, 0.4)' : colors[1];
+        ctx.shadowBlur = isHovered ? 18 : 10;
         ctx.stroke();
 
-        // Node Format Labels
-        ctx.fillStyle = '#FFFFFF';
-        ctx.textAlign = 'center';
-
-        if (node.subtext) {
-          ctx.font = `800 ${Math.min(node.r * 0.38, 12)}px Inter, sans-serif`;
-          ctx.textBaseline = 'bottom';
-          ctx.fillText(node.label, node.x, node.y + 1);
-
-          ctx.font = `600 ${Math.min(node.r * 0.28, 9)}px Inter, sans-serif`;
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-          ctx.textBaseline = 'top';
-          ctx.fillText(node.subtext, node.x, node.y + 3);
+        // Central Hub: Draw WikiMind Logo Image Inside Circle
+        if (node.format === 'hub' && logoLoaded) {
+          const size = node.r * 1.5;
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, node.r * 0.85, 0, Math.PI * 2);
+          ctx.clip();
+          ctx.drawImage(logoImg, node.x - size / 2, node.y - size / 2, size, size);
+          ctx.restore();
         } else {
-          ctx.font = `700 ${Math.min(node.r * 0.42, 11)}px Inter, sans-serif`;
-          ctx.textBaseline = 'middle';
-          ctx.fillText(node.label, node.x, node.y);
+          // Node Format Labels
+          ctx.fillStyle = node.format === 'hub' ? '#09090B' : '#FFFFFF';
+          ctx.textAlign = 'center';
+
+          if (node.subtext) {
+            ctx.font = `800 ${Math.min(node.r * 0.38, 12)}px Inter, sans-serif`;
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(node.label, node.x, node.y + 1);
+
+            ctx.font = `600 ${Math.min(node.r * 0.28, 9)}px Inter, sans-serif`;
+            ctx.fillStyle = node.format === 'hub' ? '#64748B' : 'rgba(255, 255, 255, 0.85)';
+            ctx.textBaseline = 'top';
+            ctx.fillText(node.subtext, node.x, node.y + 3);
+          } else {
+            ctx.font = `700 ${Math.min(node.r * 0.42, 11)}px Inter, sans-serif`;
+            ctx.textBaseline = 'middle';
+            ctx.fillText(node.label, node.x, node.y);
+          }
         }
 
         ctx.restore();
