@@ -58,13 +58,24 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
   const [inputQuery, setInputQuery] = useState('');
   const [isAsking, setIsAsking] = useState(false);
   const [generationStep, setGenerationStep] = useState(0);
-  const [showSidebar, setShowSidebar] = useState(true);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+  const [showSidebar, setShowSidebar] = useState(typeof window !== 'undefined' ? window.innerWidth >= 768 : false);
   const [searchConv, setSearchConv] = useState('');
   const [showSearchInput, setShowSearchInput] = useState(false);
   const [editingSessionId, setEditingSessionId] = useState(null);
   const [editingTitle, setEditingTitle] = useState('');
 
   const chatEndRef = useRef(null);
+
+  // Monitor window resize for responsive layout
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Cycle generation pipeline steps while asking
   useEffect(() => {
@@ -284,18 +295,43 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
   const filteredSessions = sessions.filter(s => s.title.toLowerCase().includes(searchConv.toLowerCase()));
 
   return (
-    <div style={{ display: 'flex', minHeight: 'calc(100vh - 100px)', width: '100%', gap: '20px' }}>
+    <div style={{ display: 'flex', minHeight: 'calc(100vh - 100px)', width: '100%', gap: '20px', position: 'relative' }}>
       
-      {/* Sessions Left Panel / Sidebar (Matching Screenshot UI) */}
+      {/* Mobile Dark Backdrop Overlay */}
+      {isMobile && showSidebar && (
+        <div 
+          onClick={() => setShowSidebar(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(9, 9, 11, 0.4)',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)',
+            zIndex: 99
+          }}
+        />
+      )}
+
+      {/* Sessions Left Panel / Sidebar */}
       {showSidebar && (
         <div style={{
-          width: '290px',
+          position: isMobile ? 'fixed' : 'relative',
+          top: isMobile ? '70px' : 'auto',
+          left: isMobile ? '12px' : 'auto',
+          zIndex: isMobile ? 100 : 1,
+          width: isMobile ? 'calc(100% - 24px)' : '290px',
+          maxWidth: '320px',
+          maxHeight: isMobile ? 'calc(100vh - 90px)' : '820px',
+          overflowY: 'auto',
           display: 'flex',
           flexDirection: 'column',
           backgroundColor: '#FFFFFF',
           border: '1px solid #E2E8F0',
           borderRadius: '28px',
-          boxShadow: '0 10px 40px rgba(0,0,0,0.03)',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.12)',
           padding: '24px 20px',
           gap: '18px'
         }}>
@@ -407,7 +443,10 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
               return (
                 <div 
                   key={sess.id}
-                  onClick={() => setActiveSessionId(sess.id)}
+                  onClick={() => {
+                    setActiveSessionId(sess.id);
+                    if (isMobile) setShowSidebar(false);
+                  }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',

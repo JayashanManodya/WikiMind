@@ -35,6 +35,15 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
   const [selectedNode, setSelectedNode] = useState(null);
   const [activeCommunityFilter, setActiveCommunityFilter] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Map each wiki page title to its source document filename
   const pageFileMap = useMemo(() => {
@@ -515,18 +524,19 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
       style={{ 
         position: 'relative', 
         width: '100%', 
-        height: isFullscreen ? '100vh' : '580px', 
+        height: isFullscreen ? '100vh' : isMobile ? 'auto' : '580px', 
         backgroundColor: '#FFFFFF', // Pure Light Theme Canvas Background
         borderRadius: '24px', 
         border: '1px solid #E2E8F0', 
         overflow: 'hidden',
         display: 'flex',
+        flexDirection: isMobile ? 'column' : 'row',
         boxShadow: '0 8px 30px rgba(0,0,0,0.02)',
         ...(isFullscreen ? { position: 'fixed', top: 0, left: 0, zIndex: 9999, borderRadius: 0 } : {})
       }}
     >
       {/* Main Canvas Viewport (Left Area - Light Theme) */}
-      <div style={{ flex: 1, position: 'relative', height: '100%', overflow: 'hidden' }}>
+      <div style={{ flex: 1, position: 'relative', height: isMobile ? '380px' : '100%', minHeight: isMobile ? '380px' : 'auto', overflow: 'hidden' }}>
         <canvas 
           ref={canvasRef} 
           onMouseDown={handleMouseDown} 
@@ -574,9 +584,10 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
 
       {/* Right Inspector Sidebar Panel (Clean Light Theme) */}
       <div style={{
-        width: '280px',
+        width: isMobile ? '100%' : '280px',
         backgroundColor: '#FFFFFF',
-        borderLeft: '1px solid #E2E8F0',
+        borderLeft: isMobile ? 'none' : '1px solid #E2E8F0',
+        borderTop: isMobile ? '1px solid #E2E8F0' : 'none',
         padding: '18px 16px',
         display: 'flex',
         flexDirection: 'column',

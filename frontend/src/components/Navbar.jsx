@@ -24,25 +24,26 @@ export default function Navbar({ activeTab, setActiveTab }) {
 
   return (
     <header style={{ 
-      backgroundColor: 'rgba(255, 255, 255, 0.9)', 
+      backgroundColor: 'rgba(255, 255, 255, 0.95)', 
       backdropFilter: 'blur(16px)',
       WebkitBackdropFilter: 'blur(16px)',
       border: '1px solid #E2E8F0', 
       borderRadius: '9999px',
-      padding: '8px 16px 8px 28px',
-      margin: '12px auto 0 auto',
-      width: 'calc(100% - 72px)',
-      maxWidth: '100%',
+      padding: '8px 16px',
+      margin: '8px auto 0 auto',
+      width: 'min(1200px, calc(100% - 24px))',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
       position: 'sticky',
-      top: '12px',
+      top: '8px',
       zIndex: 50,
-      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.04)'
+      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.04)',
+      gap: '8px',
+      overflowX: 'auto'
     }}>
       {/* Brand Logo */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => setActiveTab('dashboard')}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', flexShrink: 0 }} onClick={() => setActiveTab('dashboard')}>
         <img 
           src="/logo-color.png" 
           alt="WikiMind Logo" 

@@ -84,8 +84,18 @@ export default function WikiPage({ selectedEntity, setSelectedEntity }) {
     setViewMode('article');
   };
 
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '290px 1fr', gap: '24px', width: '100%', minHeight: 'calc(100vh - 100px)' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '260px 1fr', gap: '24px', width: '100%', minHeight: 'calc(100vh - 100px)' }}>
       
       {/* Compact Near-Node Popover Dialog */}
       {modalNode && (
@@ -98,19 +108,20 @@ export default function WikiPage({ selectedEntity, setSelectedEntity }) {
         />
       )}
 
-      {/* Left Sidebar: Entity Topic List (Home Theme Bento Box) */}
-      <div style={{
-        backgroundColor: '#FFFFFF',
-        borderRadius: '28px',
-        border: '1px solid #E2E8F0',
-        boxShadow: '0 10px 40px rgba(0,0,0,0.03)',
-        padding: '24px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '18px',
-        maxHeight: '820px',
-        overflowY: 'auto'
-      }}>
+      {/* Left Sidebar: Entity Topic List (Hidden on Mobile while in Graph Mode to place Graph at Top) */}
+      {(!isMobile || viewMode === 'article') && (
+        <div style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: isMobile ? '20px' : '28px',
+          border: '1px solid #E2E8F0',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.03)',
+          padding: isMobile ? '16px' : '24px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: isMobile ? '12px' : '18px',
+          maxHeight: isMobile ? '240px' : '820px',
+          overflowY: 'auto'
+        }}>
         <div>
           <h3 style={{ fontSize: '15px', fontWeight: '600' }}>Wiki Knowledge Base</h3>
           <p style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>{wikiPages.length} topic pages</p>
@@ -252,15 +263,16 @@ export default function WikiPage({ selectedEntity, setSelectedEntity }) {
           </div>
         )}
       </div>
+      )}
 
       {/* Main Panel */}
-      <div style={{ backgroundColor: '#FFFFFF', borderRadius: '28px', border: '1px solid #E2E8F0', boxShadow: '0 8px 30px rgba(0,0,0,0.02)', padding: '32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ backgroundColor: '#FFFFFF', borderRadius: isMobile ? '20px' : '28px', border: '1px solid #E2E8F0', boxShadow: '0 8px 30px rgba(0,0,0,0.02)', padding: isMobile ? '16px 14px' : '32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         
         {viewMode === 'graph' ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
               <div>
-                <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#09090B' }}>Interactive Knowledge Graph Network</h1>
+                <h1 style={{ fontSize: isMobile ? '18px' : '22px', fontWeight: '700', color: '#09090B' }}>Interactive Knowledge Graph Network</h1>
                 <p style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>
                   Click any circular node to open near-node summary popover & detailed article.
                 </p>

@@ -8,19 +8,21 @@
 [![Pinecone](https://img.shields.io/badge/Pinecone-VectorDB-000000?style=flat-square)](https://pinecone.io)
 [![LlamaParse](https://img.shields.io/badge/LlamaParse-Document_AI-FF6B6B?style=flat-square)](https://llamaindex.ai)
 
-**WikiMind** is a state-of-the-art, full-stack AI-Powered Knowledge Management System (IKMS) that transforms unstructured documents (PDFs, DOCX, TXT, MD) into a structured, interlinked **Wikipedia-style Knowledge Base** and **2D Interactive Physics Knowledge Graph**. It features a zero-hallucination grounded QA chatbot with click-through source citations and cross-device Turso Cloud DB sync.
+**WikiMind** is a state-of-the-art, full-stack AI-Powered Knowledge Management System (IKMS) that transforms unstructured documents into a structured, interlinked **Wikipedia-style Knowledge Base** and an **Interactive 2D Physics Knowledge Graph**. It features a **zero-hallucination grounded QA assistant** with click-through source citations, multi-format document parsing, compact dynamic generation feedback, and cross-device Turso Cloud Database persistence.
 
 ---
 
 ## 🌟 Key Features
 
-- 📄 **LlamaParse Layout Document Ingestion**: Accurate extraction of complex headers, formatting, and structured tables from PDFs, DOCX, TXT, and Markdown.
+- 📄 **Multi-Format Document Ingestion**: Support for **PDF, DOCX, XLSX, XLS, CSV, TXT, Markdown (.md), PPTX, and HTML** with accurate layout and structured table extraction powered by LlamaParse & PyMuPDF.
 - 🤖 **Automated Multi-Entity Discovery**: GPT-4 intelligence extraction automatically identifies key entities (*Concepts, People, Technologies, Organizations, Hardware*) and relationship triples.
 - 📚 **Structured Markdown Wiki Generator**: Automatically generates interlinked, exhaustive Wikipedia-style articles stored in Turso Edge Cloud Database.
-- 🌐 **Interactive 2D Physics Knowledge Graph**: Canvas simulation engine with node repulsion, line glow, zoom/pan controls, and node selection popovers.
-- 💬 **Grounded Zero-Hallucination QA Engine**: Fact-checked answers backed by Pinecone vector context with click-through citation badges linking to wiki source articles.
-- ☁️ **Turso Edge Cloud DB Persistence**: Cross-device synchronization for chat sessions, message history, wiki pages, and relationship graph edges.
-- 🔒 **Google OAuth 2.0 & JWT Isolation**: Secure authentication with per-user data isolation.
+- 🌐 **Interactive 2D Physics Knowledge Graph**: Canvas simulation engine with node repulsion, line glow, zoom/pan controls, physics dynamics, and near-node popover preview dialogs.
+- 💬 **Grounded Zero-Hallucination QA Assistant**: Fact-checked answers synthesized strictly from vector context with click-through citation badges linking directly to wiki source articles.
+- ⏱️ **Dynamic Compact Loading Indicator**: Lightweight single-line loading pill displaying 4-stage pipeline progress (*Analyzing -> Searching -> Verifying -> Synthesizing*) running at 2s intervals with continuous 360° circular rotation animation.
+- 📱 **Full Mobile Responsiveness**: Seamless viewport adaptation across mobile (< 480px), tablet (< 768px), and desktop screens with grid auto-fit scaling.
+- ☁️ **Turso Edge Cloud DB Persistence**: Cross-device synchronization for chat sessions, full message history, wiki pages, and relationship graph edges.
+- 🔒 **Google OAuth 2.0 & JWT Isolation**: Secure authentication with per-user data isolation and custom profile avatars.
 - ⚡ **Client-Side Data Memory Caching**: React `DataContext` store providing **0ms instant tab switching** without redundant API re-fetching.
 - 🛠️ **Serverless Ready**: Built-in fallback to `/tmp/wiki` for read-only serverless filesystems on Vercel and AWS Lambda.
 
@@ -31,8 +33,8 @@
 ```text
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
 │                                   WikiMind Frontend UI                                  │
-│         [ Overview ]   •   [ Chat ]   •   [ Upload ]   •   [ Knowledge Base ]           │
-└────────────────────────────────────────────┬────────────────────────────────────────────┘
+│       [ Overview ]   •   [ Chat ]   •   [ Upload ]   •   [ Knowledge Base ]  •  [ Guide ] │
+└────────────────────────────┬────────────────────────────────────────────┘
                                              │ REST API / JSON
                                              ▼
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
@@ -58,17 +60,17 @@
 WikiMind/
 ├── backend/
 │   ├── app/
-│   │   ├── api.py                   # FastAPI routing, CORS middleware & endpoints
+│   │   ├── api.py                   # FastAPI routing, CORS middleware & REST endpoints
 │   │   ├── models.py                # Pydantic request/response schemas
 │   │   ├── services/
-│   │   │   └── qa_service.py        # Grounded QA LLM answer pipeline
+│   │   │   └── qa_service.py        # Grounded QA LLM answer & citation pipeline
 │   │   └── core/
 │   │       ├── config.py            # Pydantic Settings & environment manager
 │   │       ├── db.py                # Turso Edge SQLite client adapter & CRUD
 │   │       ├── auth.py              # Google OAuth 2.0 token verification & JWT
 │   │       ├── paths.py             # Central path manager & /tmp fallback for Vercel
 │   │       ├── ingestion/
-│   │       │   ├── parser.py        # Multi-format document parser
+│   │       │   ├── parser.py        # Multi-format document parser (PDF, DOCX, XLSX, TXT)
 │   │       │   ├── llama_parser.py  # LlamaParse OCR & layout extraction
 │   │       │   └── wiki_generator.py# LLM entity extraction & wiki generator
 │   │       └── retrieval/
@@ -81,25 +83,25 @@ WikiMind/
 │   ├── src/
 │   │   ├── main.jsx                 # React root entry point
 │   │   ├── App.jsx                  # Main application gate & tab router
-│   │   ├── index.css                # Global CSS design tokens & layout styles
+│   │   ├── index.css                # Global CSS design system, spin animation & media queries
 │   │   ├── api/
 │   │   │   └── client.js            # Axios REST client with Bearer auth token
 │   │   ├── context/
 │   │   │   ├── AuthContext.jsx      # Google OAuth session context
 │   │   │   └── DataContext.jsx      # React Memory Cache store for 0ms tab switching
 │   │   ├── components/
-│   │   │   ├── Navbar.jsx           # Glassmorphic top navigation bar
-│   │   │   ├── HeroNodeGraph.jsx    # Interactive Zilliz-style physics canvas graph
-│   │   │   ├── KnowledgeGraphCanvas.jsx # Full-featured 2D graph visualizer
+│   │   │   ├── Navbar.jsx           # Glassmorphic responsive top navigation bar
+│   │   │   ├── HeroNodeGraph.jsx    # Interactive physics node graph canvas
+│   │   │   ├── KnowledgeGraphCanvas.jsx # Full-featured 2D Knowledge Graph visualizer
 │   │   │   ├── NodePopover.jsx      # Near-node popover preview dialog
 │   │   │   ├── LoginModal.jsx       # Google Sign-In authentication modal
-│   │   │   └── Sidebar.jsx          # Health check & legacy controls
+│   │   │   └── Footer.jsx           # Platform footer component
 │   │   └── pages/
-│   │       ├── DashboardPage.jsx    # Overview tab with metrics & collection cards
-│   │       ├── ChatPage.jsx         # Full-width Grounded QA Chat tab
+│   │       ├── DashboardPage.jsx    # Overview tab with hero bento grid & collection cards
+│   │       ├── ChatPage.jsx         # Grounded QA Chat tab with compact 2s loading pill
 │   │       ├── WikiPage.jsx         # Knowledge Base article reader & graph tab
 │   │       ├── UploadPage.jsx       # 4-stage document ingestion pipeline tab
-│   │       └── GuidePage.jsx        # Platform user guide & FAQ documentation tab
+│   │       └── GuidePage.jsx        # User guide, 4-step workflow arrows & FAQs tab
 │   ├── package.json                 # Frontend React dependencies
 │   ├── vite.config.js               # Vite bundler configuration
 │   └── .env                         # Frontend environment variables
@@ -124,7 +126,7 @@ WikiMind/
 ### Frontend Services
 - **Framework**: [React 18](https://reactjs.org/) + [Vite 5](https://vitejs.dev/)
 - **Icons**: [Lucide React](https://lucide.dev/)
-- **Styling**: Vanilla CSS Design System with HSL tokens, glassmorphic frosted headers, and HSL mesh gradients
+- **Styling**: Vanilla CSS Design System with HSL tokens, glassmorphic headers, smooth animations, and mobile breakpoints
 - **HTTP Client**: [Axios](https://axios-http.com/)
 
 ---
@@ -178,7 +180,7 @@ CORS_ORIGINS=http://localhost:5173,http://localhost:3000,https://wikimind.jayash
 # Start FastAPI backend with hot-reload
 uv run main.py
 ```
-Backend will be available at **`http://localhost:8000`** (Swagger docs at `http://localhost:8000/docs`).
+Backend will be available at **`http://localhost:8000`** (Swagger API docs at `http://localhost:8000/docs`).
 
 ---
 
@@ -216,7 +218,7 @@ Frontend will be available at **`http://localhost:5173`**.
 | :--- | :--- | :--- |
 | `POST` | `/auth/google` | Authenticate Google OAuth 2.0 credential & receive JWT access token |
 | `GET` | `/auth/me` | Fetch authenticated user profile |
-| `POST` | `/upload` | Ingest PDF, DOCX, TXT document, extract entities & generate wiki pages |
+| `POST` | `/upload` | Ingest document (PDF, DOCX, XLSX, TXT, MD), extract entities & generate wiki pages |
 | `POST` | `/qa` | Submit question to grounded QA engine & receive cited answer |
 | `GET` | `/wiki/catalog` | List all generated wiki knowledge topic pages |
 | `GET` | `/wiki/page/{name}` | Fetch full Markdown article content for a topic |

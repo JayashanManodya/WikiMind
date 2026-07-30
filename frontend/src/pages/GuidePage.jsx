@@ -176,6 +176,7 @@ export default function GuidePage({ setActiveTab }) {
               {/* Connecting Flow Arrow pointing to next step */}
               {idx < steps.length - 1 && (
                 <div 
+                  className="hide-mobile-arrow"
                   style={{
                     position: 'absolute',
                     right: '-18px',

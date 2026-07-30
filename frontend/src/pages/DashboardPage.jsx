@@ -59,7 +59,7 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
         border: '1px solid #E2E8F0',
         boxShadow: '0 10px 40px rgba(0,0,0,0.03)',
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
         gap: '40px',
         alignItems: 'center',
         position: 'relative',

@@ -327,3 +327,34 @@ h1, h2, h3, h4, h5, h6 {
   animation: spin 0.8s linear infinite;
   transform-origin: center center;
 }
+
+/* Mobile Responsiveness Breakpoints */
+@media (max-width: 768px) {
+  .memora-hero-container {
+    padding: 20px 16px 16px 16px !important;
+    border-radius: 18px !important;
+  }
+
+  .hide-mobile-arrow {
+    display: none !important;
+  }
+
+  .mobile-stack {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .mobile-full-width {
+    width: 100% !important;
+  }
+
+  .mobile-text-center {
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 13.5px;
+  }
+}
