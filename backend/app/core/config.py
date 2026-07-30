@@ -33,6 +33,10 @@ class Settings(BaseSettings):
     # Retrieval Configuration
     retrieval_k: int = 3
 
+    # Turso Edge SQLite Configuration
+    turso_database_url: str = ""
+    turso_auth_token: str = ""
+
     # Auth Configuration
     google_client_id: str = ""
     jwt_secret_key: str = "wikillm_super_secret_jwt_key_2026_change_in_production"

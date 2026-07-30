@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Sparkles, 
-  Wrench, 
-  BookOpen, 
-  MessageSquare, 
+import {
+  Sparkles,
+  Wrench,
+  BookOpen,
+  MessageSquare,
   UploadCloud,
-  Zap, 
-  HelpCircle, 
+  Zap,
+  HelpCircle,
   Settings,
   Activity,
   Plus,
@@ -35,13 +35,13 @@ export default function Sidebar({ activeTab, setActiveTab }) {
       }
     };
     checkBackend();
-    const interval = setInterval(checkBackend, 15000);
+    const interval = setInterval(checkBackend, 86400000);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <aside className="sidebar" style={{ width: '230px', padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      
+
       {/* Contextual Header based on activeTab */}
       <div style={{ paddingBottom: '10px', borderBottom: '1px solid var(--border-color)' }}>
         <p style={{ fontSize: '11px', fontWeight: '700', color: '#71717A', textTransform: 'uppercase', tracking: '0.5px' }}>
@@ -54,7 +54,7 @@ export default function Sidebar({ activeTab, setActiveTab }) {
 
       {/* Contextual Navigation Menu */}
       <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        
+
         {/* MENU 1: CHAT MENU */}
         {activeTab === 'chat' && (
           <>
@@ -62,8 +62,8 @@ export default function Sidebar({ activeTab, setActiveTab }) {
               Select or switch between active conversation sessions below.
             </div>
 
-            <button 
-              className="btn btn-outline" 
+            <button
+              className="btn btn-outline"
               onClick={() => setActiveTab('wiki')}
               style={{ justifyContent: 'center', fontSize: '12.5px', padding: '8px 12px', gap: '6px' }}
             >
@@ -137,7 +137,7 @@ export default function Sidebar({ activeTab, setActiveTab }) {
             <div style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: '1.4' }}>
               Ingestion Pipeline Stages:
             </div>
-            
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <div style={{ fontSize: '12px', fontWeight: '500', color: '#09090B', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <FileText size={14} color="#71717A" />

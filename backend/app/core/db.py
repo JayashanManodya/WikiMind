@@ -9,6 +9,79 @@ from typing import List, Dict, Any, Optional
 from .paths import get_project_root, get_user_wiki_dir
 
 
+from .config import get_settings
+
+try:
+    import libsql_client
+except ImportError:
+    libsql_client = None
+
+
+class TursoRow(dict):
+    """Dictionary subclass supporting index access to mimic sqlite3.Row."""
+    def __init__(self, cols, vals):
+        super().__init__(zip(cols, vals))
+        self._vals = tuple(vals)
+
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return self._vals[key]
+        return super().__getitem__(key)
+
+
+class TursoCursor:
+    """Cursor wrapper for libsql_client to provide a sqlite3-compatible interface."""
+    def __init__(self, client):
+        self.client = client
+        self._results = []
+        self._idx = 0
+
+    def execute(self, stmt: str, params: tuple = ()):
+        p = list(params) if isinstance(params, (tuple, list)) else params
+        rs = self.client.execute(stmt, p)
+        cols = getattr(rs, 'columns', [])
+        rows = getattr(rs, 'rows', [])
+        self._results = [TursoRow(cols, list(r)) for r in rows]
+        self._idx = 0
+        return self
+
+    def executescript(self, script: str):
+        stmts = [s.strip() for s in script.split(';') if s.strip()]
+        for stmt in stmts:
+            self.client.execute(stmt)
+        return self
+
+    def fetchone(self):
+        if self._idx < len(self._results):
+            row = self._results[self._idx]
+            self._idx += 1
+            return row
+        return None
+
+    def fetchall(self):
+        res = self._results[self._idx:]
+        self._idx = len(self._results)
+        return res
+
+
+class TursoConnection:
+    """Connection wrapper for libsql_client."""
+    def __init__(self, client):
+        self.client = client
+
+    def cursor(self):
+        return TursoCursor(self.client)
+
+    def commit(self):
+        pass
+
+    def close(self):
+        try:
+            self.client.close()
+        except Exception:
+            pass
+
+
 def get_db_path() -> Path:
     """Get absolute path to local SQLite database file inside storage directory."""
     storage_dir = get_project_root() / "storage"
@@ -16,8 +89,19 @@ def get_db_path() -> Path:
     return storage_dir / "wikimind.db"
 
 
-def get_db_connection() -> sqlite3.Connection:
-    """Get SQLite database connection with row factory enabled."""
+def get_db_connection():
+    """Get database connection (Turso cloud SQLite if configured, otherwise local SQLite)."""
+    settings = get_settings()
+    turso_url = os.environ.get("TURSO_DATABASE_URL") or settings.turso_database_url
+    turso_token = os.environ.get("TURSO_AUTH_TOKEN") or settings.turso_auth_token
+
+    if libsql_client and turso_url and turso_token:
+        url = turso_url
+        if url.startswith("libsql://"):
+            url = url.replace("libsql://", "https://", 1)
+        client = libsql_client.create_client_sync(url, auth_token=turso_token)
+        return TursoConnection(client)
+
     conn = sqlite3.connect(get_db_path(), timeout=30.0)
     conn.row_factory = sqlite3.Row
     return conn
