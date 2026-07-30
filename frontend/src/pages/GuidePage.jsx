@@ -24,7 +24,9 @@ export default function GuidePage({ setActiveTab }) {
       icon: UploadCloud,
       color: '#2563EB',
       bg: '#EFF6FF',
-      desc: 'Upload PDF, DOCX, TXT, or MD documents. LlamaParse automatically parses complex document layouts, tables, and raw text formatting.'
+      desc: 'Upload PDF, DOCX, TXT, or MD documents. Automatically parse document layouts, tables, and raw text formatting.',
+      actionTab: 'upload',
+      actionText: 'Upload Documents'
     },
     {
       num: '02',
@@ -40,7 +42,9 @@ export default function GuidePage({ setActiveTab }) {
       icon: Share2,
       color: '#0EA5E9',
       bg: '#F0F9FF',
-      desc: 'Structured Markdown Wiki articles are automatically generated and indexed in Turso Cloud DB alongside an interactive 2D Knowledge Graph visualization.'
+      desc: 'Structured Markdown Wiki articles are automatically generated and indexed alongside an interactive Knowledge Graph visualization.',
+      actionTab: 'wiki',
+      actionText: 'Explore Knowledge'
     },
     {
       num: '04',
@@ -48,18 +52,20 @@ export default function GuidePage({ setActiveTab }) {
       icon: MessageSquare,
       color: '#10B981',
       bg: '#ECFDF5',
-      desc: 'Ask complex questions to the grounded Chatbot. Answers are generated with zero hallucination and include click-through citations to source wiki pages.'
+      desc: 'Ask complex questions to the grounded Chatbot. Answers are generated with zero hallucination and include click-through citations to source wiki pages.',
+      actionTab: 'chat',
+      actionText: 'Start AI Chat'
     }
   ];
 
   const faqs = [
     {
       q: 'What document formats are supported?',
-      a: 'WikiMind supports PDF, DOCX, TXT, and Markdown (.md) documents. LlamaParse ensures high-accuracy parsing of complex tables and headers.'
+      a: 'WikiMind supports PDF, DOCX, TXT, Markdown (.md), Excel (.xlsx, .xls), CSV, PPTX, HTML, and Image OCR formats.'
     },
     {
-      q: 'How does Turso Cloud Database persistence work?',
-      a: 'All generated wiki articles, knowledge graph node relationships, chat sessions, and message history are automatically saved in Turso Edge SQLite Cloud DB.'
+      q: 'How does cloud storage & persistence work?',
+      a: 'All generated wiki articles, knowledge graph node relationships, chat sessions, and message history are automatically saved and synced.'
     },
     {
       q: 'What is Grounded QA with zero hallucination?',
@@ -135,10 +141,36 @@ export default function GuidePage({ setActiveTab }) {
                 <span style={{ fontSize: '20px', fontWeight: '800', color: '#CBD5E1' }}>{s.num}</span>
               </div>
 
-              <div>
+              <div style={{ flex: 1 }}>
                 <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#09090B', marginBottom: '6px' }}>{s.title}</h3>
                 <p style={{ fontSize: '12.5px', color: '#64748B', lineHeight: '1.5' }}>{s.desc}</p>
               </div>
+
+              {s.actionTab && (
+                <button
+                  onClick={() => setActiveTab(s.actionTab)}
+                  style={{
+                    marginTop: '8px',
+                    padding: '8px 16px',
+                    borderRadius: '9999px',
+                    backgroundColor: s.color,
+                    color: '#FFFFFF',
+                    border: 'none',
+                    fontSize: '12px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    alignSelf: 'flex-start',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                    transition: 'transform 0.15s ease'
+                  }}
+                >
+                  <span>{s.actionText}</span>
+                  <ArrowRight size={13} />
+                </button>
+              )}
             </div>
           );
         })}
@@ -270,7 +302,7 @@ export default function GuidePage({ setActiveTab }) {
         gap: '20px'
       }}>
         <div>
-          <h3 style={{ fontSize: '22px', fontWeight: '700', marginBottom: '6px' }}>Ready to explore your knowledge base?</h3>
+          <h3 style={{ fontSize: '22px', fontWeight: '700', color: '#FFFFFF', marginBottom: '6px' }}>Ready to explore your knowledge base?</h3>
           <p style={{ fontSize: '13.5px', color: '#A1A1AA' }}>Upload your first document or start asking questions in the grounded chat.</p>
         </div>
 

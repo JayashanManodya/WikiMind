@@ -29,10 +29,10 @@ export default function Navbar({ activeTab, setActiveTab }) {
       WebkitBackdropFilter: 'blur(16px)',
       border: '1px solid #E2E8F0', 
       borderRadius: '9999px',
-      padding: '8px 24px',
+      padding: '8px 16px 8px 28px',
       margin: '12px auto 0 auto',
-      width: 'calc(100% - 48px)',
-      maxWidth: '1280px',
+      width: 'calc(100% - 72px)',
+      maxWidth: '100%',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -83,7 +83,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
       </div>
 
       {/* Right: Auth / Actions */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginRight: '-4px' }}>
         {isAuthenticated && user ? (
           <div style={{ position: 'relative' }}>
             <button

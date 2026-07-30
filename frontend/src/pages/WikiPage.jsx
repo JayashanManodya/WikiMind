@@ -277,45 +277,6 @@ export default function WikiPage({ selectedEntity, setSelectedEntity }) {
               wikiPages={wikiPages}
               onSelectNode={handleNodeClickFromCanvas} 
             />
-
-            {/* Compact Relationship Triples List */}
-            {graphData.edges && graphData.edges.length > 0 && (
-              <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px', backgroundColor: '#F8FAFC', padding: '14px 16px', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <h3 style={{ fontSize: '12.5px', fontWeight: '700', color: '#09090B', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    Extracted Relationship Triples ({graphData.edges.length})
-                  </h3>
-                  <span style={{ fontSize: '11px', color: '#64748B', fontWeight: '600' }}>Scroll for all triples</span>
-                </div>
-
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', maxHeight: '140px', overflowY: 'auto', paddingRight: '4px' }}>
-                  {graphData.edges.map((edge, idx) => (
-                    <div 
-                      key={idx}
-                      onClick={(e) => handleNodeClickFromCanvas(edge.source, 'CONCEPT', { x: e.clientX, y: e.clientY })}
-                      style={{ 
-                        padding: '6px 12px', 
-                        backgroundColor: '#FFFFFF',
-                        border: '1px solid #E2E8F0',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
-                        transition: 'all 0.15s ease'
-                      }}
-                    >
-                      <span style={{ fontSize: '11.5px', fontWeight: '700', color: '#09090B' }}>{edge.source}</span>
-                      <span style={{ fontSize: '9px', fontWeight: '800', backgroundColor: '#EFF6FF', color: '#2563EB', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase', border: '1px solid #BFDBFE' }}>
-                        {edge.relation}
-                      </span>
-                      <span style={{ fontSize: '11.5px', fontWeight: '700', color: '#09090B' }}>{edge.target}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         ) : loadingPage ? (
           <div style={{ padding: '60px', textAlign: 'center' }}>

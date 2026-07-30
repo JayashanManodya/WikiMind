@@ -28,32 +28,26 @@ export default function HeroNodeGraph({ onNodeClick, isLight = true }) {
     };
     window.addEventListener('resize', handleResize);
 
-    // 4 Primary File Format Nodes + Central WikiMind Hub + Auxiliary Graph Nodes
+    // Central WikiMind Logo Hub + Entity Type Nodes
     const initialNodes = [
-      // 4 Main File Format Nodes
-      { x: width * 0.22, y: height * 0.28, r: 34, vx: 0.25, vy: 0.15, label: 'PDF', subtext: 'DOC', format: 'pdf', gradient: ['#F87171', '#EF4444', '#DC2626'] },
-      { x: width * 0.78, y: height * 0.25, r: 34, vx: -0.2, vy: 0.2, label: 'WORD', subtext: 'DOCX', format: 'word', gradient: ['#60A5FA', '#2563EB', '#1D4ED8'] },
-      { x: width * 0.22, y: height * 0.72, r: 34, vx: 0.15, vy: -0.2, label: 'EXCEL', subtext: 'XLSX', format: 'excel', gradient: ['#34D399', '#10B981', '#047857'] },
-      { x: width * 0.78, y: height * 0.72, r: 34, vx: -0.25, vy: -0.15, label: 'CSV', subtext: 'DATA', format: 'csv', gradient: ['#38BDF8', '#0EA5E9', '#0369A1'] },
-      
-      // Central WikiMind Knowledge Engine Hub (Features Logo Inside)
-      { x: width * 0.50, y: height * 0.48, r: 42, vx: 0.1, vy: -0.1, label: 'WikiMind', subtext: 'GRAPH', format: 'hub', gradient: ['#FFFFFF', '#FFFFFF', '#F8FAFC'] },
-      
-      // Supporting Feature Nodes
-      { x: width * 0.50, y: height * 0.18, r: 20, vx: -0.15, vy: 0.1, label: 'Vectors', format: 'aux', gradient: ['#93C5FD', '#3B82F6', '#1D4ED8'] },
-      { x: width * 0.50, y: height * 0.82, r: 22, vx: 0.15, vy: -0.1, label: 'Graph RAG', format: 'aux', gradient: ['#FDE047', '#EAB308', '#CA8A04'] },
-      { x: width * 0.08, y: height * 0.50, r: 18, vx: 0.1, vy: 0.15, label: 'Entities', format: 'aux', gradient: ['#F472B6', '#EC4899', '#BE185D'] },
-      { x: width * 0.92, y: height * 0.50, r: 18, vx: -0.1, vy: -0.15, label: 'AI QA', format: 'aux', gradient: ['#38BDF8', '#0284C7', '#0369A1'] },
+      // Central WikiMind Hub (Index 0)
+      { x: width * 0.50, y: height * 0.48, r: 44, vx: 0.08, vy: -0.08, label: 'WikiMind', subtext: 'HUB', format: 'hub', gradient: ['#FFFFFF', '#FFFFFF', '#F8FAFC'] },
+
+      // 6 Core Knowledge Graph Entity Types (Surrounding Hub)
+      { x: width * 0.20, y: height * 0.25, r: 32, vx: 0.2, vy: 0.15, label: 'ORGANIZATION', subtext: 'COMPANY', format: 'entity', gradient: ['#60A5FA', '#2563EB', '#1D4ED8'] },
+      { x: width * 0.80, y: height * 0.25, r: 32, vx: -0.2, vy: 0.15, label: 'PERSON', subtext: 'AUTHOR', format: 'entity', gradient: ['#F87171', '#EF4444', '#DC2626'] },
+      { x: width * 0.15, y: height * 0.65, r: 32, vx: 0.15, vy: -0.2, label: 'CONCEPT', subtext: 'TOPIC', format: 'entity', gradient: ['#34D399', '#10B981', '#047857'] },
+      { x: width * 0.85, y: height * 0.65, r: 32, vx: -0.15, vy: -0.2, label: 'TECHNOLOGY', subtext: 'TOOL', format: 'entity', gradient: ['#A78BFA', '#8B5CF6', '#6D28D9'] },
+      { x: width * 0.50, y: height * 0.15, r: 28, vx: -0.1, vy: 0.1, label: 'LOCATION', subtext: 'PLACE', format: 'entity', gradient: ['#FBBF24', '#F59E0B', '#D97706'] },
+      { x: width * 0.50, y: height * 0.85, r: 28, vx: 0.1, vy: -0.1, label: 'EVENT', subtext: 'DATE', format: 'entity', gradient: ['#38BDF8', '#0EA5E9', '#0284C7'] },
     ];
 
-    // Connections linking PDF, WORD, EXCEL, CSV to central WikiMind Hub & Features
+    // Connections linking all Entity Nodes to central WikiMind Hub & interconnects
     const links = [
-      [0, 4], [1, 4], [2, 4], [3, 4], // 4 File Formats -> WikiMind Hub
-      [0, 5], [1, 5],                 // PDF & WORD -> Vectors
-      [2, 6], [3, 6],                 // EXCEL & CSV -> Graph RAG
-      [0, 7], [2, 7],                 // PDF & EXCEL -> Entities
-      [1, 8], [3, 8],                 // WORD & CSV -> AI QA
-      [5, 4], [6, 4], [7, 4], [8, 4], // Auxiliary Nodes -> WikiMind Hub
+      [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], // Entity Nodes -> WikiMind Hub
+      [1, 5], [2, 5],                                 // ORGANIZATION & PERSON -> LOCATION
+      [3, 6], [4, 6],                                 // CONCEPT & TECHNOLOGY -> EVENT
+      [1, 3], [2, 4],                                 // Cross-entity connections
     ];
 
     let mouse = { x: -1000, y: -1000 };
@@ -194,13 +188,10 @@ export default function HeroNodeGraph({ onNodeClick, isLight = true }) {
       });
     };
 
-    canvas.addEventListener('click', handleClick);
-
     return () => {
       window.removeEventListener('resize', handleResize);
       canvas.removeEventListener('mousemove', handleMouseMove);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
-      canvas.removeEventListener('click', handleClick);
       cancelAnimationFrame(animationFrameId);
     };
   }, [onNodeClick, isLight]);
@@ -209,7 +200,7 @@ export default function HeroNodeGraph({ onNodeClick, isLight = true }) {
     <div style={{ width: '100%', height: '360px', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <canvas 
         ref={canvasRef} 
-        style={{ width: '100%', height: '100%', cursor: 'pointer' }}
+        style={{ width: '100%', height: '100%' }}
       />
     </div>
   );

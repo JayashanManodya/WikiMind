@@ -12,7 +12,8 @@ import {
   CheckCircle2,
   FileText,
   ShieldCheck,
-  HelpCircle
+  HelpCircle,
+  Network
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
@@ -42,7 +43,7 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
 
   const filteredPages = allWikiPages.filter((page) => {
     const matchesSearch = (page.entity_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          (page.summary || '').toLowerCase().includes(searchQuery.toLowerCase());
+      (page.summary || '').toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCat = activeCategory === 'ALL' || (page.entity_type || 'CONCEPT').toUpperCase() === activeCategory;
     return matchesSearch && matchesCat;
   });
@@ -67,13 +68,13 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
 
         {/* Left Column: Headline, Controls & Stats */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', zIndex: 2 }}>
-          
+
           {/* Top Brand Logo */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <img 
-              src="/logo-color.png" 
-              alt="WikiMind Logo" 
-              style={{ width: '36px', height: '36px', objectFit: 'contain', borderRadius: '8px' }} 
+            <img
+              src="/logo-color.png"
+              alt="WikiMind Logo"
+              style={{ width: '36px', height: '36px', objectFit: 'contain', borderRadius: '8px' }}
             />
             <span style={{ fontSize: '20px', fontWeight: '800', color: '#09090B', letterSpacing: '-0.5px' }}>WikiMind</span>
           </div>
@@ -192,33 +193,33 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 {[
-                  { label: 'PDF', bg: '#EF4444', text: '#FFFFFF' },
-                  { label: 'DOC', bg: '#2563EB', text: '#FFFFFF' },
-                  { label: 'XLS', bg: '#10B981', text: '#FFFFFF' }
-                ].map((badge, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      width: '34px',
-                      height: '34px',
-                      borderRadius: '50%',
-                      backgroundColor: badge.bg,
-                      color: badge.text,
-                      fontSize: '10px',
-                      fontWeight: '800',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      border: '2px solid #FFFFFF',
-                      marginLeft: i === 0 ? 0 : '-10px',
-                      boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
-                      letterSpacing: '-0.3px',
-                      lineHeight: 1
-                    }}
-                  >
-                    {badge.label}
-                  </div>
-                ))}
+                  { icon: FileText, bg: '#EF4444', title: 'Document Ingestion' },
+                  { icon: Network, bg: '#10B981', title: 'Knowledge Graph' },
+                  { icon: Sparkles, bg: '#2563EB', title: 'Citation AI QA' }
+                ].map((badge, i) => {
+                  const Icon = badge.icon;
+                  return (
+                    <div
+                      key={i}
+                      title={badge.title}
+                      style={{
+                        width: '34px',
+                        height: '34px',
+                        borderRadius: '50%',
+                        backgroundColor: badge.bg,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: '2px solid #FFFFFF',
+                        marginLeft: i === 0 ? 0 : '-10px',
+                        boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
+                        zIndex: 3 - i
+                      }}
+                    >
+                      <Icon size={16} color="#FFFFFF" />
+                    </div>
+                  );
+                })}
               </div>
               <div>
                 <span style={{ fontSize: '18px', fontWeight: '800', color: '#09090B', display: 'block', lineHeight: '1.1' }}>
@@ -253,12 +254,209 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
           justify: 'center',
           zIndex: 2
         }}>
-          <HeroNodeGraph isLight={false} onNodeClick={() => setActiveTab('wiki')} />
+          <HeroNodeGraph isLight={false} />
         </div>
 
       </div>
 
-      {/* ANIMATED FILE FORMAT MARQUEE TICKER BANNER */}
+
+
+      {/* BOTTOM BENTO ROW: 3 Distinct Bento Cards (Ref Image Layout) */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+        gap: '24px'
+      }}>
+
+        {/* BOTTOM CARD 1: AI Ask Feature Highlight */}
+        <div style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '28px',
+          padding: '28px',
+          border: '1px solid #E2E8F0',
+          boxShadow: '0 8px 30px rgba(0,0,0,0.02)',
+          display: 'flex',
+          flexDirection: 'column',
+          justify: 'space-between',
+          position: 'relative'
+        }}>
+          {/* Floating badge pill 1 */}
+          <div style={{
+            position: 'absolute',
+            top: '20px',
+            left: '20px',
+            backgroundColor: '#059669',
+            color: '#FFFFFF',
+            fontSize: '11px',
+            fontWeight: '700',
+            padding: '4px 12px',
+            borderRadius: '9999px',
+            transform: 'rotate(-6deg)',
+            boxShadow: '0 4px 10px rgba(5, 150, 105, 0.3)'
+          }}>
+            Zero Hallucination
+          </div>
+
+          {/* Floating badge pill 2 */}
+          <div style={{
+            position: 'absolute',
+            top: '20px',
+            right: '20px',
+            backgroundColor: '#2563EB',
+            color: '#FFFFFF',
+            fontSize: '11px',
+            fontWeight: '700',
+            padding: '4px 12px',
+            borderRadius: '9999px',
+            transform: 'rotate(8deg)',
+            boxShadow: '0 4px 10px rgba(37, 99, 235, 0.3)'
+          }}>
+            Citation Grounded
+          </div>
+
+          <div style={{ marginTop: '48px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#09090B', marginBottom: '8px', lineHeight: '1.25' }}>
+              Ask AI Anything with Zero Hallucination
+            </h3>
+            <p style={{ fontSize: '13px', color: '#64748B', lineHeight: '1.5', margin: 0 }}>
+              Grounded AI assistant answering questions with instant click-through citations to your knowledge base.
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#10B981', marginTop: '12px', fontWeight: '600' }}>
+              <ShieldCheck size={16} color="#10B981" />
+              <span>Grounded QA Engine Active</span>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setActiveTab('chat')}
+            style={{
+              marginTop: '20px',
+              alignSelf: 'flex-start',
+              backgroundColor: '#09090B',
+              color: '#FFFFFF',
+              border: 'none',
+              padding: '10px 20px',
+              borderRadius: '9999px',
+              fontSize: '13px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              boxShadow: '0 4px 12px rgba(9, 9, 11, 0.15)'
+            }}
+          >
+            <span>Ask AI Assistant</span>
+            <MessageSquare size={14} />
+          </button>
+        </div>
+
+        {/* BOTTOM CARD 2: Connect Easily / Knowledge Base Quick List (Explore Topics) */}
+        <div style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '28px',
+          padding: '28px',
+          border: '1px solid #E2E8F0',
+          boxShadow: '0 8px 30px rgba(0,0,0,0.02)',
+          display: 'flex',
+          flexDirection: 'column',
+          justify: 'space-between'
+        }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#09090B' }}>Explore Knowledge Pages</h3>
+              <button
+                onClick={() => setActiveTab('wiki')}
+                style={{ background: 'none', border: 'none', fontSize: '13px', color: '#64748B', cursor: 'pointer', fontWeight: '500' }}
+              >
+                See all
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {filteredPages.slice(0, 2).map((pg, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => {
+                    if (setSelectedWikiEntity) setSelectedWikiEntity(pg.entity_name);
+                    setActiveTab('wiki');
+                  }}
+                  style={{
+                    backgroundColor: '#F8FAFC',
+                    borderRadius: '16px',
+                    padding: '12px 16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justify: 'space-between',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <BookOpen size={16} color="#2563EB" />
+                    </div>
+                    <div>
+                      <h4 style={{ fontSize: '13.5px', fontWeight: '700', color: '#09090B', margin: 0 }}>{pg.entity_name}</h4>
+                      <span style={{ fontSize: '11px', color: '#64748B' }}>{pg.entity_type || 'CONCEPT'}</span>
+                    </div>
+                  </div>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <ArrowRight size={12} color="#09090B" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* BOTTOM CARD 3: Document Uploading & Ingestion Feature */}
+        <div style={{
+          backgroundColor: '#ECFDF5',
+          borderRadius: '28px',
+          padding: '28px',
+          border: '1px solid #A7F3D0',
+          boxShadow: '0 8px 30px rgba(16, 185, 129, 0.05)',
+          display: 'flex',
+          flexDirection: 'column',
+          justify: 'space-between',
+          position: 'relative'
+        }}>
+          <div>
+            <span style={{ fontSize: '12px', fontWeight: '700', color: '#047857', backgroundColor: '#D1FAE5', padding: '4px 10px', borderRadius: '9999px' }}>
+              Multi-Format Ingestion
+            </span>
+            <h3 style={{ fontSize: '22px', fontWeight: '800', color: '#064E3B', marginTop: '14px', marginBottom: '8px', lineHeight: '1.2' }}>
+              Upload Documents & Build Knowledge!
+            </h3>
+            <p style={{ fontSize: '13px', color: '#047857', lineHeight: '1.5' }}>
+              Upload PDFs, Word DOCX, Excel spreadsheets, and text files for automatic entity extraction and interlinked wiki creation.
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '20px' }}>
+            <button
+              onClick={() => setActiveTab('upload')}
+              style={{
+                backgroundColor: '#BEF264',
+                color: '#09090B',
+                border: 'none',
+                padding: '8px 18px',
+                borderRadius: '9999px',
+                fontSize: '12.5px',
+                fontWeight: '800',
+                cursor: 'pointer',
+                letterSpacing: '0.5px'
+              }}
+            >
+              UPLOAD NOW
+            </button>
+            <UploadCloud size={28} color="#059669" />
+          </div>
+        </div>
+      </div>
+
+      {/* ANIMATED FILE FORMAT MARQUEE TICKER BANNER (Below Main 3 Cards) */}
       <style>{`
         @keyframes marqueeTicker {
           0% { transform: translateX(0%); }
@@ -306,117 +504,117 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
             animation: 'marqueeTicker 28s linear infinite'
           }}>
             {[
-              { 
+              {
                 name: 'PDF Documents', ext: '.pdf', color: '#EF4444',
                 svg: (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#DC2626"/>
-                    <path d="M14 2V8H20L14 2Z" fill="#FCA5A5"/>
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#DC2626" />
+                    <path d="M14 2V8H20L14 2Z" fill="#FCA5A5" />
                     <text x="7" y="17" fill="white" fontSize="7" fontWeight="900" fontFamily="sans-serif">PDF</text>
                   </svg>
                 )
               },
-              { 
+              {
                 name: 'Word Documents', ext: '.docx, .doc', color: '#2563EB',
                 svg: (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#1D4ED8"/>
-                    <path d="M14 2V8H20L14 2Z" fill="#93C5FD"/>
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#1D4ED8" />
+                    <path d="M14 2V8H20L14 2Z" fill="#93C5FD" />
                     <text x="7" y="17" fill="white" fontSize="7" fontWeight="900" fontFamily="sans-serif">DOC</text>
                   </svg>
                 )
               },
-              { 
+              {
                 name: 'Excel Spreadsheets', ext: '.xlsx, .xls', color: '#10B981',
                 svg: (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#047857"/>
-                    <path d="M14 2V8H20L14 2Z" fill="#6EE7B7"/>
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#047857" />
+                    <path d="M14 2V8H20L14 2Z" fill="#6EE7B7" />
                     <text x="7.5" y="17" fill="white" fontSize="7" fontWeight="900" fontFamily="sans-serif">XLS</text>
                   </svg>
                 )
               },
-              { 
+              {
                 name: 'CSV Datasets', ext: '.csv', color: '#0EA5E9',
                 svg: (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#0284C7"/>
-                    <path d="M14 2V8H20L14 2Z" fill="#7DD3FC"/>
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#0284C7" />
+                    <path d="M14 2V8H20L14 2Z" fill="#7DD3FC" />
                     <text x="7" y="17" fill="white" fontSize="7" fontWeight="900" fontFamily="sans-serif">CSV</text>
                   </svg>
                 )
               },
-              { 
+              {
                 name: 'Text Files', ext: '.txt', color: '#334155',
                 svg: (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#1E293B"/>
-                    <path d="M14 2V8H20L14 2Z" fill="#94A3B8"/>
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#1E293B" />
+                    <path d="M14 2V8H20L14 2Z" fill="#94A3B8" />
                     <text x="7.5" y="17" fill="white" fontSize="7" fontWeight="900" fontFamily="sans-serif">TXT</text>
                   </svg>
                 )
               },
-              { 
+              {
                 name: 'Markdown Docs', ext: '.md', color: '#8B5CF6',
                 svg: (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#6D28D9"/>
-                    <path d="M14 2V8H20L14 2Z" fill="#C4B5FD"/>
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#6D28D9" />
+                    <path d="M14 2V8H20L14 2Z" fill="#C4B5FD" />
                     <text x="8" y="17" fill="white" fontSize="7" fontWeight="900" fontFamily="sans-serif">MD</text>
                   </svg>
                 )
               },
-              { 
+              {
                 name: 'PowerPoint Slides', ext: '.pptx, .ppt', color: '#F97316',
                 svg: (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#EA580C"/>
-                    <path d="M14 2V8H20L14 2Z" fill="#FDBA74"/>
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#EA580C" />
+                    <path d="M14 2V8H20L14 2Z" fill="#FDBA74" />
                     <text x="7.5" y="17" fill="white" fontSize="7" fontWeight="900" fontFamily="sans-serif">PPT</text>
                   </svg>
                 )
               },
-              { 
+              {
                 name: 'HTML Web Pages', ext: '.html, .htm', color: '#F59E0B',
                 svg: (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#D97706"/>
-                    <path d="M14 2V8H20L14 2Z" fill="#FDE68A"/>
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#D97706" />
+                    <path d="M14 2V8H20L14 2Z" fill="#FDE68A" />
                     <text x="6" y="17" fill="white" fontSize="6.5" fontWeight="900" fontFamily="sans-serif">HTML</text>
                   </svg>
                 )
               },
-              { 
+              {
                 name: 'PNG Images', ext: '.png', color: '#06B6D4',
                 svg: (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#0891B2"/>
-                    <path d="M14 2V8H20L14 2Z" fill="#67E8F9"/>
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#0891B2" />
+                    <path d="M14 2V8H20L14 2Z" fill="#67E8F9" />
                     <text x="7" y="17" fill="white" fontSize="7" fontWeight="900" fontFamily="sans-serif">PNG</text>
                   </svg>
                 )
               },
-              { 
+              {
                 name: 'JPEG Images', ext: '.jpg, .jpeg', color: '#F43F5E',
                 svg: (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#E11D48"/>
-                    <path d="M14 2V8H20L14 2Z" fill="#FDA4AF"/>
+                    <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#E11D48" />
+                    <path d="M14 2V8H20L14 2Z" fill="#FDA4AF" />
                     <text x="7" y="17" fill="white" fontSize="7" fontWeight="900" fontFamily="sans-serif">JPG</text>
                   </svg>
                 )
               }
             ].concat([
-              { name: 'PDF Documents', ext: '.pdf', color: '#EF4444', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#DC2626"/><path d="M14 2V8H20L14 2Z" fill="#FCA5A5"/><text x="7" y="17" fill="white" fontSize="7" fontWeight="900">PDF</text></svg> },
-              { name: 'Word Documents', ext: '.docx, .doc', color: '#2563EB', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#1D4ED8"/><path d="M14 2V8H20L14 2Z" fill="#93C5FD"/><text x="7" y="17" fill="white" fontSize="7" fontWeight="900">DOC</text></svg> },
-              { name: 'Excel Spreadsheets', ext: '.xlsx, .xls', color: '#10B981', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#047857"/><path d="M14 2V8H20L14 2Z" fill="#6EE7B7"/><text x="7.5" y="17" fill="white" fontSize="7" fontWeight="900">XLS</text></svg> },
-              { name: 'CSV Datasets', ext: '.csv', color: '#0EA5E9', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#0284C7"/><path d="M14 2V8H20L14 2Z" fill="#7DD3FC"/><text x="7" y="17" fill="white" fontSize="7" fontWeight="900">CSV</text></svg> },
-              { name: 'Text Files', ext: '.txt', color: '#334155', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#1E293B"/><path d="M14 2V8H20L14 2Z" fill="#94A3B8"/><text x="7.5" y="17" fill="white" fontSize="7" fontWeight="900">TXT</text></svg> },
-              { name: 'Markdown Docs', ext: '.md', color: '#8B5CF6', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#6D28D9"/><path d="M14 2V8H20L14 2Z" fill="#C4B5FD"/><text x="8" y="17" fill="white" fontSize="7" fontWeight="900">MD</text></svg> },
-              { name: 'PowerPoint Slides', ext: '.pptx, .ppt', color: '#F97316', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#EA580C"/><path d="M14 2V8H20L14 2Z" fill="#FDBA74"/><text x="7.5" y="17" fill="white" fontSize="7" fontWeight="900">PPT</text></svg> },
-              { name: 'HTML Web Pages', ext: '.html, .htm', color: '#F59E0B', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#D97706"/><path d="M14 2V8H20L14 2Z" fill="#FDE68A"/><text x="6" y="17" fill="white" fontSize="6.5" fontWeight="900">HTML</text></svg> },
-              { name: 'PNG Images', ext: '.png', color: '#06B6D4', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#0891B2"/><path d="M14 2V8H20L14 2Z" fill="#67E8F9"/><text x="7" y="17" fill="white" fontSize="7" fontWeight="900">PNG</text></svg> },
-              { name: 'JPEG Images', ext: '.jpg, .jpeg', color: '#F43F5E', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#E11D48"/><path d="M14 2V8H20L14 2Z" fill="#FDA4AF"/><text x="7" y="17" fill="white" fontSize="7" fontWeight="900">JPG</text></svg> }
+              { name: 'PDF Documents', ext: '.pdf', color: '#EF4444', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#DC2626" /><path d="M14 2V8H20L14 2Z" fill="#FCA5A5" /><text x="7" y="17" fill="white" fontSize="7" fontWeight="900">PDF</text></svg> },
+              { name: 'Word Documents', ext: '.docx, .doc', color: '#2563EB', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#1D4ED8" /><path d="M14 2V8H20L14 2Z" fill="#93C5FD" /><text x="7" y="17" fill="white" fontSize="7" fontWeight="900">DOC</text></svg> },
+              { name: 'Excel Spreadsheets', ext: '.xlsx, .xls', color: '#10B981', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#047857" /><path d="M14 2V8H20L14 2Z" fill="#6EE7B7" /><text x="7.5" y="17" fill="white" fontSize="7" fontWeight="900">XLS</text></svg> },
+              { name: 'CSV Datasets', ext: '.csv', color: '#0EA5E9', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#0284C7" /><path d="M14 2V8H20L14 2Z" fill="#7DD3FC" /><text x="7" y="17" fill="white" fontSize="7" fontWeight="900">CSV</text></svg> },
+              { name: 'Text Files', ext: '.txt', color: '#334155', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#1E293B" /><path d="M14 2V8H20L14 2Z" fill="#94A3B8" /><text x="7.5" y="17" fill="white" fontSize="7" fontWeight="900">TXT</text></svg> },
+              { name: 'Markdown Docs', ext: '.md', color: '#8B5CF6', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#6D28D9" /><path d="M14 2V8H20L14 2Z" fill="#C4B5FD" /><text x="8" y="17" fill="white" fontSize="7" fontWeight="900">MD</text></svg> },
+              { name: 'PowerPoint Slides', ext: '.pptx, .ppt', color: '#F97316', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#EA580C" /><path d="M14 2V8H20L14 2Z" fill="#FDBA74" /><text x="7.5" y="17" fill="white" fontSize="7" fontWeight="900">PPT</text></svg> },
+              { name: 'HTML Web Pages', ext: '.html, .htm', color: '#F59E0B', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#D97706" /><path d="M14 2V8H20L14 2Z" fill="#FDE68A" /><text x="6" y="17" fill="white" fontSize="6.5" fontWeight="900">HTML</text></svg> },
+              { name: 'PNG Images', ext: '.png', color: '#06B6D4', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#0891B2" /><path d="M14 2V8H20L14 2Z" fill="#67E8F9" /><text x="7" y="17" fill="white" fontSize="7" fontWeight="900">PNG</text></svg> },
+              { name: 'JPEG Images', ext: '.jpg, .jpeg', color: '#F43F5E', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" fill="#E11D48" /><path d="M14 2V8H20L14 2Z" fill="#FDA4AF" /><text x="7" y="17" fill="white" fontSize="7" fontWeight="900">JPG</text></svg> }
             ]).map((fmt, i) => (
               <div
                 key={i}
@@ -441,198 +639,6 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
             ))}
           </div>
         </div>
-      </div>
-
-      {/* BOTTOM BENTO ROW: 3 Distinct Bento Cards (Ref Image Layout) */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-        gap: '24px'
-      }}>
-
-        {/* BOTTOM CARD 1: White Card with Floating Badges matching Ref Image (Zero Boundary) */}
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: '28px',
-          padding: '28px',
-          border: '1px solid #E2E8F0',
-          boxShadow: '0 8px 30px rgba(0,0,0,0.02)',
-          display: 'flex',
-          flexDirection: 'column',
-          justify: 'space-between',
-          position: 'relative'
-        }}>
-          {/* Floating badge pill 1 */}
-          <div style={{
-            position: 'absolute',
-            top: '20px',
-            left: '20px',
-            backgroundColor: '#FF4D4D',
-            color: '#FFFFFF',
-            fontSize: '11px',
-            fontWeight: '700',
-            padding: '4px 12px',
-            borderRadius: '9999px',
-            transform: 'rotate(-6deg)',
-            boxShadow: '0 4px 10px rgba(255, 77, 77, 0.3)'
-          }}>
-            Top rated RAG
-          </div>
-
-          {/* Floating badge pill 2 */}
-          <div style={{
-            position: 'absolute',
-            top: '20px',
-            right: '20px',
-            backgroundColor: '#09090B',
-            color: '#FFFFFF',
-            fontSize: '11px',
-            fontWeight: '700',
-            padding: '4px 12px',
-            borderRadius: '9999px',
-            transform: 'rotate(8deg)',
-            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)'
-          }}>
-            Grounded AI
-          </div>
-
-          <div style={{ marginTop: '48px' }}>
-            <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#09090B', marginBottom: '8px', lineHeight: '1.25' }}>
-              Grow your knowledge with zero boundary
-            </h3>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12.5px', color: '#64748B', marginTop: '10px' }}>
-              <ShieldCheck size={16} color="#10B981" />
-              <span>Trusted by 50,000+ queries</span>
-            </div>
-          </div>
-
-          <button
-            onClick={() => setActiveTab('chat')}
-            style={{
-              marginTop: '20px',
-              backgroundColor: '#09090B',
-              color: '#FFFFFF',
-              border: 'none',
-              padding: '12px 20px',
-              borderRadius: '16px',
-              fontSize: '13px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justify: 'center',
-              gap: '8px'
-            }}
-          >
-            <span>Ask AI Assistant</span>
-            <MessageSquare size={14} />
-          </button>
-        </div>
-
-        {/* BOTTOM CARD 2: Connect Easily / Knowledge Base Quick List (Explore Topics) */}
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: '28px',
-          padding: '28px',
-          border: '1px solid #E2E8F0',
-          boxShadow: '0 8px 30px rgba(0,0,0,0.02)',
-          display: 'flex',
-          flexDirection: 'column',
-          justify: 'space-between'
-        }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#09090B' }}>Explore Topics</h3>
-              <button 
-                onClick={() => setActiveTab('wiki')}
-                style={{ background: 'none', border: 'none', fontSize: '13px', color: '#64748B', cursor: 'pointer', fontWeight: '500' }}
-              >
-                See all
-              </button>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {filteredPages.slice(0, 2).map((pg, idx) => (
-                <div 
-                  key={idx}
-                  onClick={() => {
-                    if (setSelectedWikiEntity) setSelectedWikiEntity(pg.entity_name);
-                    setActiveTab('wiki');
-                  }}
-                  style={{
-                    backgroundColor: '#F8FAFC',
-                    borderRadius: '16px',
-                    padding: '12px 16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justify: 'space-between',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <BookOpen size={16} color="#2563EB" />
-                    </div>
-                    <div>
-                      <h4 style={{ fontSize: '13.5px', fontWeight: '700', color: '#09090B', margin: 0 }}>{pg.entity_name}</h4>
-                      <span style={{ fontSize: '11px', color: '#64748B' }}>{pg.entity_type || 'CONCEPT'}</span>
-                    </div>
-                  </div>
-                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <ArrowRight size={12} color="#09090B" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* BOTTOM CARD 3: Mint Soft Glow Box / Ingestion Feature matching Ref Image */}
-        <div style={{
-          backgroundColor: '#ECFDF5',
-          borderRadius: '28px',
-          padding: '28px',
-          border: '1px solid #A7F3D0',
-          boxShadow: '0 8px 30px rgba(16, 185, 129, 0.05)',
-          display: 'flex',
-          flexDirection: 'column',
-          justify: 'space-between',
-          position: 'relative'
-        }}>
-          <div>
-            <span style={{ fontSize: '12px', fontWeight: '700', color: '#047857', backgroundColor: '#D1FAE5', padding: '4px 10px', borderRadius: '9999px' }}>
-              Multi-Format Parser
-            </span>
-            <h3 style={{ fontSize: '22px', fontWeight: '800', color: '#064E3B', marginTop: '14px', marginBottom: '8px', lineHeight: '1.2' }}>
-              LlamaParse Document Platform!
-            </h3>
-            <p style={{ fontSize: '13px', color: '#047857', lineHeight: '1.5' }}>
-              Upload PDFs, Word DOCX, and TXT files for deep layout OCR & structured Markdown generation.
-            </p>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '20px' }}>
-            <button
-              onClick={() => setActiveTab('upload')}
-              style={{
-                backgroundColor: '#BEF264',
-                color: '#09090B',
-                border: 'none',
-                padding: '8px 18px',
-                borderRadius: '9999px',
-                fontSize: '12.5px',
-                fontWeight: '800',
-                cursor: 'pointer',
-                letterSpacing: '0.5px'
-              }}
-            >
-              TRY NOW
-            </button>
-            <UploadCloud size={28} color="#059669" />
-          </div>
-        </div>
-
       </div>
 
       {/* Platform Guide & Documentation Banner */}

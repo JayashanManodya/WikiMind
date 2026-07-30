@@ -15,10 +15,12 @@ import {
   ChevronLeft,
   ChevronRight,
   Pencil,
-  Search
+  Search,
+  Check
 } from 'lucide-react';
 import { askQuestion, getSessionMessages, deleteChatSession } from '../api/client';
 import { useData } from '../context/DataContext';
+import { useAuth } from '../context/AuthContext';
 
 const INITIAL_WELCOME_MESSAGE = [
   {
@@ -38,6 +40,7 @@ const createDefaultSession = () => ({
 });
 
 export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
+  const { user } = useAuth();
   const { chatSessions: cachedSessions, loadChatSessions } = useData();
   const [sessions, setSessions] = useState([createDefaultSession()]);
   const [activeSessionId, setActiveSessionId] = useState(sessions[0]?.id);
@@ -383,9 +386,10 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
                     display: 'flex',
                     alignItems: 'center',
                     justify: 'space-between',
-                    padding: '12px 14px',
+                    padding: '10px 14px',
                     borderRadius: '16px',
-                    backgroundColor: isActive ? '#EEF2FF' : 'transparent',
+                    backgroundColor: isActive ? '#EEF2FF' : '#F8FAFC',
+                    border: isActive ? '1px solid #C7D2FE' : '1px solid #E2E8F0',
                     color: isActive ? '#4F46E5' : '#0F172A',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
@@ -393,27 +397,56 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden', flex: 1, paddingRight: '6px' }}>
-                    <MessageSquare size={16} color={isActive ? '#4F46E5' : '#0F172A'} style={{ flexShrink: 0 }} />
+                    <MessageSquare size={16} color={isActive ? '#4F46E5' : '#64748B'} style={{ flexShrink: 0 }} />
                     
                     {isEditing ? (
-                      <input 
-                        type="text"
-                        value={editingTitle}
-                        onChange={(e) => setEditingTitle(e.target.value)}
-                        onBlur={() => handleSaveRename(sess.id)}
-                        onKeyDown={(e) => { if (e.key === 'Enter') handleSaveRename(sess.id); }}
-                        autoFocus
-                        style={{
-                          backgroundColor: '#FFFFFF',
-                          border: '1px solid #4F46E5',
-                          borderRadius: '4px',
-                          fontSize: '13px',
-                          padding: '2px 6px',
-                          color: '#09090B',
-                          width: '100%',
-                          outline: 'none'
-                        }}
-                      />
+                      <div 
+                        style={{ display: 'flex', alignItems: 'center', gap: '6px', width: '100%' }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <input 
+                          type="text"
+                          value={editingTitle}
+                          onChange={(e) => setEditingTitle(e.target.value)}
+                          onKeyDown={(e) => { 
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleSaveRename(sess.id);
+                            }
+                          }}
+                          autoFocus
+                          style={{
+                            backgroundColor: '#FFFFFF',
+                            border: '1px solid #4F46E5',
+                            borderRadius: '6px',
+                            fontSize: '12.5px',
+                            padding: '3px 8px',
+                            color: '#09090B',
+                            width: '100%',
+                            outline: 'none'
+                          }}
+                        />
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSaveRename(sess.id);
+                          }}
+                          title="Save title"
+                          style={{
+                            backgroundColor: '#4F46E5',
+                            border: 'none',
+                            borderRadius: '6px',
+                            padding: '4px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justify: 'center',
+                            flexShrink: 0
+                          }}
+                        >
+                          <Check size={13} color="#FFFFFF" />
+                        </button>
+                      </div>
                     ) : (
                       <span style={{ fontSize: '13.5px', fontWeight: isActive ? '600' : '500', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                         {sess.title}
@@ -421,43 +454,43 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
                     )}
                   </div>
 
-                  {/* Actions & Active Blue Indicator Dot */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                    {isActive && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#FFFFFF', padding: '4px 8px', borderRadius: '12px', boxShadow: '0 2px 6px rgba(0,0,0,0.05)' }}>
+                  {/* Action Buttons (Edit & Delete) & Active Indicator */}
+                  {!isEditing && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: '#FFFFFF', padding: '3px 6px', borderRadius: '10px', border: '1px solid #E2E8F0', boxShadow: '0 2px 4px rgba(0,0,0,0.03)' }}>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             setEditingSessionId(sess.id);
                             setEditingTitle(sess.title);
                           }}
-                          title="Rename Chat"
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}
+                          title="Rename Conversation"
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}
                         >
-                          <Pencil size={13} color="#64748B" />
+                          <Pencil size={12} color="#64748B" />
                         </button>
 
                         <button 
                           onClick={(e) => handleDeleteSession(sess.id, e)}
-                          title="Delete Chat"
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}
+                          title="Delete Conversation"
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', display: 'flex', alignItems: 'center' }}
                         >
-                          <Trash2 size={13} color="#64748B" />
+                          <Trash2 size={12} color="#EF4444" />
                         </button>
                       </div>
-                    )}
 
-                    {/* Active Indicator Blue Dot */}
-                    {isActive && (
-                      <div style={{
-                        width: '8px',
-                        height: '8px',
-                        borderRadius: '50%',
-                        backgroundColor: '#4F46E5',
-                        boxShadow: '0 0 8px rgba(79, 70, 229, 0.6)'
-                      }} />
-                    )}
-                  </div>
+                      {/* Active Indicator Blue Dot */}
+                      {isActive && (
+                        <div style={{
+                          width: '7px',
+                          height: '7px',
+                          borderRadius: '50%',
+                          backgroundColor: '#4F46E5',
+                          boxShadow: '0 0 6px rgba(79, 70, 229, 0.6)'
+                        }} />
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -472,34 +505,20 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '14px', borderBottom: '1px solid var(--border-color)', marginBottom: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <button 
-              className="btn btn-outline" 
               onClick={() => setShowSidebar(!showSidebar)} 
-              style={{ padding: '6px', borderRadius: '6px' }}
+              style={{ background: 'none', border: 'none', padding: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '6px' }}
               title={showSidebar ? 'Hide Sidebar' : 'Show Sidebar'}
             >
-              {showSidebar ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+              {showSidebar ? <ChevronLeft size={18} color="#09090B" /> : <ChevronRight size={18} color="#09090B" />}
             </button>
 
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#09090B', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Bot size={18} color="#FFFFFF" />
+            <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
+              <img src="/full.png" alt="WikiMind Logo" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%', display: 'block' }} />
             </div>
             <div>
               <h3 style={{ fontSize: '15.5px', fontWeight: '600' }}>{activeSession?.title || 'WikiMind Grounded Engine'}</h3>
               <p style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>Zero-hallucination factual answer model</p>
             </div>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <button 
-              className="btn btn-outline" 
-              onClick={handleClearCurrentSession}
-              style={{ fontSize: '12px', padding: '6px 12px', gap: '6px' }}
-              title="Clear Current Chat"
-            >
-              <Trash2 size={13} color="#71717A" />
-              <span>Clear Current</span>
-            </button>
-            <span className="badge-clean">WikiMind v1.0</span>
           </div>
         </div>
 
@@ -510,63 +529,116 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
             return (
               <div 
                 key={idx}
-                className={isUser ? 'chat-user-msg' : 'chat-bot-msg'}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: isUser ? 'flex-end' : 'flex-start',
+                  gap: '6px',
+                  maxWidth: isUser ? '75%' : '82%',
+                  marginLeft: isUser ? 'auto' : '0',
+                  marginRight: isUser ? '0' : 'auto'
+                }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                  {isUser ? (
-                    <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: '#27272A', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>
-                      U
-                    </div>
-                  ) : (
-                    <div style={{ width: '22px', height: '22px', borderRadius: '4px', backgroundColor: '#09090B', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Bot size={12} color="#FFF" />
+                {/* Header Avatar & Sender Info */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {!isUser && (
+                    <div style={{
+                      width: '28px',
+                      height: '28px',
+                      borderRadius: '50%',
+                      backgroundColor: '#FFFFFF',
+                      border: '1px solid #E2E8F0',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justify: 'center',
+                      overflow: 'hidden',
+                      flexShrink: 0,
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.06)'
+                    }}>
+                      <img src="/full.png" alt="WikiMind" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%', display: 'block' }} />
                     </div>
                   )}
-                  
-                  <span style={{ fontSize: '12px', fontWeight: '600' }}>
+
+                  <span style={{ fontSize: '12px', fontWeight: '600', color: '#64748B' }}>
                     {isUser ? 'You' : 'WikiMind Assistant'}
                   </span>
 
+                  {isUser && (
+                    user && user.picture ? (
+                      <img
+                        src={user.picture}
+                        alt={user.name || 'User'}
+                        style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }}
+                      />
+                    ) : (
+                      <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#09090B', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '700' }}>
+                        {user && user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                      </div>
+                    )
+                  )}
+
                   {!isUser && msg.grounded !== undefined && (
-                    <span className="badge-clean" style={{ marginLeft: 'auto', fontSize: '10px' }}>
+                    <span className="badge-clean" style={{ marginLeft: '4px', fontSize: '10px' }}>
                       {msg.grounded ? <CheckCircle2 size={11} color="#10B981" /> : <XCircle size={11} color="#EF4444" />}
                       {msg.grounded ? 'Grounded' : 'Refused / No Knowledge'}
                     </span>
                   )}
                 </div>
 
-                <p style={{ fontSize: '14.5px', whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>{msg.text}</p>
+                {/* Message Bubble */}
+                <div style={{
+                  backgroundColor: isUser ? '#FFFFFF' : '#F8FAFC',
+                  border: '1px solid #E2E8F0',
+                  borderRadius: isUser ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
+                  padding: '14px 18px',
+                  color: '#0F172A',
+                  boxShadow: '0 4px 14px rgba(0, 0, 0, 0.03)',
+                  fontSize: '14.5px',
+                  lineHeight: '1.6',
+                  whiteSpace: 'pre-wrap',
+                  width: '100%'
+                }}>
+                  <p style={{ margin: 0, color: '#0F172A' }}>{msg.text}</p>
 
-                {/* Source Citations */}
-                {!isUser && msg.citations && msg.citations.length > 0 && (
-                  <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Citations:</span>
-                    {msg.citations.map((cite, cIdx) => {
-                      const citeStr = typeof cite === 'string' 
-                        ? cite 
-                        : (cite.file || cite.name || cite.source || (cite.snippet ? (cite.snippet.substring(0, 35) + '...') : 'Source Document'));
-                      const entityName = citeStr.replace('.md', '').replace(/_/g, ' ');
+                  {/* Source Citations */}
+                  {!isUser && msg.citations && msg.citations.length > 0 && (
+                    <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '11px', color: '#64748B', fontWeight: '600' }}>Citations:</span>
+                      {msg.citations.map((cite, cIdx) => {
+                        let rawStr = typeof cite === 'string' 
+                          ? cite 
+                          : (cite.entity_name || cite.name || cite.title || cite.file || cite.source || 'Wiki Article');
+                        
+                        // Extract filename if full path
+                        if (typeof rawStr === 'string') {
+                          rawStr = rawStr.split('/').pop().split('\\').pop();
+                          rawStr = rawStr.replace(/\.[a-zA-Z0-9]+$/i, ''); // Strip .md, .pdf, etc.
+                          rawStr = rawStr.replace(/_/g, ' ').trim(); // Replace underscores with spaces
+                        }
 
-                      return (
-                        <span 
-                          key={cIdx} 
-                          className="badge-clean" 
-                          style={{ cursor: 'pointer' }}
-                          title={typeof cite === 'object' && cite.snippet ? cite.snippet : citeStr}
-                          onClick={() => {
-                            if (setSelectedWikiEntity && entityName && !entityName.includes('...')) {
-                              setSelectedWikiEntity(entityName);
-                              setActiveTab('wiki');
-                            }
-                          }}
-                        >
-                          <BookOpen size={10} />
-                          {citeStr}
-                        </span>
-                      );
-                    })}
-                  </div>
-                )}
+                        const cleanWikiName = rawStr || 'Wiki Article';
+
+                        return (
+                          <span 
+                            key={cIdx} 
+                            className="badge-clean"
+                            style={{ cursor: 'pointer' }}
+                            title={`View Wiki Article: ${cleanWikiName}`}
+                            onClick={() => {
+                              if (setSelectedWikiEntity && cleanWikiName) {
+                                setSelectedWikiEntity(cleanWikiName);
+                                setActiveTab('wiki');
+                              }
+                            }}
+                          >
+                            <BookOpen size={11} color="#2563EB" />
+                            {cleanWikiName}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })}
@@ -588,15 +660,16 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
             marginTop: '16px',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '10px',
             backgroundColor: '#FFFFFF',
-            border: '1px solid var(--border-color)',
-            borderRadius: 'var(--radius-lg)',
-            padding: '8px 12px',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.04)'
+            border: '1px solid #E2E8F0',
+            borderRadius: '9999px',
+            padding: '6px 8px 6px 16px',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.03)',
+            overflow: 'hidden'
           }}
         >
-          <Paperclip size={18} color="#71717A" style={{ cursor: 'pointer', marginLeft: '4px' }} />
+          <Paperclip size={18} color="#71717A" style={{ cursor: 'pointer' }} />
 
           <input 
             type="text" 
@@ -621,19 +694,23 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
             type="submit" 
             disabled={!inputQuery.trim() || isAsking}
             style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '8px',
-              backgroundColor: inputQuery.trim() ? '#09090B' : '#E4E4E7',
+              width: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              backgroundColor: inputQuery.trim() ? '#09090B' : '#F4F4F5',
               border: 'none',
-              display: 'flex',
+              padding: 0,
+              margin: 0,
+              display: 'inline-flex',
               alignItems: 'center',
               justify: 'center',
               cursor: inputQuery.trim() ? 'pointer' : 'default',
-              transition: 'background-color 0.15s ease'
+              transition: 'all 0.15s ease',
+              flexShrink: 0,
+              outline: 'none'
             }}
           >
-            <Send size={15} color={inputQuery.trim() ? '#FFFFFF' : '#A1A1AA'} />
+            <Send size={15} color={inputQuery.trim() ? '#FFFFFF' : '#A1A1AA'} style={{ display: 'block', margin: 'auto' }} />
           </button>
         </form>
 

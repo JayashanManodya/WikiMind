@@ -352,9 +352,9 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
 
         ctx.fill();
 
-        // Text label inside / centered over node
-        ctx.font = `700 ${Math.min(13, Math.max(10, n.r * 0.55))}px Inter, sans-serif`;
-        ctx.fillStyle = '#FFFFFF';
+        // Text label inside / centered over node (Solid Black)
+        ctx.font = `800 ${Math.min(13, Math.max(10, n.r * 0.55))}px Inter, sans-serif`;
+        ctx.fillStyle = '#000000';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         
