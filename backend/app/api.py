@@ -33,7 +33,15 @@ app = FastAPI(
 # Configure CORS from settings
 sys_settings = get_settings()
 raw_origins = sys_settings.cors_origins.split(",") if sys_settings.cors_origins else ["*"]
-allowed_origins = [o.strip() for o in raw_origins if o.strip()]
+allowed_origins = []
+for o in raw_origins:
+    s = o.strip()
+    if s:
+        allowed_origins.append(s)
+        if s != "*" and s.endswith("/"):
+            allowed_origins.append(s.rstrip("/"))
+        elif s != "*" and not s.endswith("/"):
+            allowed_origins.append(s + "/")
 
 app.add_middleware(
     CORSMiddleware,
