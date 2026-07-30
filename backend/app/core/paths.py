@@ -6,6 +6,7 @@ a single, unified per-user directory structure under wiki/users/{user_id}/.
 """
 
 import os
+import tempfile
 from pathlib import Path
 
 def get_project_root() -> Path:
@@ -18,9 +19,25 @@ def get_project_root() -> Path:
     return cwd
 
 def get_base_wiki_dir() -> Path:
-    """Get the base wiki directory root (IKMS_WikiLLM/wiki)."""
-    root = get_project_root()
-    wiki_dir = root / "wiki"
+    """Get the base wiki directory root (IKMS_WikiLLM/wiki).
+    
+    Falls back to /tmp/wiki on serverless platforms (Vercel/AWS Lambda) where the project root is read-only.
+    """
+    if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+        wiki_dir = Path(tempfile.gettempdir()) / "wiki"
+    else:
+        root = get_project_root()
+        wiki_dir = root / "wiki"
+        try:
+            wiki_dir.mkdir(parents=True, exist_ok=True)
+            # Test write access
+            test_file = wiki_dir / ".write_test"
+            test_file.touch()
+            test_file.unlink()
+            return wiki_dir
+        except (OSError, PermissionError):
+            wiki_dir = Path(tempfile.gettempdir()) / "wiki"
+
     wiki_dir.mkdir(parents=True, exist_ok=True)
     return wiki_dir
 
