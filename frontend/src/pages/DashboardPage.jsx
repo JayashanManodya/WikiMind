@@ -110,22 +110,23 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
                 backgroundColor: '#D9F99D', // Lime yellow pill button matching reference image
                 color: '#09090B',
                 border: 'none',
-                padding: '14px 24px',
+                padding: '10px 18px',
                 borderRadius: '9999px',
-                fontSize: '15px',
-                fontWeight: '700',
+                fontSize: '14px',
+                fontWeight: '600',
+                height: '44px',
                 cursor: 'pointer',
-                display: 'flex',
+                display: 'inline-flex',
                 alignItems: 'center',
-                gap: '10px',
-                boxShadow: '0 4px 14px rgba(217, 249, 157, 0.5)',
+                gap: '8px',
+                boxShadow: '0 4px 14px rgba(217, 249, 157, 0.4)',
                 transition: 'transform 0.15s ease'
               }}
             >
               <span>Start Exploring</span>
               <div style={{
-                width: '32px',
-                height: '32px',
+                width: '24px',
+                height: '24px',
                 borderRadius: '50%',
                 backgroundColor: '#09090B',
                 display: 'inline-flex',
@@ -135,7 +136,7 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
                 padding: 0,
                 margin: 0
               }}>
-                <ArrowUpRight size={18} color="#FFFFFF" style={{ display: 'block' }} />
+                <ArrowUpRight size={14} color="#FFFFFF" style={{ display: 'block' }} />
               </div>
             </button>
 
@@ -145,12 +146,13 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
                 backgroundColor: '#F4F4F5',
                 color: '#09090B',
                 border: '1px solid #E4E4E7',
-                padding: '14px 24px',
+                padding: '10px 20px',
                 borderRadius: '9999px',
                 fontSize: '14px',
                 fontWeight: '600',
+                height: '44px',
                 cursor: 'pointer',
-                display: 'flex',
+                display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px'
               }}
@@ -165,12 +167,13 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
                 backgroundColor: '#EFF6FF',
                 color: '#2563EB',
                 border: '1px solid #BFDBFE',
-                padding: '14px 24px',
+                padding: '10px 20px',
                 borderRadius: '9999px',
                 fontSize: '14px',
                 fontWeight: '600',
+                height: '44px',
                 cursor: 'pointer',
-                display: 'flex',
+                display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px'
               }}
@@ -677,7 +680,8 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            boxShadow: '0 4px 12px rgba(14, 165, 233, 0.3)'
+            boxShadow: '0 4px 12px rgba(14, 165, 233, 0.3)',
+            marginLeft: 'auto'
           }}
         >
           <span>Open Full Platform Guide</span>

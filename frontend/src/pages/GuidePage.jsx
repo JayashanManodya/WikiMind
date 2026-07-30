@@ -108,7 +108,7 @@ export default function GuidePage({ setActiveTab }) {
       </div>
 
       {/* 4-Step Interactive Workflow Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '20px', position: 'relative' }}>
         {steps.map((s, idx) => {
           const IconComp = s.icon;
           return (
@@ -132,11 +132,12 @@ export default function GuidePage({ setActiveTab }) {
                   height: '40px',
                   borderRadius: '10px',
                   backgroundColor: s.bg,
-                  display: 'flex',
+                  display: 'inline-flex',
                   alignItems: 'center',
-                  justify: 'center'
+                  justify: 'center',
+                  flexShrink: 0
                 }}>
-                  <IconComp size={20} color={s.color} />
+                  <IconComp size={20} color={s.color} style={{ display: 'block', margin: 'auto' }} />
                 </div>
                 <span style={{ fontSize: '20px', fontWeight: '800', color: '#CBD5E1' }}>{s.num}</span>
               </div>
@@ -170,6 +171,31 @@ export default function GuidePage({ setActiveTab }) {
                   <span>{s.actionText}</span>
                   <ArrowRight size={13} />
                 </button>
+              )}
+
+              {/* Connecting Flow Arrow pointing to next step */}
+              {idx < steps.length - 1 && (
+                <div 
+                  style={{
+                    position: 'absolute',
+                    right: '-18px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    zIndex: 3,
+                    backgroundColor: '#FFFFFF',
+                    border: '2px solid #2563EB',
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justify: 'center',
+                    boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)'
+                  }}
+                  title="Next Workflow Step"
+                >
+                  <ArrowRight size={18} color="#2563EB" />
+                </div>
               )}
             </div>
           );

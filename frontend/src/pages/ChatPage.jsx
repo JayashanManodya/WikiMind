@@ -16,7 +16,11 @@ import {
   ChevronRight,
   Pencil,
   Search,
-  Check
+  Check,
+  Database,
+  ShieldCheck,
+  Sparkles,
+  Cpu
 } from 'lucide-react';
 import { askQuestion, getSessionMessages, deleteChatSession } from '../api/client';
 import { useData } from '../context/DataContext';
@@ -30,6 +34,13 @@ const INITIAL_WELCOME_MESSAGE = [
     citations: [],
     confidence: 1.0
   }
+];
+
+const GENERATION_PIPELINE = [
+  { id: 1, label: 'Analyzing question intent & query parameters', icon: Search, color: '#2563EB' },
+  { id: 2, label: 'Searching grounded Wiki knowledge base & vectors', icon: Database, color: '#10B981' },
+  { id: 3, label: 'Verifying factual citations & context snippets', icon: ShieldCheck, color: '#8B5CF6' },
+  { id: 4, label: 'Synthesizing zero-hallucination answer', icon: Sparkles, color: '#EC4899' }
 ];
 
 const createDefaultSession = () => ({
@@ -46,6 +57,7 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
   const [activeSessionId, setActiveSessionId] = useState(sessions[0]?.id);
   const [inputQuery, setInputQuery] = useState('');
   const [isAsking, setIsAsking] = useState(false);
+  const [generationStep, setGenerationStep] = useState(0);
   const [showSidebar, setShowSidebar] = useState(true);
   const [searchConv, setSearchConv] = useState('');
   const [showSearchInput, setShowSearchInput] = useState(false);
@@ -53,6 +65,20 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
   const [editingTitle, setEditingTitle] = useState('');
 
   const chatEndRef = useRef(null);
+
+  // Cycle generation pipeline steps while asking
+  useEffect(() => {
+    let interval;
+    if (isAsking) {
+      setGenerationStep(0);
+      interval = setInterval(() => {
+        setGenerationStep(prev => (prev < 3 ? prev + 1 : prev));
+      }, 2000);
+    } else {
+      setGenerationStep(0);
+    }
+    return () => clearInterval(interval);
+  }, [isAsking]);
 
   // Load chat sessions from DataContext cache/fetch on mount
   useEffect(() => {
@@ -576,13 +602,6 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
                       </div>
                     )
                   )}
-
-                  {!isUser && msg.grounded !== undefined && (
-                    <span className="badge-clean" style={{ marginLeft: '4px', fontSize: '10px' }}>
-                      {msg.grounded ? <CheckCircle2 size={11} color="#10B981" /> : <XCircle size={11} color="#EF4444" />}
-                      {msg.grounded ? 'Grounded' : 'Refused / No Knowledge'}
-                    </span>
-                  )}
                 </div>
 
                 {/* Message Bubble */}
@@ -644,9 +663,37 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
           })}
 
           {isAsking && (
-            <div className="chat-bot-msg" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Loader2 className="spin" size={16} color="#09090B" style={{ animation: 'spin 1s linear infinite' }} />
-              <span style={{ fontSize: '13.5px', color: 'var(--text-muted)' }}>Searching grounded documents & generating response...</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px', marginLeft: '2px' }}>
+              <div style={{
+                width: '24px',
+                height: '24px',
+                borderRadius: '50%',
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #E2E8F0',
+                display: 'flex',
+                alignItems: 'center',
+                justify: 'center',
+                overflow: 'hidden',
+                flexShrink: 0
+              }}>
+                <img src="/full.png" alt="WikiMind" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%', display: 'block' }} />
+              </div>
+
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '6px 12px',
+                backgroundColor: '#F8FAFC',
+                border: '1px solid #E2E8F0',
+                borderRadius: '16px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
+              }}>
+                <Loader2 className="spin" size={13} color={GENERATION_PIPELINE[generationStep]?.color || '#2563EB'} style={{ flexShrink: 0, animation: 'spin 1s linear infinite' }} />
+                <span style={{ fontSize: '12.5px', color: '#0F172A', fontWeight: '500' }}>
+                  {GENERATION_PIPELINE[generationStep]?.label || 'Generating response...'}
+                </span>
+              </div>
             </div>
           )}
 

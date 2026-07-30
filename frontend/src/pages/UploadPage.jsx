@@ -102,19 +102,11 @@ export default function UploadPage({ setActiveTab }) {
         gap: '24px'
       }}>
         <div style={{ maxWidth: '580px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-            <span style={{ backgroundColor: '#EFF6FF', color: '#2563EB', fontSize: '12px', fontWeight: '700', padding: '4px 12px', borderRadius: '9999px', border: '1px solid #BFDBFE' }}>
-              Multi-Format Parser
-            </span>
-            <span style={{ backgroundColor: '#ECFDF5', color: '#047857', fontSize: '12px', fontWeight: '700', padding: '4px 12px', borderRadius: '9999px', border: '1px solid #A7F3D0' }}>
-              Zero Hallucination
-            </span>
-          </div>
           <h1 style={{ fontSize: '32px', fontWeight: '800', color: '#09090B', letterSpacing: '-0.8px', margin: '0 0 8px 0' }}>
             Document Ingestion & Pipeline
           </h1>
           <p style={{ fontSize: '14.5px', color: '#64748B', lineHeight: '1.6', margin: 0 }}>
-            Upload PDF, DOCX, XLSX, CSV, or TXT files to automatically extract entities, generate interlinked Wiki pages, and index vector embeddings for grounded QA.
+            Upload PDF, DOCX, XLSX, XLS, CSV, TXT, MD, PPTX, or HTML files to automatically extract entities, generate interlinked Wiki pages, and index vector embeddings.
           </p>
         </div>
 
@@ -123,13 +115,22 @@ export default function UploadPage({ setActiveTab }) {
             PDF
           </span>
           <span style={{ fontSize: '12px', fontWeight: '700', padding: '6px 14px', borderRadius: '10px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', color: '#2563EB' }}>
-            WORD
+            DOCX
           </span>
           <span style={{ fontSize: '12px', fontWeight: '700', padding: '6px 14px', borderRadius: '10px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', color: '#059669' }}>
             EXCEL
           </span>
           <span style={{ fontSize: '12px', fontWeight: '700', padding: '6px 14px', borderRadius: '10px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', color: '#0EA5E9' }}>
             CSV
+          </span>
+          <span style={{ fontSize: '12px', fontWeight: '700', padding: '6px 14px', borderRadius: '10px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', color: '#64748B' }}>
+            TXT
+          </span>
+          <span style={{ fontSize: '12px', fontWeight: '700', padding: '6px 14px', borderRadius: '10px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', color: '#7C3AED' }}>
+            MD
+          </span>
+          <span style={{ fontSize: '12px', fontWeight: '700', padding: '6px 14px', borderRadius: '10px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', color: '#D97706' }}>
+            PPTX
           </span>
         </div>
       </div>
@@ -153,7 +154,7 @@ export default function UploadPage({ setActiveTab }) {
           type="file" 
           id="fileInput" 
           onChange={handleFileChange} 
-          accept=".pdf,.docx,.txt,.md,.csv,.xlsx" 
+          accept=".pdf,.docx,.doc,.txt,.md,.csv,.xlsx,.xls,.pptx,.html" 
           style={{ display: 'none' }} 
         />
         
@@ -175,7 +176,7 @@ export default function UploadPage({ setActiveTab }) {
                 Drag & drop or <span style={{ color: '#2563EB', fontWeight: '700' }}>browse files</span> to upload
               </p>
               <p style={{ fontSize: '13px', color: '#64748B', marginTop: '8px' }}>
-                Supported: PDF, DOCX, XLSX, CSV, TXT, MD • Max 25MB per file
+                Supported Formats: PDF, DOCX, XLSX, XLS, CSV, TXT, MD, PPTX, HTML • Max 25MB per file
               </p>
             </div>
           )}
