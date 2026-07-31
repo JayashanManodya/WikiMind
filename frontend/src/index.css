@@ -151,6 +151,17 @@ body {
   padding: 8px 36px 36px 36px;
 }
 
+.wikimind-navbar-header {
+  width: calc(100% - 72px);
+  margin: 8px auto 0 auto;
+}
+
+@media (max-width: 768px) {
+  .wikimind-navbar-header {
+    width: calc(100% - 32px);
+  }
+}
+
 /* Clean Cards (No gradients!) */
 .clean-card {
   background: var(--bg-card);

@@ -31,15 +31,10 @@ export default function Footer({ setActiveTab }) {
               className="footer-logo-img" 
             />
             <span className="footer-brand-title">WikiMind</span>
-            <span className="footer-version-badge">v1.2</span>
           </div>
           <p className="footer-tagline">
             An AI-powered personal knowledge base & interactive entity graph platform designed to structure documents into queryable wiki pages.
           </p>
-          <div className="footer-status-badge">
-            <span className="footer-status-dot" />
-            <span>All Systems Operational</span>
-          </div>
         </div>
 
         {/* Column 2: Platform Navigation */}
