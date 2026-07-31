@@ -14,7 +14,7 @@ from .prompts import (
     RETRIEVAL_SYSTEM_PROMPT,
     SUMMARIZATION_SYSTEM_PROMPT,
     VERIFICATION_SYSTEM_PROMPT,
-    GROUNDED_QA_SYSTEM_PROMPT,
+    WIKIMIND_AGENT_SYSTEM_PROMPT,
 )
 from .state import QAState
 from .tools import retrieval_tool
@@ -68,10 +68,10 @@ def create_agent(model, tools, system_prompt):
 
 # Define agents at module level for reuse
 
-grounded_qa_agent = create_agent(
+wikimind_agent = create_agent(
     model=create_chat_model(),
     tools=[retrieval_tool],
-    system_prompt=GROUNDED_QA_SYSTEM_PROMPT,
+    system_prompt=WIKIMIND_AGENT_SYSTEM_PROMPT,
 )
 
 retrieval_agent = create_agent(
@@ -112,13 +112,13 @@ def _build_history_messages(state: QAState, current_prompt: str) -> List[object]
     return msgs
 
 
-async def grounded_qa_node(state: QAState) -> QAState:
-    """Tool-Calling Grounded QA node: LLM agent dynamically invokes retrieval_tool for vector search."""
+async def wikimind_agent_node(state: QAState) -> QAState:
+    """Tool-Calling WikiMind Agent node: LLM agent dynamically invokes retrieval_tool for vector search."""
     question = state["question"]
     user_id = state.get("user_id") or "guest_user"
     
     msgs = _build_history_messages(state, question)
-    result = await grounded_qa_agent.ainvoke({"messages": msgs})
+    result = await wikimind_agent.ainvoke({"messages": msgs})
     
     last_msg = result["messages"][-1]
     context_text = ""
@@ -145,7 +145,7 @@ async def grounded_qa_node(state: QAState) -> QAState:
             # Pass tool results back to LLM to synthesize final grounded answer
             synthesis_prompt = f"Question: {question}\n\nRETRIEVED CONTEXT:\n{context_text}\n\nSynthesize a grounded answer with Markdown formatting."
             synthesis_msgs = _build_history_messages(state, synthesis_prompt)
-            synth_res = await grounded_qa_agent.ainvoke({"messages": synthesis_msgs})
+            synth_res = await wikimind_agent.ainvoke({"messages": synthesis_msgs})
             answer = _extract_last_ai_content(synth_res["messages"])
         else:
             answer = _extract_last_ai_content(result["messages"])
@@ -158,7 +158,7 @@ async def grounded_qa_node(state: QAState) -> QAState:
         
         synthesis_prompt = f"Question: {question}\n\nCONTEXT:\n{context_text}"
         synthesis_msgs = _build_history_messages(state, synthesis_prompt)
-        synth_res = await grounded_qa_agent.ainvoke({"messages": synthesis_msgs})
+        synth_res = await wikimind_agent.ainvoke({"messages": synthesis_msgs})
         answer = _extract_last_ai_content(synth_res["messages"])
 
     return {

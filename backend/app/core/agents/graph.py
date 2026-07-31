@@ -6,27 +6,27 @@ from typing import Any, Dict
 from langgraph.constants import END, START
 from langgraph.graph import StateGraph
 
-from .agents import grounded_qa_node
+from .agents import wikimind_agent_node
 from .state import QAState
 
 
 def create_qa_graph() -> Any:
-    """Create and compile the optimized direct grounded QA graph.
+    """Create and compile the optimized WikiMind Agent QA graph.
 
     The graph executes in order:
-    1. Grounded QA Agent: performs direct vector retrieval and single-pass grounded answer synthesis.
+    1. WikiMind Agent: performs vector retrieval and grounded answer synthesis.
 
     Returns:
         Compiled graph ready for execution.
     """
     builder = StateGraph(QAState)
 
-    # Add node for grounded QA agent
-    builder.add_node("grounded_qa", grounded_qa_node)
+    # Add node for WikiMind agent
+    builder.add_node("wikimind_agent", wikimind_agent_node)
 
-    # Define linear flow: START -> grounded_qa -> END
-    builder.add_edge(START, "grounded_qa")
-    builder.add_edge("grounded_qa", END)
+    # Define linear flow: START -> wikimind_agent -> END
+    builder.add_edge(START, "wikimind_agent")
+    builder.add_edge("wikimind_agent", END)
 
     return builder.compile()
 
