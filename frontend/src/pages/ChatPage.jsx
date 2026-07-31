@@ -26,6 +26,48 @@ import { askQuestion, getSessionMessages, deleteChatSession } from '../api/clien
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 
+const renderFormattedMarkdown = (text) => {
+  if (!text) return null;
+
+  const lines = text.split('\n');
+
+  return lines.map((line, lIdx) => {
+    // Process bold (**text**) and italic (*text*) tokens
+    const parts = line.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+
+    const formattedParts = parts.map((part, pIdx) => {
+      if (part.startsWith('**') && part.endsWith('**') && part.length >= 4) {
+        return (
+          <strong key={pIdx} style={{ fontWeight: '700', color: '#0F172A' }}>
+            {part.slice(2, -2)}
+          </strong>
+        );
+      }
+      if (part.startsWith('*') && part.endsWith('*') && part.length >= 2) {
+        return <em key={pIdx}>{part.slice(1, -1)}</em>;
+      }
+      return part;
+    });
+
+    // Check if line is a bullet item
+    const trimmed = line.trim();
+    if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+      return (
+        <div key={lIdx} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', margin: '4px 0 4px 8px' }}>
+          <span style={{ color: '#4F46E5', fontWeight: 'bold', lineHeight: '1.6' }}>•</span>
+          <div style={{ flex: 1 }}>{formattedParts}</div>
+        </div>
+      );
+    }
+
+    return (
+      <div key={lIdx} style={{ minHeight: line.trim() === '' ? '12px' : 'auto' }}>
+        {formattedParts}
+      </div>
+    );
+  });
+};
+
 const INITIAL_WELCOME_MESSAGE = [
   {
     sender: 'bot',
@@ -656,7 +698,7 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
                   whiteSpace: 'pre-wrap',
                   width: '100%'
                 }}>
-                  <p style={{ margin: 0, color: '#0F172A' }}>{msg.text}</p>
+                  <div style={{ margin: 0, color: '#0F172A' }}>{renderFormattedMarkdown(msg.text)}</div>
 
                   {/* Source Citations */}
                   {!isUser && msg.citations && msg.citations.length > 0 && (

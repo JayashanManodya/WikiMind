@@ -14,6 +14,7 @@ from .prompts import (
     RETRIEVAL_SYSTEM_PROMPT,
     SUMMARIZATION_SYSTEM_PROMPT,
     VERIFICATION_SYSTEM_PROMPT,
+    GROUNDED_QA_SYSTEM_PROMPT,
 )
 from .state import QAState
 from .tools import retrieval_tool
@@ -67,6 +68,12 @@ def create_agent(model, tools, system_prompt):
 
 # Define agents at module level for reuse
 
+grounded_qa_agent = create_agent(
+    model=create_chat_model(),
+    tools=[retrieval_tool],
+    system_prompt=GROUNDED_QA_SYSTEM_PROMPT,
+)
+
 retrieval_agent = create_agent(
     model=create_chat_model(),
     tools=[retrieval_tool],
@@ -103,6 +110,61 @@ def _build_history_messages(state: QAState, current_prompt: str) -> List[object]
             
     msgs.append(HumanMessage(content=current_prompt))
     return msgs
+
+
+async def grounded_qa_node(state: QAState) -> QAState:
+    """Tool-Calling Grounded QA node: LLM agent dynamically invokes retrieval_tool for vector search."""
+    question = state["question"]
+    user_id = state.get("user_id") or "guest_user"
+    
+    msgs = _build_history_messages(state, question)
+    result = await grounded_qa_agent.ainvoke({"messages": msgs})
+    
+    last_msg = result["messages"][-1]
+    context_text = ""
+
+    # Handle Tool Call Loop
+    if hasattr(last_msg, "tool_calls") and last_msg.tool_calls:
+        tool_tasks = []
+        for tool_call in last_msg.tool_calls:
+            if tool_call["name"] == "retrieval_tool":
+                args = dict(tool_call["args"])
+                args["user_id"] = user_id
+                tool_tasks.append(retrieval_tool.ainvoke(args))
+        
+        if tool_tasks:
+            tool_results = await asyncio.gather(*tool_tasks)
+            all_context = []
+            for res in tool_results:
+                if isinstance(res, (tuple, list)) and len(res) > 0:
+                    all_context.append(res[0])
+                elif isinstance(res, str):
+                    all_context.append(res)
+            context_text = "\n\n---\n\n".join(all_context) if all_context else "No context found."
+            
+            # Pass tool results back to LLM to synthesize final grounded answer
+            synthesis_prompt = f"Question: {question}\n\nRETRIEVED CONTEXT:\n{context_text}\n\nSynthesize a grounded answer with Markdown formatting."
+            synthesis_msgs = _build_history_messages(state, synthesis_prompt)
+            synth_res = await grounded_qa_agent.ainvoke({"messages": synthesis_msgs})
+            answer = _extract_last_ai_content(synth_res["messages"])
+        else:
+            answer = _extract_last_ai_content(result["messages"])
+    else:
+        # Direct retrieval fallback if LLM skipped tool call
+        from ..retrieval.vector_store import retrieve
+        from ..retrieval.serialization import serialize_wikis
+        docs = retrieve(question, k=5, user_id=user_id)
+        context_text = serialize_wikis(docs) if docs else "No context found."
+        
+        synthesis_prompt = f"Question: {question}\n\nCONTEXT:\n{context_text}"
+        synthesis_msgs = _build_history_messages(state, synthesis_prompt)
+        synth_res = await grounded_qa_agent.ainvoke({"messages": synthesis_msgs})
+        answer = _extract_last_ai_content(synth_res["messages"])
+
+    return {
+        "context": context_text,
+        "answer": answer,
+    }
 
 
 async def retrieval_node(state: QAState) -> QAState:

@@ -6,33 +6,27 @@ from typing import Any, Dict
 from langgraph.constants import END, START
 from langgraph.graph import StateGraph
 
-from .agents import retrieval_node, summarization_node, verification_node
+from .agents import grounded_qa_node
 from .state import QAState
 
 
 def create_qa_graph() -> Any:
-    """Create and compile the linear multi-agent QA graph.
+    """Create and compile the optimized direct grounded QA graph.
 
     The graph executes in order:
-    1. Retrieval Agent: gathers context from vector store
-    2. Summarization Agent: generates draft answer from context
-    3. Verification Agent: verifies and corrects the answer
+    1. Grounded QA Agent: performs direct vector retrieval and single-pass grounded answer synthesis.
 
     Returns:
         Compiled graph ready for execution.
     """
     builder = StateGraph(QAState)
 
-    # Add nodes for each agent
-    builder.add_node("retrieval", retrieval_node)
-    builder.add_node("summarization", summarization_node)
-    builder.add_node("verification", verification_node)
+    # Add node for grounded QA agent
+    builder.add_node("grounded_qa", grounded_qa_node)
 
-    # Define linear flow: START -> retrieval -> summarization -> verification -> END
-    builder.add_edge(START, "retrieval")
-    builder.add_edge("retrieval", "summarization")
-    builder.add_edge("summarization", "verification")
-    builder.add_edge("verification", END)
+    # Define linear flow: START -> grounded_qa -> END
+    builder.add_edge(START, "grounded_qa")
+    builder.add_edge("grounded_qa", END)
 
     return builder.compile()
 

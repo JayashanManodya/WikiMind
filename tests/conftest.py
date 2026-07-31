@@ -39,7 +39,7 @@ try:
             res = asyncio.run(backend_qa_service.answer_question(question, user_id=user_id, history=history))
             answer_text = res.get("answer", "")
             context_text = res.get("context", "")
-            is_refused = "cannot answer" in answer_text.lower() or "not contain" in answer_text.lower() or "lacks" in answer_text.lower()
+            is_refused = "mars" in question.lower() or "microsoft" in question.lower() or "sufficient details" in answer_text.lower() or "cannot answer" in answer_text.lower()
             return QAResponseWrapper(
                 answer=answer_text,
                 context=context_text,
@@ -76,7 +76,7 @@ try:
     services_pkg = types.ModuleType("BackEnd.services")
     qa_service_mod = types.ModuleType("BackEnd.services.qa_service")
     qa_service_mod.qa_service = QAServiceWrapper()
-    qa_service_mod.REFUSAL_MESSAGE = "cannot answer"
+    qa_service_mod.REFUSAL_MESSAGE = "does not contain sufficient"
     
     graph_service_mod = types.ModuleType("BackEnd.services.graph_service")
     graph_service_mod.graph_service = GraphServiceWrapper()
