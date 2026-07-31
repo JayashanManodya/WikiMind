@@ -159,6 +159,13 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
   // Fetch messages for active session when activeSessionId changes
   useEffect(() => {
     if (!activeSessionId) return;
+
+    // Check if session messages are already cached in memory
+    const existingSess = sessions.find(s => s.id === activeSessionId);
+    if (existingSess && existingSess.messages && existingSess.messages.length > 0) {
+      return; // Instant 0ms memory switch!
+    }
+
     const loadMessages = async () => {
       try {
         const res = await getSessionMessages(activeSessionId);
@@ -188,7 +195,7 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
       }
     };
     loadMessages();
-  }, [activeSessionId]);
+  }, [activeSessionId, sessions]);
 
   // Active session object
   const activeSession = sessions.find(s => s.id === activeSessionId) || sessions[0] || createDefaultSession();
@@ -337,7 +344,7 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
   const filteredSessions = sessions.filter(s => s.title.toLowerCase().includes(searchConv.toLowerCase()));
 
   return (
-    <div style={{ display: 'flex', minHeight: 'calc(100vh - 100px)', width: '100%', gap: '20px', position: 'relative' }}>
+    <div style={{ display: 'flex', height: 'calc(100vh - 110px)', maxHeight: 'calc(100vh - 110px)', width: '100%', gap: '20px', position: 'relative', overflow: 'hidden' }}>
       
       {/* Mobile Dark Backdrop Overlay */}
       {isMobile && showSidebar && (
@@ -606,7 +613,7 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
       )}
 
       {/* Main Chat Interface */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '28px', boxShadow: '0 8px 30px rgba(0,0,0,0.02)', padding: '28px' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', maxHeight: '100%', backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '28px', boxShadow: '0 8px 30px rgba(0,0,0,0.02)', padding: '28px', overflow: 'hidden' }}>
         
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '14px', borderBottom: '1px solid var(--border-color)', marginBottom: '16px' }}>
@@ -630,7 +637,7 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
         </div>
 
         {/* Messages Feed */}
-        <div style={{ flex: 1, overflowY: 'auto', paddingRight: '8px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', minHeight: 0, paddingRight: '8px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {messages.map((msg, idx) => {
             const isUser = msg.sender === 'user';
             return (

@@ -76,10 +76,8 @@ class TursoConnection:
         pass
 
     def close(self):
-        try:
-            self.client.close()
-        except Exception:
-            pass
+        # Shared client instance remains open for connection pooling
+        pass
 
 
 def get_db_path() -> Path:
@@ -89,8 +87,12 @@ def get_db_path() -> Path:
     return storage_dir / "wikimind.db"
 
 
+_TURSO_CLIENT_CACHE = None
+
+
 def get_db_connection():
     """Get database connection (Turso cloud SQLite if configured, otherwise local SQLite)."""
+    global _TURSO_CLIENT_CACHE
     settings = get_settings()
     turso_url = os.environ.get("TURSO_DATABASE_URL") or settings.turso_database_url
     turso_token = os.environ.get("TURSO_AUTH_TOKEN") or settings.turso_auth_token
@@ -99,8 +101,9 @@ def get_db_connection():
         url = turso_url
         if url.startswith("libsql://"):
             url = url.replace("libsql://", "https://", 1)
-        client = libsql_client.create_client_sync(url, auth_token=turso_token)
-        return TursoConnection(client)
+        if _TURSO_CLIENT_CACHE is None:
+            _TURSO_CLIENT_CACHE = libsql_client.create_client_sync(url, auth_token=turso_token)
+        return TursoConnection(_TURSO_CLIENT_CACHE)
 
     conn = sqlite3.connect(get_db_path(), timeout=30.0)
     conn.row_factory = sqlite3.Row
