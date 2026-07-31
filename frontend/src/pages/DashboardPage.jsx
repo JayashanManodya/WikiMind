@@ -187,7 +187,7 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            justify: 'space-between',
+            justifyContent: 'space-between',
             paddingTop: '20px',
             borderTop: '1px solid #F1F5F9',
             flexWrap: 'wrap',
@@ -254,7 +254,7 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
           height: '380px',
           display: 'flex',
           alignItems: 'center',
-          justify: 'center',
+          justifyContent: 'center',
           zIndex: 2
         }}>
           <HeroNodeGraph isLight={false} />
@@ -280,7 +280,7 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
           boxShadow: '0 8px 30px rgba(0,0,0,0.02)',
           display: 'flex',
           flexDirection: 'column',
-          justify: 'space-between',
+          justifyContent: 'space-between',
           position: 'relative'
         }}>
           {/* Floating badge pill 1 */}
@@ -363,7 +363,7 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
           boxShadow: '0 8px 30px rgba(0,0,0,0.02)',
           display: 'flex',
           flexDirection: 'column',
-          justify: 'space-between'
+          justifyContent: 'space-between'
         }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
@@ -390,7 +390,7 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
                     padding: '12px 16px',
                     display: 'flex',
                     alignItems: 'center',
-                    justify: 'space-between',
+                    justifyContent: 'space-between',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease'
                   }}
@@ -404,7 +404,7 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
                       <span style={{ fontSize: '11px', color: '#64748B' }}>{pg.entity_type || 'CONCEPT'}</span>
                     </div>
                   </div>
-                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <ArrowRight size={12} color="#09090B" />
                   </div>
                 </div>
@@ -422,7 +422,7 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
           boxShadow: '0 8px 30px rgba(16, 185, 129, 0.05)',
           display: 'flex',
           flexDirection: 'column',
-          justify: 'space-between',
+          justifyContent: 'space-between',
           position: 'relative'
         }}>
           <div>
@@ -653,7 +653,7 @@ export default function DashboardPage({ setActiveTab, setSelectedWikiEntity }) {
         boxShadow: '0 8px 30px rgba(14, 165, 233, 0.05)',
         display: 'flex',
         alignItems: 'center',
-        justify: 'space-between',
+        justifyContent: 'space-between',
         flexWrap: 'wrap',
         gap: '20px'
       }}>

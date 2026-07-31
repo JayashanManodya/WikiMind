@@ -499,7 +499,7 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    justify: 'space-between',
+                    justifyContent: 'space-between',
                     padding: '10px 14px',
                     borderRadius: '16px',
                     backgroundColor: isActive ? '#EEF2FF' : '#F8FAFC',
@@ -554,7 +554,7 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
-                            justify: 'center',
+                            justifyContent: 'center',
                             flexShrink: 0
                           }}
                         >
@@ -664,7 +664,7 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
                       border: '1px solid #E2E8F0',
                       display: 'flex',
                       alignItems: 'center',
-                      justify: 'center',
+                      justifyContent: 'center',
                       overflow: 'hidden',
                       flexShrink: 0,
                       boxShadow: '0 2px 6px rgba(0,0,0,0.06)'
@@ -760,7 +760,7 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
                 border: '1px solid #E2E8F0',
                 display: 'flex',
                 alignItems: 'center',
-                justify: 'center',
+                justifyContent: 'center',
                 overflow: 'hidden',
                 flexShrink: 0
               }}>
@@ -838,7 +838,7 @@ export default function ChatPage({ setActiveTab, setSelectedWikiEntity }) {
               margin: 0,
               display: 'inline-flex',
               alignItems: 'center',
-              justify: 'center',
+              justifyContent: 'center',
               cursor: inputQuery.trim() ? 'pointer' : 'default',
               transition: 'all 0.15s ease',
               flexShrink: 0,

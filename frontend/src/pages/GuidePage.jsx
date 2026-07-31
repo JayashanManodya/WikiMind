@@ -134,7 +134,7 @@ export default function GuidePage({ setActiveTab }) {
                   backgroundColor: s.bg,
                   display: 'inline-flex',
                   alignItems: 'center',
-                  justify: 'center',
+                  justifyContent: 'center',
                   flexShrink: 0
                 }}>
                   <IconComp size={20} color={s.color} style={{ display: 'block', margin: 'auto' }} />
@@ -190,7 +190,7 @@ export default function GuidePage({ setActiveTab }) {
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
-                    justify: 'center',
+                    justifyContent: 'center',
                     boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)'
                   }}
                   title="Next Workflow Step"
@@ -291,7 +291,7 @@ export default function GuidePage({ setActiveTab }) {
                     padding: '14px 18px',
                     display: 'flex',
                     alignItems: 'center',
-                    justify: 'space-between',
+                    justifyContent: 'space-between',
                     backgroundColor: 'transparent',
                     border: 'none',
                     textAlign: 'left',
@@ -324,7 +324,7 @@ export default function GuidePage({ setActiveTab }) {
         color: '#FFFFFF',
         display: 'flex',
         alignItems: 'center',
-        justify: 'space-between',
+        justifyContent: 'space-between',
         flexWrap: 'wrap',
         gap: '20px'
       }}>

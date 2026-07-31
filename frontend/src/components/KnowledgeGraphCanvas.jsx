@@ -673,7 +673,7 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    justify: 'space-between',
+                    justifyContent: 'space-between',
                     padding: '8px 10px',
                     borderRadius: '8px',
                     backgroundColor: isSelectedFilter ? '#F1F5F9' : 'transparent',
