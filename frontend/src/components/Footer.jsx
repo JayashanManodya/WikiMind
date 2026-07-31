@@ -127,15 +127,6 @@ export default function Footer({ setActiveTab }) {
         </div>
 
         <div className="footer-bottom-links">
-          <a 
-            href="https://www.jayashan.online/" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="footer-bottom-link"
-          >
-            Portfolio (jayashan.online)
-          </a>
-          <span>•</span>
           <span className="footer-bottom-link" onClick={() => setActiveTab && setActiveTab('guide')}>
             Documentation
           </span>
