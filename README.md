@@ -18,7 +18,7 @@
 
 - 📄 **Multi-Format Document Ingestion**: Support for **PDF, DOCX, XLSX, XLS, CSV, TXT, Markdown (.md), PPTX, and HTML** with layout and structured table extraction powered by LlamaParse & PyMuPDF.
 - ⚡ **Single-Pass Ingestion Engine**: Merges Stage 4 Content Enrichment and Stage 5 Knowledge Extraction into **1 single LLM call**, cutting document upload processing latency by **50%**.
-- 🤖 **LangGraph Agentic StateGraph**: State-driven execution pipeline (`START -> grounded_qa -> END`) with tool-calling capabilities (`retrieval_tool`) for multi-turn conversational follow-up reasoning.
+- 🤖 **LangGraph Agentic StateGraph**: State-driven execution pipeline (`START -> wikimind_agent -> END`) with tool-calling capabilities (`retrieval_tool`) for multi-turn conversational follow-up reasoning.
 - 🎯 **LangSmith Evaluated & Benchmark Verified**: Tested against the 20-question golden CV benchmark dataset (`Jayashan_Manodya_CV_Benchmark`), achieving **100.0% QA Correctness** and **100.0% Groundedness Score**.
 - 💬 **Grounded Zero-Hallucination QA Assistant**: Fact-checked answers synthesized strictly from retrieved vector context with click-through source citations linking directly to wiki pages.
 - 🎨 **Frontend Bold Markdown & Bullet Renderer**: Custom inline markdown parser (`renderFormattedMarkdown`) in `ChatPage.jsx` rendering `**bold**` text as clean HTML `<strong>` elements and bullets without raw asterisk clutter (`**`).
@@ -43,7 +43,7 @@
 │                                FastAPI Backend Engine                                   │
 │  ┌────────────────────┐   ┌────────────────────────────────┐   ┌─────────────────────┐  │
 │  │ LlamaParse & PyMu  │   │  LangGraph StateGraph Engine   │   │ Grounded QA Service │  │
-│  │ Document Parser    │   │  (grounded_qa_agent + tool)    │   │ & Vector Retrieval  │  │
+│  │ Document Parser    │   │  (wikimind_agent + tool)       │   │ & Vector Retrieval  │  │
 │  └─────────┬──────────┘   └───────────────┬────────────────┘   └──────────┬──────────┘  │
 └────────────┼──────────────────────────────┼───────────────────────────────┼─────────────┘
              │                              │                               │
@@ -72,7 +72,7 @@ WikiMind/
 │   │       ├── auth.py              # Google OAuth 2.0 token verification & JWT
 │   │       ├── paths.py             # Central path manager & /tmp fallback for Vercel
 │   │       ├── agents/
-│   │       │   ├── agents.py        # Tool-calling grounded QA agent & node handlers
+│   │       │   ├── agents.py        # Tool-calling wikimind_agent & node handlers
 │   │       │   ├── graph.py         # LangGraph StateGraph workflow orchestrator
 │   │       │   ├── prompts.py       # Master consolidated system prompt & formatting rules
 │   │       │   └── tools.py         # Retrieval tool wrappers for LangGraph
