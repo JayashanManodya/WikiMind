@@ -14,7 +14,6 @@ from .prompts import (
     RETRIEVAL_SYSTEM_PROMPT,
     SUMMARIZATION_SYSTEM_PROMPT,
     VERIFICATION_SYSTEM_PROMPT,
-    PLANNING_AGENT_PROMPT,
 )
 from .state import QAState
 from .tools import retrieval_tool
@@ -68,12 +67,6 @@ def create_agent(model, tools, system_prompt):
 
 # Define agents at module level for reuse
 
-planning_agent = create_agent(
-    model=create_chat_model(),
-    tools=[],
-    system_prompt=PLANNING_AGENT_PROMPT,
-)
-
 retrieval_agent = create_agent(
     model=create_chat_model(),
     tools=[retrieval_tool],
@@ -112,79 +105,41 @@ def _build_history_messages(state: QAState, current_prompt: str) -> List[object]
     return msgs
 
 
-def planning_node(state: QAState) -> QAState:
-    """Planning Agent node: detects ambiguity and generates sub-questions."""
-    question = state["question"]
-    msgs = _build_history_messages(state, question)
-    
-    result = planning_agent.invoke({"messages": msgs})
-    content = _extract_last_ai_content(result["messages"])
-    
-    # Parsing logic for plan and sub-questions
-    plan = ""
-    sub_questions = []
-    
-    if "Plan:" in content:
-        parts = content.split("Plan:")
-        if len(parts) > 1:
-            plan_part = parts[1].split("Sub-questions:")[0].strip()
-            plan = plan_part
-    
-    if "Sub-questions:" in content:
-        parts = content.split("Sub-questions:")
-        if len(parts) > 1:
-            sub_q_part = parts[1].strip()
-            sub_questions = [q.strip("- ").strip() for q in sub_q_part.split("\n") if q.strip()]
-
-    return {
-        "plan": plan,
-        "sub_questions": sub_questions if sub_questions else [question]
-    }
-
-
 async def retrieval_node(state: QAState) -> QAState:
-    """Retrieval Agent node: gathers context from vector store using sub-questions (parallellized)."""
-    sub_questions = state.get("sub_questions") or [state["question"]]
+    """Retrieval Agent node: gathers context directly from vector store for the question."""
+    question = state["question"]
     user_id = state.get("user_id") or "guest_user"
     
-    async def process_question(q):
-        msgs = _build_history_messages(state, f"Retrieve context for: {q}")
-        result = await retrieval_agent.ainvoke({"messages": msgs})
-        
-        last_msg = result["messages"][-1]
-        if hasattr(last_msg, "tool_calls") and last_msg.tool_calls:
-            tool_tasks = []
-            for tool_call in last_msg.tool_calls:
-                if tool_call["name"] == "retrieval_tool":
-                    args = dict(tool_call["args"])
-                    args["user_id"] = user_id
-                    tool_tasks.append(retrieval_tool.ainvoke(args))
-            
-            if tool_tasks:
-                tool_results = await asyncio.gather(*tool_tasks)
-                final_contents = []
-                for res in tool_results:
-                    if isinstance(res, (tuple, list)) and len(res) > 0:
-                        final_contents.append(res[0])
-                    else:
-                        final_contents.append(res)
-                return final_contents
+    msgs = _build_history_messages(state, f"Retrieve context for: {question}")
+    result = await retrieval_agent.ainvoke({"messages": msgs})
+    
+    last_msg = result["messages"][-1]
+    all_context = []
 
-        # Direct retrieve fallback if tool_calls wasn't emitted by LLM
+    if hasattr(last_msg, "tool_calls") and last_msg.tool_calls:
+        tool_tasks = []
+        for tool_call in last_msg.tool_calls:
+            if tool_call["name"] == "retrieval_tool":
+                args = dict(tool_call["args"])
+                args["user_id"] = user_id
+                tool_tasks.append(retrieval_tool.ainvoke(args))
+        
+        if tool_tasks:
+            tool_results = await asyncio.gather(*tool_tasks)
+            for res in tool_results:
+                if isinstance(res, (tuple, list)) and len(res) > 0:
+                    all_context.append(str(res[0]))
+                else:
+                    all_context.append(str(res))
+
+    # Fallback to direct vector store retrieve if tool_calls weren't emitted
+    if not all_context:
         from ..retrieval.vector_store import retrieve
         from ..retrieval.serialization import serialize_wikis
-        docs = retrieve(q, k=3, user_id=user_id)
+        docs = retrieve(question, k=5, user_id=user_id)
         if docs:
-            return [serialize_wikis(docs)]
+            all_context.append(serialize_wikis(docs))
 
-        return []
-
-    # Run all sub-questions in parallel
-    results = await asyncio.gather(*(process_question(q) for q in sub_questions))
-    
-    # Flatten results and join
-    all_context = [ctx for sublist in results for ctx in sublist]
-                    
     return {
         "context": "\n\n".join(all_context) if all_context else "No context found.",
     }

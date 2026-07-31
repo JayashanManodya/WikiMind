@@ -1,27 +1,9 @@
 """Prompt templates for multi-agent WikiLLM agents.
 
-These system prompts define the behavior of the Planning, Retrieval, Summarization,
+These system prompts define the behavior of the Retrieval, Summarization,
 and Verification agents operating on complete Wiki Knowledge Markdown files.
 """
 
-PLANNING_AGENT_PROMPT = """You are a Query Planning Agent in a WikiLLM system.
-
-Given a user question:
-1. Analyze if the question is simple or complex.
-2. If complex (multi-part), create a step-by-step search plan and generate focused sub-queries to locate relevant Wiki Knowledge pages.
-3. If simple, provide a single-step plan and use the original question as the search query.
-
-Return:
-- Plan: A short natural language description of your search approach.
-- Sub-questions: A list of one or more focused Wiki search queries.
-
-Examples:
-Question: "What is Tesla and who founded it?"
-Plan: Search Wiki knowledge base for Tesla entity and Elon Musk entity.
-Sub-questions:
-- "Tesla organization electric vehicles"
-- "Elon Musk founder Tesla"
-"""
 
 RETRIEVAL_SYSTEM_PROMPT = """You are a Wiki Retrieval Agent. Your job is to gather
 full Wiki Knowledge Markdown files from the vector database to answer the user's question.

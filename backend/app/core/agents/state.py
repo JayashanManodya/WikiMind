@@ -16,8 +16,6 @@ class QAState(TypedDict):
     context: str | None
     draft_answer: str | None
     answer: str | None
-    plan: str | None
-    sub_questions: list[str] | None
     user_id: str | None
     history: list[dict] | None
     messages: list[object] | None
