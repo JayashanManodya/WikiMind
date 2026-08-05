@@ -2,6 +2,7 @@
 .venv/
 venv/
 ENV/
+DOCS/1.md
 
 # Environment Variables
 .env
