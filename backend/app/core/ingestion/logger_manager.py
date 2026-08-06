@@ -35,8 +35,8 @@ def append_ingestion_log(
         Path of the updated log.md file.
     """
     target_dir = Path(wiki_dir)
-    target_dir.mkdir(parents=True, exist_ok=True)
     log_path = target_dir / "log.md"
+
 
     now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
@@ -73,11 +73,6 @@ def append_ingestion_log(
 ---
 """
 
-    if not log_path.exists():
-        header = "# Wiki Ingestion Audit Log\n\nThis file maintains an append-only historical audit log of all document ingestions.\n\n---\n"
-        log_path.write_text(header + log_entry, encoding="utf-8")
-    else:
-        with log_path.open("a", encoding="utf-8") as f:
-            f.write(log_entry)
+    return str(log_path)
 
-    return str(log_path.resolve())
+

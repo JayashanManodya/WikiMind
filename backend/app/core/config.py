@@ -22,20 +22,17 @@ class Settings(BaseSettings):
     openai_model_name: str = "gpt-4o-mini"
     openai_embedding_model_name: str = "text-embedding-3-small"
 
-    # Pinecone Configuration
-    pinecone_api_key: str = "pcsk_placeholder"
-    pinecone_index_name: str = "ikms-rag-agent-system"
-    pinecone_environment: str = ""
-
     # LlamaParse Configuration
     llama_cloud_api_key: str = ""
 
     # Retrieval Configuration
     retrieval_k: int = 3
 
-    # Turso Edge SQLite Configuration
-    turso_database_url: str = ""
-    turso_auth_token: str = ""
+    # Neo4j Graph Database Configuration
+    neo4j_uri: str = "bolt://localhost:7687"
+    neo4j_user: str = "neo4j"
+    neo4j_password: str = "password"
+
 
     # CORS Configuration
     cors_origins: str = "*"

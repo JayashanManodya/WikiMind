@@ -108,10 +108,13 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
   // Initialize nodes and edges physics positions
   useEffect(() => {
     if (!graphData || !graphData.nodes || graphData.nodes.length === 0) {
-      nodesRef.current = [];
-      edgesRef.current = [];
+      if (nodesRef.current.length === 0) {
+        nodesRef.current = [];
+        edgesRef.current = [];
+      }
       return;
     }
+
 
     const rawNodes = graphData.nodes;
     const rawEdges = graphData.edges || [];
@@ -399,14 +402,22 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
       const canvas = canvasRef.current;
       const container = containerRef.current;
       if (canvas && container) {
-        canvas.width = container.clientWidth - (isFullscreen ? 300 : 280);
-        canvas.height = container.clientHeight || 580;
+        const clientW = container.clientWidth || 800;
+        const clientH = container.clientHeight || 580;
+        const calculatedWidth = clientW - (isFullscreen ? 300 : 280);
+        canvas.width = Math.max(450, calculatedWidth);
+        canvas.height = Math.max(500, clientH);
       }
     };
     handleResize();
+    const timer = setTimeout(handleResize, 150);
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', handleResize);
+    };
   }, [isFullscreen]);
+
 
   // Convert mouse coordinates to canvas world coordinates
   const getCanvasCoords = (e) => {
@@ -516,6 +527,30 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
     transformRef.current = { x: 0, y: 0, scale: 1 };
   };
 
+  // Native non-passive wheel listener for smooth zooming without console warnings
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const handleWheelNative = (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+      const rect = canvas.getBoundingClientRect();
+      const screenX = e.clientX - rect.left;
+      const screenY = e.clientY - rect.top;
+
+      const t = transformRef.current;
+      const newScale = Math.min(3.5, Math.max(0.3, t.scale * zoomFactor));
+
+      t.x = screenX - (screenX - t.x) * (newScale / t.scale);
+      t.y = screenY - (screenY - t.y) * (newScale / t.scale);
+      t.scale = newScale;
+    };
+
+    canvas.addEventListener('wheel', handleWheelNative, { passive: false });
+    return () => canvas.removeEventListener('wheel', handleWheelNative);
+  }, []);
+
   const activeDisplayNode = hoveredNode || selectedNode;
 
   return (
@@ -542,9 +577,9 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
           onMouseDown={handleMouseDown} 
           onMouseMove={handleMouseMove} 
           onMouseUp={handleMouseUp} 
-          onWheel={handleWheel} 
           style={{ width: '100%', height: '100%', cursor: hoveredNode ? 'pointer' : 'grab' }}
         />
+
 
         {/* Top Floating Control Toolbar (Light Theme) */}
         <div style={{ position: 'absolute', top: '16px', left: '16px', display: 'flex', gap: '8px', zIndex: 10 }}>

@@ -6,7 +6,7 @@ import traceback as _traceback
 from pathlib import Path
 from typing import Dict, Any, Optional
 
-from fastapi import FastAPI, HTTPException, File, UploadFile, Query, Depends, Body
+from fastapi import FastAPI, HTTPException, File, UploadFile, Query, Depends, Body, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -14,9 +14,38 @@ from .models import QuestionRequest, QAResponse
 from .services.qa_service import answer_question
 from .core.ingestion.parser import parse_document_bytes
 from .core.ingestion.wiki_generator import generate_wiki_pages_from_text, run_ingestion_pipeline
-from .core.retrieval.vector_store import index_wiki_documents, index_documents_from_bytes
 from .core.auth import get_current_user, verify_google_token, create_access_token
 from .core.config import get_settings
+
+
+def run_ingestion_in_background(
+    file_bytes: bytes,
+    filename: str,
+    user_id: str,
+    user_wiki_dir: str,
+    doc_record: Dict[str, Any]
+):
+    """Background worker function for asynchronous 8-stage document ingestion pipeline."""
+    try:
+        pipeline_res = run_ingestion_pipeline(
+            file_bytes=file_bytes,
+            filename=filename,
+            user_id=user_id,
+            wiki_dir=user_wiki_dir
+        )
+        wiki_pages = pipeline_res.get("wiki_pages", [])
+        doc_record["wiki_pages"] = wiki_pages
+        doc_record["parsed_data"] = pipeline_res.get("parsed_output")
+        doc_record["cleaned_text"] = pipeline_res.get("cleaned_output", {}).get("cleaned_markdown", "")
+        doc_record["vector_indexed"] = True
+        doc_record["pages_created"] = pipeline_res.get("pages_created", [])
+        doc_record["pages_updated"] = pipeline_res.get("pages_updated", [])
+        doc_record["status"] = "fully_processed"
+        doc_record["message"] = f"File {filename} successfully processed into Knowledge Graph."
+    except Exception as e:
+        doc_record["status"] = "failed"
+        doc_record["error"] = str(e)
+        print(f"Background ingestion error for {filename}: {e}")
 
 
 class GoogleAuthRequest(BaseModel):
@@ -52,9 +81,31 @@ app.add_middleware(
 )
 
 from .core.paths import get_user_wiki_dir, get_user_raw_docs_dir
+from .core.graph_db import (
+    init_neo4j_schema,
+    upsert_user_node,
+    get_user_wiki_pages,
+    get_wiki_page_by_title,
+    delete_wiki_page,
+    get_user_knowledge_graph,
+    get_user_chat_sessions,
+    get_chat_history,
+    delete_chat_session,
+    save_chat_message,
+    create_chat_session
+)
 
 # Per-User document storage store (user_id -> file_id -> dict)
 DOCUMENT_STORE: Dict[str, Dict[str, Dict[str, Any]]] = {}
+
+
+@app.on_event("startup")
+async def on_startup():
+    """Initialize Neo4j database schema constraints & Lucene BM25 indexes on startup."""
+    try:
+        init_neo4j_schema()
+    except Exception as e:
+        print(f"Neo4j startup schema note: {e}")
 
 
 @app.post("/auth/google")
@@ -63,6 +114,18 @@ async def google_login(payload: GoogleAuthRequest):
     try:
         user_data = await verify_google_token(payload.credential)
         token = create_access_token(user_data)
+        
+        # Upsert user node in Neo4j
+        try:
+            upsert_user_node(
+                user_id=user_data.get("user_id", "guest"),
+                email=user_data.get("email", ""),
+                name=user_data.get("name", ""),
+                picture=user_data.get("picture", "")
+            )
+        except Exception as ex:
+            print(f"Neo4j upsert user note: {ex}")
+
         return {
             "access_token": token,
             "token_type": "bearer",
@@ -74,6 +137,7 @@ async def google_login(payload: GoogleAuthRequest):
         raise HTTPException(status_code=400, detail=f"Google authentication failed: {str(e)}")
 
 
+
 @app.get("/auth/me")
 async def get_me(current_user: Dict[str, Any] = Depends(get_current_user)):
     """Return currently authenticated user session details."""
@@ -82,11 +146,12 @@ async def get_me(current_user: Dict[str, Any] = Depends(get_current_user)):
 
 @app.post("/upload")
 async def upload_document(
+    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     auto_process: bool = Query(True),
     current_user: Dict[str, Any] = Depends(get_current_user)
 ):
-    """Upload PDF, DOCX, HTML, Markdown, Image, or PPTX document and run 8-stage WikiLLM ingestion pipeline."""
+    """Upload PDF, DOCX, HTML, Markdown, Image, or PPTX document and run 8-stage WikiLLM ingestion pipeline asynchronously."""
     user_id = current_user["user_id"]
     allowed_exts = [".pdf", ".docx", ".doc", ".html", ".htm", ".txt", ".md", ".png", ".jpg", ".jpeg", ".webp", ".pptx", ".ppt"]
     file_ext = Path(file.filename).suffix.lower()
@@ -102,10 +167,8 @@ async def upload_document(
         file_id = str(uuid.uuid4())
         size_bytes = len(file_bytes)
 
-        # Save to unified user raw_documents dir (wiki/users/{user_id}/raw_documents)
-        user_raw_dir = get_user_raw_docs_dir(user_id)
-        saved_file_path = user_raw_dir / f"{file_id}_{file.filename}"
-        saved_file_path.write_bytes(file_bytes)
+        saved_file_path = f"in_memory://{user_id}/{file_id}_{file.filename}"
+
 
         doc_record = {
             "file_id": file_id,
@@ -114,7 +177,7 @@ async def upload_document(
             "saved_path": str(saved_file_path),
             "size_bytes": size_bytes,
             "file_bytes": file_bytes,
-            "status": "uploaded",
+            "status": "processing" if auto_process else "uploaded",
             "parsed_data": None,
             "cleaned_text": None,
             "wiki_pages": [],
@@ -128,37 +191,27 @@ async def upload_document(
         user_wiki_dir = get_user_wiki_dir(user_id)
 
         if auto_process:
-            # Execute full 8-stage structured ingestion pipeline
-            pipeline_res = run_ingestion_pipeline(
-                file_bytes=file_bytes,
-                filename=file.filename,
-                user_id=user_id,
-                wiki_dir=str(user_wiki_dir)
+            # Dispatch background task for non-blocking 8-stage pipeline ingestion
+            background_tasks.add_task(
+                run_ingestion_in_background,
+                file_bytes,
+                file.filename,
+                user_id,
+                str(user_wiki_dir),
+                doc_record
             )
-
-            wiki_pages = pipeline_res["wiki_pages"]
-            doc_record["wiki_pages"] = wiki_pages
-            doc_record["parsed_data"] = pipeline_res.get("parsed_output")
-            doc_record["cleaned_text"] = pipeline_res.get("cleaned_output", {}).get("cleaned_markdown", "")
-
-            # Vector Indexing (Scoped with user_id metadata & namespace)
-            num_indexed = index_wiki_documents(wiki_pages, user_id=user_id)
-            doc_record["vector_indexed"] = True
-            doc_record["status"] = "fully_processed"
 
             return {
                 "file_id": file_id,
                 "filename": file.filename,
                 "saved_path": str(saved_file_path),
                 "size_bytes": size_bytes,
-                "message": f"File {file.filename} fully ingested via 8-stage pipeline into WikiLLM system.",
-                "status": "fully_processed",
-                "vector_indexed": True,
-                "parser_used": pipeline_res.get("parser_used"),
-                "pages_created": pipeline_res.get("pages_created", []),
-                "pages_updated": pipeline_res.get("pages_updated", []),
-                "wiki_pages_generated": len(wiki_pages),
-                "chunks": num_indexed
+                "message": f"File '{file.filename}' uploaded successfully. Pipeline is processing in the background.",
+                "status": "processing",
+                "vector_indexed": False,
+                "pages_created": [],
+                "pages_updated": [],
+                "wiki_pages_generated": 0
             }
 
         return {
@@ -174,6 +227,30 @@ async def upload_document(
         if isinstance(e, HTTPException):
             raise e
         raise HTTPException(status_code=500, detail=_traceback.format_exc())
+
+
+@app.get("/documents/{file_id}/status")
+async def get_document_status(
+    file_id: str,
+    current_user: Dict[str, Any] = Depends(get_current_user)
+):
+    """Retrieve processing status of an uploaded document task."""
+    user_id = current_user["user_id"]
+    doc_record = DOCUMENT_STORE.get(user_id, {}).get(file_id)
+    if not doc_record:
+        raise HTTPException(status_code=404, detail="Document not found.")
+
+    return {
+        "file_id": file_id,
+        "filename": doc_record["filename"],
+        "status": doc_record.get("status", "uploaded"),
+        "message": doc_record.get("message", ""),
+        "pages_created": doc_record.get("pages_created", []),
+        "pages_updated": doc_record.get("pages_updated", []),
+        "wiki_pages_generated": len(doc_record.get("wiki_pages", [])),
+        "error": doc_record.get("error")
+    }
+
 
 
 @app.post("/documents/{file_id}/parse")
@@ -279,32 +356,27 @@ async def process_full_pipeline_endpoint(
         file_bytes = doc_record.get("file_bytes")
         if not file_bytes and doc_record.get("saved_path") and Path(doc_record["saved_path"]).exists():
             file_bytes = Path(doc_record["saved_path"]).read_bytes()
-        if not file_bytes:
-            file_bytes = b"Tesla produces Electric Vehicles with lithium-ion battery technology."
-
-        parsed = parse_document_bytes(file_bytes, doc_record["filename"])
-        doc_record["parsed_data"] = parsed
-        doc_record["cleaned_text"] = parsed["full_text"]
-
         user_wiki_dir = get_user_wiki_dir(user_id)
-        wiki_pages = generate_wiki_pages_from_text(parsed["full_text"], doc_record["filename"], wiki_dir=str(user_wiki_dir))
+        pipeline_res = run_ingestion_pipeline(
+            file_bytes=file_bytes,
+            filename=doc_record["filename"],
+            user_id=user_id,
+            wiki_dir=str(user_wiki_dir)
+        )
+        wiki_pages = pipeline_res.get("wiki_pages", [])
         doc_record["wiki_pages"] = wiki_pages
-
-        try:
-            num_indexed = index_wiki_documents(wiki_pages, user_id=user_id)
-        except Exception:
-            num_indexed = len(wiki_pages)
-
-        doc_record["vector_indexed"] = True
+        doc_record["parsed_data"] = pipeline_res.get("parsed_output")
+        doc_record["cleaned_text"] = pipeline_res.get("cleaned_output", {}).get("cleaned_markdown", "")
         doc_record["status"] = "fully_processed"
 
         return {
             "file_id": file_id,
             "status": "fully_processed",
-            "vector_indexed": True,
+            "graph_indexed": True,
             "wiki_pages_generated": len(wiki_pages),
-            "chunks": num_indexed
+            "chunks": len(wiki_pages)
         }
+
     except Exception as e:
         if isinstance(e, HTTPException):
             raise e
@@ -313,27 +385,26 @@ async def process_full_pipeline_endpoint(
 
 @app.get("/wiki/index")
 async def get_wiki_index(current_user: Dict[str, Any] = Depends(get_current_user)):
-    """Return cumulative index catalog of all generated Wiki pages for the current user."""
+    """Return cumulative index catalog of all generated Wiki pages for the current user from Neo4j."""
     user_id = current_user["user_id"]
-    from .core.db import get_user_wiki_pages_db
+    db_pages = get_user_wiki_pages(user_id)
 
-    db_pages = get_user_wiki_pages_db(user_id)
     if db_pages:
         pages = []
         for p in db_pages:
             pages.append({
-                "entity_name": p["entity_name"],
-                "filename": p["filename"],
-                "entity_type": p["entity_type"],
+                "entity_name": p["title"],
+                "filename": p.get("file_name", f"{p['title']}.md"),
+                "entity_type": p.get("category", "General"),
                 "summary": p.get("summary", ""),
-                "related_entities": p.get("related_entities", [])
+                "related_entities": p.get("links", [])
             })
         return {
             "total_pages": len(pages),
             "pages": pages
         }
 
-    # Fallback to filesystem index.json if database is empty
+    # Fallback to filesystem index.json if Neo4j graph is empty
     user_wiki_dir = get_user_wiki_dir(user_id)
     index_file = user_wiki_dir / "index.json"
     if not index_file.exists():
@@ -351,51 +422,30 @@ async def get_wiki_index(current_user: Dict[str, Any] = Depends(get_current_user
 
 @app.get("/wiki/graph")
 async def get_wiki_graph(current_user: Dict[str, Any] = Depends(get_current_user)):
-    """Return cumulative Knowledge Graph nodes and edges for visualization for the current user."""
+    """Return cumulative Knowledge Graph nodes and edges for visual interactive canvas for current user."""
     user_id = current_user["user_id"]
-    from .core.db import get_user_wiki_pages_db, get_user_graph_edges_db
+    graph_data = get_user_knowledge_graph(user_id)
 
-    db_pages = get_user_wiki_pages_db(user_id)
-    db_edges = get_user_graph_edges_db(user_id)
-
-    if db_pages:
-        nodes = []
-        node_ids = set()
-        for p in db_pages:
-            e_name = p["entity_name"]
-            nodes.append({
-                "id": e_name,
-                "label": e_name,
-                "type": p["entity_type"],
-                "filename": p["filename"]
-            })
-            node_ids.add(e_name)
-
-        edges = []
-        edge_tuples = set()
-        for e in db_edges:
-            src = e["source"]
-            tgt = e["target"]
-            r_type = e["relation"]
-            if src in node_ids and tgt in node_ids:
-                tup = (src, r_type, tgt)
-                if tup not in edge_tuples:
-                    edges.append({"source": src, "relation": r_type, "target": tgt})
-                    edge_tuples.add(tup)
-
-        # Enforce zero isolated nodes (degree >= 1 for every node)
-        if len(nodes) > 1:
-            connected_nodes = set()
-            for eg in edges:
-                connected_nodes.add(eg["source"])
-                connected_nodes.add(eg["target"])
-
-            hub_node = nodes[0]["id"]
-            for nd in nodes:
-                if nd["id"] not in connected_nodes and nd["id"] != hub_node:
-                    edges.append({"source": nd["id"], "relation": "RELATED_TO", "target": hub_node})
-
-        return {"nodes": nodes, "edges": edges}
+    if graph_data["nodes"]:
+        return {
+            "nodes": [
+                {
+                    "id": n["id"],
+                    "label": n["name"],
+                    "type": n["category"],
+                    "summary": n.get("summary", "")
+                }
+                for n in graph_data["nodes"]
+            ],
+            "edges": [
+                {
+                    "source": l["source"],
+                    "relation": l["type"],
+                    "target": l["target"]
+                }
+                for l in graph_data["links"]
+            ]
+        }
 
     # Fallback to filesystem graph.json if database is empty
     user_wiki_dir = get_user_wiki_dir(user_id)
@@ -414,20 +464,19 @@ async def get_wiki_page(
     entity_name: str,
     current_user: Dict[str, Any] = Depends(get_current_user)
 ):
-    """Return content of specific Wiki Knowledge Markdown page for the current user."""
+    """Return content of specific Wiki Knowledge Markdown page for the current user from Neo4j."""
     user_id = current_user["user_id"]
-    from .core.db import get_wiki_page_db
 
-    # Try database first
-    db_rec = get_wiki_page_db(user_id, entity_name)
+    # Try Neo4j graph database first
+    db_rec = get_wiki_page_by_title(user_id, entity_name)
     if not db_rec:
-        db_rec = get_wiki_page_db(user_id, entity_name.replace(" ", "_"))
+        db_rec = get_wiki_page_by_title(user_id, entity_name.replace(" ", "_"))
 
     if db_rec:
         return {
-            "entity_name": db_rec["entity_name"],
-            "filename": db_rec["filename"],
-            "content": db_rec["content_md"]
+            "entity_name": db_rec["title"],
+            "filename": db_rec.get("file_name", f"{db_rec['title']}.md"),
+            "content": db_rec["content"]
         }
 
     # File system fallback
@@ -456,36 +505,34 @@ async def get_wiki_page(
 
 
 @app.get("/api/chat/sessions")
-async def get_chat_sessions(current_user: Dict[str, Any] = Depends(get_current_user)):
-    """Retrieve all saved chat sessions for current authenticated user."""
-    from .core.db import get_user_chat_sessions_db
+async def get_chat_sessions_endpoint(current_user: Dict[str, Any] = Depends(get_current_user)):
+    """Retrieve all saved chat sessions for current authenticated user from Neo4j."""
     user_id = current_user["user_id"]
-    sessions = get_user_chat_sessions_db(user_id)
+    sessions = get_user_chat_sessions(user_id)
     return {"sessions": sessions}
 
 
 @app.get("/api/chat/sessions/{session_id}/messages")
-async def get_session_messages(
+async def get_session_messages_endpoint(
     session_id: str,
     current_user: Dict[str, Any] = Depends(get_current_user)
 ):
-    """Retrieve message history for a specific chat session."""
-    from .core.db import get_session_messages_db
+    """Retrieve message history for a specific chat session from Neo4j."""
     user_id = current_user["user_id"]
-    messages = get_session_messages_db(user_id, session_id)
+    messages = get_chat_history(user_id, session_id)
     return {"session_id": session_id, "messages": messages}
 
 
 @app.delete("/api/chat/sessions/{session_id}")
-async def delete_chat_session(
+async def delete_chat_session_endpoint(
     session_id: str,
     current_user: Dict[str, Any] = Depends(get_current_user)
 ):
-    """Delete a chat session and all its messages."""
-    from .core.db import delete_chat_session_db
+    """Delete a chat session and all its messages in Neo4j."""
     user_id = current_user["user_id"]
-    success = delete_chat_session_db(user_id, session_id)
+    success = delete_chat_session(user_id, session_id)
     return {"status": "deleted", "session_id": session_id, "success": success}
+
 
 
 @app.post("/qa", response_model=QAResponse)
@@ -499,12 +546,12 @@ async def qa_endpoint(
         raise HTTPException(status_code=400, detail="Question string cannot be empty.")
 
     user_id = current_user["user_id"]
-    from .core.db import save_chat_message_db
     session_id = request.session_id or str(uuid.uuid4())
 
     try:
-        # Save user question to DB
-        save_chat_message_db(
+        # Ensure session exists & save user question to Neo4j
+        create_chat_session(user_id=user_id, session_id=session_id, title=request.question[:40])
+        save_chat_message(
             user_id=user_id,
             session_id=session_id,
             role="user",
@@ -520,14 +567,15 @@ async def qa_endpoint(
         if context_text and context_text != "No context retrieved.":
             sources = [{"snippet": context_text[:300]}]
 
-        # Save assistant response to DB
-        save_chat_message_db(
+        # Save assistant response to Neo4j
+        save_chat_message(
             user_id=user_id,
             session_id=session_id,
             role="assistant",
             content=answer_text,
-            sources=sources
+            citations=json.dumps(sources)
         )
+
 
         is_grounded = "lack sufficient details" not in answer_text.lower() and "does not contain" not in answer_text.lower() and "cannot answer" not in answer_text.lower()
 
@@ -548,17 +596,24 @@ async def index_pdf_endpoint(
     file: UploadFile = File(...),
     current_user: Dict[str, Any] = Depends(get_current_user)
 ):
-    """PDF index endpoint wrapper utilizing full WikiLLM pipeline."""
+    """PDF index endpoint wrapper utilizing full WikiLLM Knowledge Graph pipeline."""
     user_id = current_user["user_id"]
     try:
         file_bytes = await file.read()
-        num_indexed = index_documents_from_bytes(file_bytes, filename=file.filename, user_id=user_id)
+        user_wiki_dir = get_user_wiki_dir(user_id)
+        pipeline_res = run_ingestion_pipeline(
+            file_bytes=file_bytes,
+            filename=file.filename,
+            user_id=user_id,
+            wiki_dir=str(user_wiki_dir)
+        )
         return {
-            "message": f"Successfully indexed {file.filename} into WikiLLM system.",
-            "chunks": num_indexed
+            "message": f"Successfully ingested {file.filename} into WikiLLM Knowledge Graph system.",
+            "pages_generated": len(pipeline_res.get("wiki_pages", []))
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=_traceback.format_exc())
+
 
 
 class DebugWikiRequest(BaseModel):

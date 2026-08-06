@@ -38,16 +38,16 @@ def store_raw_document(
     user_id: str,
     base_dir: Union[str, Path, None] = None
 ) -> Dict[str, Any]:
-    """Store original file unchanged as an immutable source document under wiki/users/{user_id}/raw_documents.
+    """Process raw document metadata in-memory without storing binary files on disk.
 
     Args:
         file_bytes: Raw binary bytes of the document.
         filename: Original file name.
         user_id: ID of the user performing the upload.
-        base_dir: Optional custom directory path override.
+        base_dir: Unused legacy directory parameter.
 
     Returns:
-        Dict containing document metadata including immutable path, sha256, and size.
+        Dict containing document metadata including sha256 hash and size.
     """
     ext = filename.lower().rsplit(".", 1)[-1] if "." in filename else ""
     if ext not in ALLOWED_EXTENSIONS:
@@ -55,22 +55,8 @@ def store_raw_document(
             f"Unsupported file format '.{ext}'. Allowed formats: {', '.join(sorted(ALLOWED_EXTENSIONS.keys()))}"
         )
 
-    # Compute immutable SHA-256 hash
+    # Compute SHA-256 hash in-memory
     doc_hash = hashlib.sha256(file_bytes).hexdigest()
-    
-    if base_dir:
-        target_dir = Path(base_dir) / user_id
-    else:
-        target_dir = get_user_raw_docs_dir(user_id)
-        
-    target_dir.mkdir(parents=True, exist_ok=True)
-
-    sanitized_filename = filename.replace(" ", "_")
-    immutable_filename = f"{doc_hash[:12]}_{sanitized_filename}"
-    immutable_path = target_dir / immutable_filename
-
-    # Write binary content unchanged (immutable)
-    immutable_path.write_bytes(file_bytes)
 
     return {
         "filename": filename,
@@ -79,6 +65,7 @@ def store_raw_document(
         "user_id": user_id,
         "size_bytes": len(file_bytes),
         "sha256": doc_hash,
-        "immutable_path": str(immutable_path.resolve()),
-        "is_immutable": True
+        "immutable_path": None,
+        "is_immutable": False
     }
+

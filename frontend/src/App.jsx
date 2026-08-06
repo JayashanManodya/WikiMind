@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { DataProvider } from './context/DataContext';
+import { DataProvider, useData } from './context/DataContext';
 import LoginPage from './components/LoginPage';
 import LoginModal from './components/LoginModal';
+import NotificationToast from './components/NotificationToast';
 import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
 import DashboardPage from './pages/DashboardPage';
@@ -13,6 +14,7 @@ import GuidePage from './pages/GuidePage';
 
 function AppGate() {
   const { isAuthenticated, isLoading } = useAuth();
+  const { toastNotification, dismissToast } = useData();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedWikiEntity, setSelectedWikiEntity] = useState(null);
 
@@ -116,9 +118,16 @@ function AppGate() {
       </div>
 
       <LoginModal />
+
+      <NotificationToast 
+        toast={toastNotification} 
+        onDismiss={dismissToast} 
+        onViewWiki={() => setActiveTab('wiki')} 
+      />
     </div>
   );
 }
+
 
 export default function App() {
   return (

@@ -80,7 +80,6 @@ WikiMind/
 │   │       │   ├── parser.py        # Multi-format document parser (PDF, DOCX, XLSX, TXT)
 │   │       │   ├── llama_parser.py  # LlamaParse OCR & layout extraction
 │   │       │   ├── cleaner.py       # Stage 3 deterministic cleaning & normalization
-│   │       │   ├── enricher.py      # Stage 4 content enrichment (0ms LLM reuse)
 │   │       │   ├── extractor.py     # Stage 5 single-pass LLM knowledge extractor
 │   │       │   └── wiki_generator.py# Structured 8-stage ingestion pipeline orchestrator
 │   │       └── retrieval/

@@ -31,9 +31,9 @@ def update_wiki_index_catalog(
         Dict with stats on index updates.
     """
     target_dir = Path(wiki_dir)
-    target_dir.mkdir(parents=True, exist_ok=True)
 
     index_json_path = target_dir / "index.json"
+
     graph_json_path = target_dir / "graph.json"
     index_md_path = target_dir / "Index.md"
 
@@ -138,33 +138,9 @@ def update_wiki_index_catalog(
         "graph": graph_data
     }
 
-    # Write JSON catalogs
-    index_json_path.write_text(json.dumps(index_data, indent=2), encoding="utf-8")
-    graph_json_path.write_text(json.dumps(graph_data, indent=2), encoding="utf-8")
-
-    # Generate Index.md sorted alphabetically and grouped by category
-    index_md = "# Wiki Knowledge Base Index\n\n"
-    index_md += f"**Total Active Wiki Pages**: {len(sorted_pages)}  \n"
-    index_md += f"**Total Knowledge Edges**: {len(all_edges)}  \n"
-    index_md += f"**Last Updated**: `{today_iso[:10]}`\n\n"
-
-    # Group by category
-    category_map: Dict[str, List[Dict[str, Any]]] = {}
-    for p in sorted_pages:
-        cat = p.get("category", "General")
-        category_map.setdefault(cat, []).append(p)
-
-    for cat in sorted(category_map.keys()):
-        index_md += f"## Category: {cat}\n\n"
-        for p in category_map[cat]:
-            sum_text = f" - *{p['summary']}*" if p.get("summary") else ""
-            index_md += f"- [{p['entity_name']}](./{p['filename']}){sum_text}\n"
-        index_md += "\n"
-
-    index_md_path.write_text(index_md, encoding="utf-8")
-
     return {
         "total_pages": len(sorted_pages),
-        "total_edges": len(all_edges),
-        "index_md_path": str(index_md_path.resolve())
+        "total_edges": len(all_edges)
     }
+
+

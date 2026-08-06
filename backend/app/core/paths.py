@@ -19,54 +19,27 @@ def get_project_root() -> Path:
     return cwd
 
 def get_base_wiki_dir() -> Path:
-    """Get the base wiki directory root (IKMS_WikiLLM/wiki).
-    
-    Falls back to /tmp/wiki on serverless platforms (Vercel/AWS Lambda) where the project root is read-only.
-    """
+    """Get the base wiki directory root."""
     if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
-        wiki_dir = Path(tempfile.gettempdir()) / "wiki"
-    else:
-        root = get_project_root()
-        wiki_dir = root / "wiki"
-        try:
-            wiki_dir.mkdir(parents=True, exist_ok=True)
-            # Test write access
-            test_file = wiki_dir / ".write_test"
-            test_file.touch()
-            test_file.unlink()
-            return wiki_dir
-        except (OSError, PermissionError):
-            wiki_dir = Path(tempfile.gettempdir()) / "wiki"
+        return Path(tempfile.gettempdir()) / "wiki"
+    root = get_project_root()
+    return root / "wiki"
 
-    wiki_dir.mkdir(parents=True, exist_ok=True)
-    return wiki_dir
 
 def get_user_wiki_dir(user_id: str) -> Path:
-    """Get unified per-user wiki directory root (wiki/users/{user_id}/).
-    
-    Structure:
-    wiki/users/{user_id}/
-    ├── raw_documents/        # Original uploaded source files
-    ├── metadata/             # JSON enrichment metadata
-    ├── Index.md              # Index page
-    ├── index.json            # Index catalog
-    ├── graph.json            # Knowledge Graph catalog
-    ├── log.md                # Execution log
-    └── [Wiki_Pages].md       # Markdown topic pages
-    """
+    """Get unified per-user wiki directory root (wiki/users/{user_id}/)."""
     clean_user = user_id.strip().replace(" ", "_")
     user_dir = get_base_wiki_dir() / "users" / clean_user
-    user_dir.mkdir(parents=True, exist_ok=True)
     return user_dir
+
 
 def get_user_raw_docs_dir(user_id: str) -> Path:
     """Get raw document storage directory for a specific user (wiki/users/{user_id}/raw_documents)."""
     raw_dir = get_user_wiki_dir(user_id) / "raw_documents"
-    raw_dir.mkdir(parents=True, exist_ok=True)
     return raw_dir
 
 def get_user_metadata_dir(user_id: str) -> Path:
     """Get metadata directory for a specific user (wiki/users/{user_id}/metadata)."""
     meta_dir = get_user_wiki_dir(user_id) / "metadata"
-    meta_dir.mkdir(parents=True, exist_ok=True)
     return meta_dir
+

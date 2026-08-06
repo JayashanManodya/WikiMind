@@ -150,11 +150,10 @@ async def wikimind_agent_node(state: QAState) -> QAState:
         else:
             answer = _extract_last_ai_content(result["messages"])
     else:
-        # Direct retrieval fallback if LLM skipped tool call
-        from ..retrieval.vector_store import retrieve
-        from ..retrieval.serialization import serialize_wikis
-        docs = retrieve(question, k=5, user_id=user_id)
-        context_text = serialize_wikis(docs) if docs else "No context found."
+        # Direct retrieval fallback using Neo4j Knowledge Graph if LLM skipped tool call
+        from ..graph_db import search_wiki_graph
+        graph_docs = search_wiki_graph(user_id=user_id, search_query=question, limit=5)
+        context_text = "\n\n".join(f"### [[{item.get('title')}]]\n{item.get('content') or item.get('summary')}" for item in graph_docs) if graph_docs else "No context found."
         
         synthesis_prompt = f"Question: {question}\n\nCONTEXT:\n{context_text}"
         synthesis_msgs = _build_history_messages(state, synthesis_prompt)
@@ -168,7 +167,7 @@ async def wikimind_agent_node(state: QAState) -> QAState:
 
 
 async def retrieval_node(state: QAState) -> QAState:
-    """Retrieval Agent node: gathers context directly from vector store for the question."""
+    """Retrieval Agent node: gathers context directly from Knowledge Graph for the question."""
     question = state["question"]
     user_id = state.get("user_id") or "guest_user"
     
@@ -194,13 +193,13 @@ async def retrieval_node(state: QAState) -> QAState:
                 else:
                     all_context.append(str(res))
 
-    # Fallback to direct vector store retrieve if tool_calls weren't emitted
+    # Fallback to direct Knowledge Graph retrieve if tool_calls weren't emitted
     if not all_context:
-        from ..retrieval.vector_store import retrieve
-        from ..retrieval.serialization import serialize_wikis
-        docs = retrieve(question, k=5, user_id=user_id)
-        if docs:
-            all_context.append(serialize_wikis(docs))
+        from ..graph_db import search_wiki_graph
+        graph_docs = search_wiki_graph(user_id=user_id, search_query=question, limit=5)
+        if graph_docs:
+            all_context.append("\n\n".join(f"### [[{item.get('title')}]]\n{item.get('content') or item.get('summary')}" for item in graph_docs))
+
 
     return {
         "context": "\n\n".join(all_context) if all_context else "No context found.",

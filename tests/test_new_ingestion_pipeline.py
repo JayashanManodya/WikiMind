@@ -8,7 +8,6 @@ from pathlib import Path
 from backend.app.core.ingestion.raw_storage import store_raw_document
 from backend.app.core.ingestion.llama_parser import parse_with_llamaparse_or_fallback
 from backend.app.core.ingestion.cleaner import clean_and_normalize_markdown
-from backend.app.core.ingestion.enricher import enrich_document
 from backend.app.core.ingestion.extractor import extract_structured_knowledge
 from backend.app.core.ingestion.wiki_engine import update_or_create_wiki_pages
 from backend.app.core.ingestion.index_manager import update_wiki_index_catalog
@@ -73,22 +72,11 @@ Duplicate paragraph here with long enough text to trigger duplicate check.
     assert cleaned_md.count("Duplicate paragraph here") == 1
 
 
-def test_stage4_content_enrichment():
-    """Test Stage 4: Content enrichment metadata generation."""
-    md = "# Artificial Intelligence\n\nArtificial Intelligence (AI) was developed by Alan Turing and computer scientists at Stanford University."
-    enrichment = enrich_document(md, "ai_doc.md")
-
-    assert "title" in enrichment
-    assert "executive_summary" in enrichment
-    assert isinstance(enrichment["concepts"], list)
-
-
 def test_stage5_knowledge_extraction():
     """Test Stage 5: Knowledge extraction into structured JSON schema."""
     md = "# Tesla Inc\n\nTesla Inc is an electric vehicle company founded by Elon Musk in 2003."
-    enrichment = enrich_document(md, "tesla.md")
     
-    knowledge = extract_structured_knowledge(md, enrichment, "tesla.md")
+    knowledge = extract_structured_knowledge(md, {}, "tesla.md")
 
     assert "entities" in knowledge
     assert "concepts" in knowledge

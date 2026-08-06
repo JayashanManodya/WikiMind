@@ -16,13 +16,16 @@ import { uploadDocument } from '../api/client';
 import { useData } from '../context/DataContext';
 
 export default function UploadPage({ setActiveTab }) {
-  const { invalidateAll } = useData();
+  const { invalidateAll, addProcessingTask, activeProcessingTasks, toastNotification } = useData();
   const [file, setFile] = useState(null);
   const [autoProcess, setAutoProcess] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0); // 0: Idle, 1: Parsing, 2: Knowledge, 3: DB & Wiki, 4: Vector DB, 5: Complete
+  const [currentStep, setCurrentStep] = useState(0);
   const [pipelineResult, setPipelineResult] = useState(null);
   const [error, setError] = useState(null);
+
+  const activeTask = activeProcessingTasks.length > 0 ? activeProcessingTasks[0] : null;
+  const isProcessingBackground = Boolean(activeTask || isUploading);
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -54,22 +57,16 @@ export default function UploadPage({ setActiveTab }) {
     setPipelineResult(null);
     setCurrentStep(1);
 
-    // Dynamic stage progression timer giving 5 seconds per step for smooth UX feedback
-    const stepTimer = setInterval(() => {
-      setCurrentStep((prev) => {
-        if (prev >= 1 && prev < 4) return prev + 1;
-        return prev;
-      });
-    }, 5000);
-
     try {
       const res = await uploadDocument(file, autoProcess);
-      clearInterval(stepTimer);
-      setCurrentStep(5);
-      setPipelineResult(res);
-      invalidateAll();
+      if (res.status === 'processing' && res.file_id) {
+        addProcessingTask(res.file_id, file.name);
+      } else {
+        setPipelineResult(res);
+        setCurrentStep(5);
+        invalidateAll();
+      }
     } catch (err) {
-      clearInterval(stepTimer);
       setCurrentStep(0);
       const msg = err.response?.data?.detail || "Error uploading document.";
       setError(msg);
@@ -78,12 +75,38 @@ export default function UploadPage({ setActiveTab }) {
     }
   };
 
+  // Dynamic step progression timer for live progress visualization
+  React.useEffect(() => {
+    if (!isProcessingBackground) return;
+
+    const timer = setInterval(() => {
+      setCurrentStep((prev) => {
+        if (prev >= 1 && prev < 4) return prev + 1;
+        return prev;
+      });
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, [isProcessingBackground]);
+
+  // When task completes via polling notification, update stepper and show success card
+  React.useEffect(() => {
+    if (toastNotification && toastNotification.status === 'fully_processed') {
+      setCurrentStep(5);
+      setPipelineResult({
+        message: toastNotification.message,
+        pages_created: toastNotification.pages_created || []
+      });
+    }
+  }, [toastNotification]);
+
   const steps = [
     { id: 1, label: 'Parsing Document Layout & Text', icon: FileText, desc: 'LlamaParse layout processing' },
     { id: 2, label: 'Extracting Knowledge & Facts', icon: Brain, desc: 'LLM Multi-entity intelligence extraction' },
-    { id: 3, label: 'Generating Wiki & DB Records', icon: Database, desc: 'Saving content_md to SQL Database' },
-    { id: 4, label: 'Vector DB Embedding & Indexing', icon: Zap, desc: 'Generating embeddings in Vector DB' },
+    { id: 3, label: 'Generating Wiki & Neo4j DB Records', icon: Database, desc: 'Saving content & graph edges to Neo4j DB' },
+    { id: 4, label: 'Indexing & Graph Construction', icon: Zap, desc: 'Linking entity references & index catalog' },
   ];
+
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%', maxWidth: '100%' }}>
@@ -213,11 +236,12 @@ export default function UploadPage({ setActiveTab }) {
       )}
 
       {/* Dynamic Ingestion Stepper Card */}
-      {isUploading && (
+      {isProcessingBackground && (
         <div style={{ backgroundColor: '#FFFFFF', borderRadius: '28px', padding: '32px', border: '1px solid #E2E8F0', boxShadow: '0 8px 30px rgba(0,0,0,0.03)' }}>
           <h3 style={{ fontSize: '17px', fontWeight: '700', color: '#09090B', marginBottom: '20px' }}>
-            Ingesting Document: <span style={{ color: '#2563EB' }}>{file?.name}</span>
+            Ingesting Document in Background: <span style={{ color: '#2563EB' }}>{file?.name || activeTask?.filename}</span>
           </h3>
+
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {steps.map((st) => {

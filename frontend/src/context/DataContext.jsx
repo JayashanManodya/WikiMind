@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import { getWikiIndex, getWikiGraph, getChatSessions } from '../api/client';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { getWikiIndex, getWikiGraph, getChatSessions, getDocumentStatus } from '../api/client';
 
 const DataContext = createContext();
 
@@ -11,6 +11,69 @@ export const DataProvider = ({ children }) => {
   const [isLoadingWiki, setIsLoadingWiki] = useState(false);
   const [isLoadingGraph, setIsLoadingGraph] = useState(false);
   const [isLoadingChat, setIsLoadingChat] = useState(false);
+
+  // Background Task & Toast Notification State
+  const [activeProcessingTasks, setActiveProcessingTasks] = useState([]); // [{ fileId, filename }]
+  const [toastNotification, setToastNotification] = useState(null);
+
+  // Invalidate all cached data on new document upload
+  const invalidateAll = useCallback(() => {
+    setWikiPages(null);
+    setWikiGraph(null);
+    setChatSessions(null);
+  }, []);
+
+  const addProcessingTask = useCallback((fileId, filename) => {
+    setActiveProcessingTasks((prev) => [...prev, { fileId, filename }]);
+    setToastNotification({
+      id: fileId,
+      status: 'processing',
+      title: 'Ingesting Document...',
+      message: `File '${filename}' is processing in the background. You can navigate anywhere.`
+    });
+  }, []);
+
+  const dismissToast = useCallback(() => {
+    setToastNotification(null);
+  }, []);
+
+  // Poll background processing tasks
+  useEffect(() => {
+    if (activeProcessingTasks.length === 0) return;
+
+    const interval = setInterval(async () => {
+      for (const task of activeProcessingTasks) {
+        try {
+          const statusRes = await getDocumentStatus(task.fileId);
+          if (statusRes.status === 'fully_processed') {
+            // Remove task from active list
+            setActiveProcessingTasks((prev) => prev.filter((t) => t.fileId !== task.fileId));
+            invalidateAll();
+            setToastNotification({
+              id: task.fileId,
+              status: 'fully_processed',
+              title: 'Document Ingestion Complete!',
+              message: `File '${task.filename}' processed successfully! ${statusRes.pages_created.length} new Wiki pages created.`,
+              filename: task.filename,
+              pages_created: statusRes.pages_created
+            });
+          } else if (statusRes.status === 'failed') {
+            setActiveProcessingTasks((prev) => prev.filter((t) => t.fileId !== task.fileId));
+            setToastNotification({
+              id: task.fileId,
+              status: 'failed',
+              title: 'Ingestion Failed',
+              message: `Failed to process '${task.filename}': ${statusRes.error || 'Unknown error'}`
+            });
+          }
+        } catch (err) {
+          console.error(`Error polling status for ${task.fileId}:`, err);
+        }
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [activeProcessingTasks, invalidateAll]);
 
   // Fetch or return cached Wiki Pages
   const loadWikiPages = useCallback(async (force = false) => {
@@ -69,13 +132,6 @@ export const DataProvider = ({ children }) => {
     }
   }, [chatSessions]);
 
-  // Invalidate all cached data on new document upload
-  const invalidateAll = useCallback(() => {
-    setWikiPages(null);
-    setWikiGraph(null);
-    setChatSessions(null);
-  }, []);
-
   return (
     <DataContext.Provider
       value={{
@@ -88,7 +144,11 @@ export const DataProvider = ({ children }) => {
         loadWikiPages,
         loadWikiGraph,
         loadChatSessions,
-        invalidateAll
+        invalidateAll,
+        activeProcessingTasks,
+        toastNotification,
+        addProcessingTask,
+        dismissToast
       }}
     >
       {children}
@@ -103,3 +163,4 @@ export const useData = () => {
   }
   return context;
 };
+

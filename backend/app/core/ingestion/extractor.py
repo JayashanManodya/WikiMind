@@ -45,6 +45,7 @@ CRITICAL GRAPH & KNOWLEDGE INTEGRATION RULES:
 5. For each entity with rich document text, the `description` MUST be a comprehensive, in-depth multi-paragraph overview detailing full background context, qualifications, achievements, affiliations, and attributes strictly based on the text.
 6. ALWAYS EXTRACT THE PRIMARY SUBJECT / PERSON / AUTHOR / CANDIDATE NAME OF THE DOCUMENT (such as the person whose Resume/CV this is) AND INCLUDE THEM IN `entities` AS TYPE `PERSON` with a full description of their profile, skills, and qualifications. Ensure all projects, experience, education, and affiliations explicitly link to this primary person.
 7. NEVER SUMMARIZE OR SHORTEN CONTENT. For each entity, extract exhaustive, complete, un-truncated multi-paragraph narratives containing ALL facts, step-by-step procedures, technical specifications, code snippets, hardware/software details, numbers, dates, and specific statements from the text. DO NOT condense rich document details into high-level generic bullet points.
+8. EXTRACT ALL PROJECTS, PRODUCTS, SYSTEMS, AND APPLICATIONS AS PRIMARY ENTITIES: Every project, product, system, tool, software, and application mentioned in the document (such as KIKO, WikiMind, PlateX, etc.) MUST be included in the 'entities' array with type 'PRODUCT' or 'SYSTEM' or 'TECHNOLOGY'. Its 'description' MUST contain a comprehensive overview detailing its purpose, features, tech stack, architecture, and candidate responsibilities strictly based on the text.
 
 Extract ONLY structured metadata and knowledge objects according to this exact JSON schema:
 
@@ -56,7 +57,9 @@ Extract ONLY structured metadata and knowledge objects according to this exact J
   "people": ["Person 1"],
   "locations": ["Location 1"],
   "products": ["Product 1"],
+  "projects": ["Project 1"],
   "keywords": ["Keyword 1"],
+
   "citations": ["Citation 1"],
   "references": ["Reference 1"],
   "executive_summary": "Concise executive summary strictly based on document text",

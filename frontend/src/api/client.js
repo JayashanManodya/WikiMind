@@ -47,6 +47,12 @@ export const uploadDocument = async (file, autoProcess = true) => {
   return res.data;
 };
 
+export const getDocumentStatus = async (fileId) => {
+  const res = await api.get(`/documents/${fileId}/status`);
+  return res.data;
+};
+
+
 export const getWikiIndex = async () => {
   const res = await api.get('/wiki/index');
   return res.data;

@@ -13,7 +13,7 @@ import datetime
 from pathlib import Path
 from typing import Dict, Any, List, Set, Tuple
 
-from ..db import save_wiki_page_db, get_wiki_page_db, save_graph_edges_db, get_user_wiki_pages_db
+from ..graph_db import save_wiki_page, get_wiki_page_by_title, get_user_wiki_pages
 
 
 def update_or_create_wiki_pages(
@@ -37,8 +37,8 @@ def update_or_create_wiki_pages(
             - contradictions_flagged: List of contradictions logged
     """
     target_dir = Path(wiki_dir)
-    target_dir.mkdir(parents=True, exist_ok=True)
     user_id = target_dir.name if "users" in target_dir.parts else "default_user"
+
 
     today_str = datetime.date.today().isoformat()
 
@@ -54,13 +54,6 @@ def update_or_create_wiki_pages(
     contradictions = knowledge_json.get("contradictions", [])
     people = knowledge_json.get("people", [])
     authors = knowledge_json.get("authors", [])
-
-    # Import database module for relational storage
-    from ..db import save_wiki_page_db, save_graph_edges_db
-
-    # Save relationships to graph database table
-    if relationships:
-        save_graph_edges_db(user_id=user_id, relationships=relationships)
 
     pages_created = []
     pages_updated = []
@@ -112,20 +105,24 @@ def update_or_create_wiki_pages(
                 "aliases": []
             }
 
-    if not all_entity_targets:
-        # Fallback if no entities extracted
-        stem_name = Path(source_filename).stem.replace("_", " ").title()
-        all_entity_targets[stem_name] = {
-            "entity_name": stem_name,
-            "entity_type": "DOCUMENT",
-            "description": f"Document entity for {source_filename}",
-            "aliases": []
-        }
+    # Ensure projects, products, and software systems (e.g. KIKO, WikiMind) are registered as PRODUCT/SYSTEM entities
+    projects = knowledge_json.get("projects", []) + knowledge_json.get("products", [])
+    for proj in projects:
+        proj_name = proj.strip() if isinstance(proj, str) else (proj.get("name") if isinstance(proj, dict) else "")
+        if proj_name and proj_name not in all_entity_targets:
+            all_entity_targets[proj_name] = {
+                "entity_name": proj_name,
+                "entity_type": "PRODUCT",
+                "description": f"Primary project/product/system extracted from source document {source_filename}.",
+                "aliases": []
+            }
+
 
     # Process each entity
     for entity_name, ent_info in all_entity_targets.items():
         safe_filename = _sanitize_filename(entity_name) + ".md"
         page_path = target_dir / safe_filename
+
         
         entity_rels = rel_map.get(entity_name, [])
         if not entity_rels:
@@ -178,10 +175,10 @@ def update_or_create_wiki_pages(
             if _is_entity_match(entity_name, ent_info["aliases"], c.get("subject", ""))
         ]
 
-        existing_db_rec = get_wiki_page_db(user_id, entity_name)
-        if existing_db_rec or page_path.exists():
+        existing_db_rec = get_wiki_page_by_title(user_id, entity_name)
+        if existing_db_rec or (page_path and page_path.exists()):
             # Update existing page content
-            existing_content = existing_db_rec["content_md"] if existing_db_rec else page_path.read_text(encoding="utf-8")
+            existing_content = existing_db_rec["content"] if existing_db_rec and existing_db_rec.get("content") else (page_path.read_text(encoding="utf-8") if page_path.exists() else "")
             updated_content = _merge_into_existing_page(
                 existing_content=existing_content,
                 entity_info=ent_info,
@@ -196,28 +193,34 @@ def update_or_create_wiki_pages(
             )
             pages_updated.append(entity_name)
 
-            save_wiki_page_db(
+            save_wiki_page(
                 user_id=user_id,
-                entity_name=entity_name,
-                entity_type=ent_info["entity_type"],
-                filename=safe_filename,
-                content_md=updated_content,
-                related_entities=list(related_entity_names)
+                title=entity_name,
+                summary=ent_info.get("description", ""),
+                content=updated_content,
+                category=ent_info.get("entity_type", "General"),
+                file_name=safe_filename,
+                linked_titles=list(related_entity_names)
             )
 
             page_records.append({
                 "entity_name": entity_name,
+                "title": entity_name,
                 "filename": safe_filename,
+                "file_name": safe_filename,
                 "entity_type": ent_info["entity_type"],
+                "category": ent_info["entity_type"],
+                "summary": ent_info.get("description", ""),
                 "related_entities": list(related_entity_names),
+                "links": list(related_entity_names),
                 "relationships": entity_rels,
                 "content": updated_content,
-                "path": str(page_path.resolve()),
+                "path": safe_filename,
                 "status": "updated"
             })
 
         else:
-            # Create new page in memory & save directly to DB + Vector store (0 disk .md files)
+            # Create new page & save directly to Neo4j Graph DB
             new_content = _create_new_page_content(
                 entity_info=ent_info,
                 source_filename=source_filename,
@@ -231,36 +234,33 @@ def update_or_create_wiki_pages(
             )
             pages_created.append(entity_name)
 
-            save_wiki_page_db(
+            save_wiki_page(
                 user_id=user_id,
-                entity_name=entity_name,
-                entity_type=ent_info["entity_type"],
-                filename=safe_filename,
-                content_md=new_content,
-                related_entities=list(related_entity_names)
+                title=entity_name,
+                summary=ent_info.get("description", ""),
+                content=new_content,
+                category=ent_info.get("entity_type", "General"),
+                file_name=safe_filename,
+                linked_titles=list(related_entity_names)
             )
 
             page_records.append({
                 "entity_name": entity_name,
+
+                "title": entity_name,
                 "filename": safe_filename,
+                "file_name": safe_filename,
                 "entity_type": ent_info["entity_type"],
+                "category": ent_info["entity_type"],
+                "summary": ent_info.get("description", ""),
                 "related_entities": list(related_entity_names),
+                "links": list(related_entity_names),
                 "relationships": entity_rels,
                 "content": new_content,
                 "path": str(page_path.resolve()),
                 "status": "created"
             })
 
-            page_records.append({
-                "entity_name": entity_name,
-                "filename": safe_filename,
-                "entity_type": ent_info["entity_type"],
-                "related_entities": list(related_entity_names),
-                "relationships": entity_rels,
-                "content": new_content,
-                "path": str(page_path.resolve()),
-                "status": "created"
-            })
 
     # Update backlinks across all entity pages in wiki_dir
     _update_backlinks_in_wiki(target_dir, [p["entity_name"] for p in page_records])
@@ -288,7 +288,19 @@ def _create_new_page_content(
     """Format markdown content for a new Wiki page adhering strictly to source knowledge boundaries."""
     entity_name = entity_info["entity_name"]
     entity_type = entity_info["entity_type"]
-    overview = entity_info["description"] or "Mentioned in uploaded source document without additional background details."
+    desc_raw = (entity_info.get("description") or "").strip()
+    if not desc_raw or "without additional background details" in desc_raw or "Auto-referenced" in desc_raw:
+        if relationships:
+            rel_summary = ", ".join([f"{r['relation'].lower().replace('_', ' ')} [[{r['target']}]]" for r in relationships[:3] if r.get('target')])
+            if rel_summary:
+                overview = f"{entity_name} is an entity extracted from [{source_filename}](file://{source_filename}) associated with {rel_summary}."
+            else:
+                overview = f"{entity_name} is a key concept identified in [{source_filename}](file://{source_filename})."
+        else:
+            overview = f"{entity_name} is a key entity identified in [{source_filename}](file://{source_filename})."
+    else:
+        overview = desc_raw
+
 
     fact_items = []
     for f in facts:
@@ -374,17 +386,36 @@ def _merge_into_existing_page(
 
     content = "\n".join(lines)
 
+    # Update overview if new detailed description is available
+    new_desc = (entity_info.get("description") or "").strip()
+    if new_desc and "without additional background details" not in new_desc and "Auto-referenced" not in new_desc:
+        if re.search(r"#*\s*Overview", content, re.IGNORECASE):
+            content = re.sub(r"#*\s*Overview\n.*?(?=\n#+ |\n\n## |\Z)", f"### Overview\n{new_desc}\n\n", content, flags=re.DOTALL | re.IGNORECASE)
+        elif "Auto-referenced entity concept" in content or "without additional background details" in content:
+            content = re.sub(r"(Auto-referenced entity concept.*?\n|Mentioned in uploaded source document.*?\n)", f"{new_desc}\n", content)
+        elif "## Information from Uploaded Sources" in content:
+            content = content.replace("## Information from Uploaded Sources", f"## Information from Uploaded Sources\n\n### Overview\n{new_desc}")
+        else:
+            content += f"\n\n### Overview\n{new_desc}\n"
+
+
     # Append new facts if not already present
     if new_facts:
         fact_additions = []
         for f in new_facts:
             stmt = f.get("statement", "").strip()
             if stmt and stmt not in content:
-                fact_additions.append(f"- {stmt} (Confidence: {f.get('confidence', 0.95)})")
+                fact_additions.append(f"- {stmt}")
         
-        if fact_additions and "## Key Facts" in content:
-            content = content.replace("## Key Facts\n- No facts recorded yet.", "## Key Facts")
-            content = content.replace("## Key Facts", "## Key Facts\n" + "\n".join(fact_additions))
+        if fact_additions:
+            if "### Known Facts & Data" in content:
+                content = content.replace("### Known Facts & Data\n- Mentioned in uploaded source document without additional factual statements.", "### Known Facts & Data")
+                content = content.replace("### Known Facts & Data", "### Known Facts & Data\n" + "\n".join(fact_additions))
+            elif "## Key Facts" in content:
+                content = content.replace("## Key Facts\n- No facts recorded yet.", "## Key Facts")
+                content = content.replace("## Key Facts", "## Key Facts\n" + "\n".join(fact_additions))
+            else:
+                content += "\n\n### Known Facts & Data\n" + "\n".join(fact_additions)
 
     # Append new relationships
     if new_relationships:
@@ -393,9 +424,12 @@ def _merge_into_existing_page(
             r_str = f"- [[{r['source']}]] --[`{r['relation']}`]--> [[{r['target']}]]"
             if r_str not in content:
                 rel_additions.append(r_str)
-        if rel_additions and "## Knowledge Graph Relationships" in content:
-            content = content.replace("## Knowledge Graph Relationships\n- No explicit relationships defined.", "## Knowledge Graph Relationships")
-            content = content.replace("## Knowledge Graph Relationships", "## Knowledge Graph Relationships\n" + "\n".join(rel_additions))
+        if rel_additions:
+            if "## Knowledge Graph Relationships" in content:
+                content = content.replace("## Knowledge Graph Relationships\n- No explicit relationships defined in source text.", "## Knowledge Graph Relationships")
+                content = content.replace("## Knowledge Graph Relationships", "## Knowledge Graph Relationships\n" + "\n".join(rel_additions))
+            else:
+                content += "\n\n## Knowledge Graph Relationships\n" + "\n".join(rel_additions)
 
     # Append new source document citation if not already present
     doc_link = f"- [{source_filename}](file://{source_filename})"
@@ -416,23 +450,37 @@ def _merge_into_existing_page(
     return content
 
 
+
 def _update_backlinks_in_wiki(wiki_dir: Path, target_entity_names: List[str]):
     """Update backlinks section across all entity database records."""
-    from ..db import get_user_wiki_pages_db, save_wiki_page_db
+    from ..graph_db import get_user_wiki_pages, save_wiki_page
 
     user_id = wiki_dir.name if "users" in wiki_dir.parts else "default_user"
-    db_pages = get_user_wiki_pages_db(user_id)
+    db_pages = get_user_wiki_pages(user_id)
     if not db_pages:
-        return
+        # Filesystem fallback if graph db has no pages yet
+        md_files = list(wiki_dir.glob("*.md"))
+        db_pages = []
+        for f in md_files:
+            if f.name not in ["Index.md", "README.md"]:
+                entity = f.stem.replace("_", " ")
+                content = f.read_text(encoding="utf-8")
+                db_pages.append({
+                    "title": entity,
+                    "content": content,
+                    "category": "General",
+                    "file_name": f.name,
+                    "links": []
+                })
 
-    all_pages_map = {p["entity_name"]: p for p in db_pages}
+    all_pages_map = {p["title"]: p for p in db_pages if p.get("title")}
 
     # Find backlinks for each page
     for target_name, target_rec in all_pages_map.items():
-        target_txt = target_rec["content_md"]
+        target_txt = target_rec.get("content", "")
         linking_pages = []
         for other_name, other_rec in all_pages_map.items():
-            if other_name != target_name and f"[[{target_name}]]" in other_rec["content_md"]:
+            if other_name != target_name and f"[[{target_name}]]" in other_rec.get("content", ""):
                 linking_pages.append(other_name)
 
         if "## Backlinks" in target_txt:
@@ -449,14 +497,19 @@ def _update_backlinks_in_wiki(wiki_dir: Path, target_entity_names: List[str]):
             )
 
             if new_target_txt != target_txt:
-                save_wiki_page_db(
+                safe_fn = _sanitize_filename(target_name) + ".md"
+                save_wiki_page(
                     user_id=user_id,
-                    entity_name=target_name,
-                    entity_type=target_rec["entity_type"],
-                    filename=target_rec["filename"],
-                    content_md=new_target_txt,
-                    related_entities=target_rec["related_entities"]
+                    title=target_name,
+                    summary=target_rec.get("summary", ""),
+                    content=new_target_txt,
+                    category=target_rec.get("category", "General"),
+                    file_name=safe_fn,
+                    linked_titles=target_rec.get("links", [])
                 )
+
+
+
 
 
 def _sanitize_filename(name: str) -> str:
