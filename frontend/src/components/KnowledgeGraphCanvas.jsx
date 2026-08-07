@@ -1,29 +1,20 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
-import { Maximize2, Minimize2, ZoomIn, ZoomOut, RefreshCw, Search, Layers, Info } from 'lucide-react';
+import { Maximize2, Minimize2, ZoomIn, ZoomOut, RefreshCw, Search } from 'lucide-react';
 
-const FILE_COLOR_PALETTE = [
-  '#2563EB', // Royal Blue
-  '#F97316', // Vibrant Orange
-  '#10B981', // Emerald Green
-  '#8B5CF6', // Purple
-  '#EF4444', // Red
-  '#06B6D4', // Cyan
-  '#EC4899', // Pink
-  '#EAB308', // Amber Gold
-  '#6366F1', // Indigo
-  '#14B8A6', // Teal
-  '#F43F5E', // Rose
-  '#A855F7'  // Violet
+const PASTEL_PALETTE = [
+  { bg: '#E9D5FF', border: '#C084FC', text: '#1E1B4B' }, // Soft Pastel Purple
+  { bg: '#A7F3D0', border: '#34D399', text: '#064E3B' }, // Soft Pastel Mint
+  { bg: '#FED7AA', border: '#FB923C', text: '#7C2D12' }, // Soft Pastel Peach
 ];
 
 const getFileColor = (fileKey) => {
-  if (!fileKey) return FILE_COLOR_PALETTE[0];
+  if (!fileKey) return PASTEL_PALETTE[0];
   let hash = 0;
   for (let i = 0; i < fileKey.length; i++) {
     hash = fileKey.charCodeAt(i) + ((hash << 5) - hash);
   }
-  const index = Math.abs(hash) % FILE_COLOR_PALETTE.length;
-  return FILE_COLOR_PALETTE[index];
+  const index = Math.abs(hash) % PASTEL_PALETTE.length;
+  return PASTEL_PALETTE[index];
 };
 
 export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSelectNode }) {
@@ -138,14 +129,17 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
       const angle = (i / count) * 2 * Math.PI;
       const deg = degreeMap[n.id] || 1;
       const fileKey = n.filename || n.file || pageFileMap[n.id?.toLowerCase()] || 'Ingested Document';
-      const color = getFileColor(fileKey);
+      const colorObj = getFileColor(fileKey);
 
       return {
         id: n.id,
         label: n.label || n.id,
         type: n.type || 'CONCEPT',
         fileKey: fileKey,
-        color: color,
+        colorObj: colorObj,
+        color: colorObj.bg,
+        textColor: colorObj.text,
+        borderColor: colorObj.border,
         degree: deg,
         r: Math.min(36, Math.max(16, 14 + deg * 3.5)), // Node radius based on degree
         x: width / 2 + radius * Math.cos(angle) + (Math.random() - 0.5) * 40,
@@ -197,11 +191,11 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
 
       // 1. Force Simulation Step
       if (nodes.length > 0) {
-        const kRepulsion = 4500;
-        const linkDistance = 140;
-        const kLink = 0.04;
+        const kRepulsion = 8500;
+        const linkDistance = 150;
+        const kLink = 0.03;
         const damping = 0.86;
-        const gravity = 0.015;
+        const gravity = 0.001;
         const center = { x: width / 2, y: height / 2 };
 
         // Repulsion between all node pairs
@@ -215,7 +209,8 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
             let dist = Math.sqrt(dx * dx + dy * dy) || 1;
 
             if (dist < 400) {
-              const force = kRepulsion / (dist * dist);
+              const effectiveDist = Math.max(30, dist);
+              const force = kRepulsion / (effectiveDist * effectiveDist);
               const fx = (dx / dist) * force;
               const fy = (dy / dist) * force;
 
@@ -255,6 +250,8 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
         });
 
         // Gravity pull toward canvas center & position update
+        const maxVel = 8;
+        const margin = 40;
         nodes.forEach(n => {
           if (n !== draggedNodeRef.current) {
             n.vx += (center.x - n.x) * gravity;
@@ -263,8 +260,22 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
             n.vx *= damping;
             n.vy *= damping;
 
+            // Clamp velocity to prevent physics explosions
+            n.vx = Math.max(-maxVel, Math.min(maxVel, n.vx));
+            n.vy = Math.max(-maxVel, Math.min(maxVel, n.vy));
+
+            // Sanitize against NaN values
+            if (isNaN(n.vx)) n.vx = 0;
+            if (isNaN(n.vy)) n.vy = 0;
+
             n.x += n.vx;
             n.y += n.vy;
+
+            // Keep nodes bounded inside visible canvas bounds
+            if (n.x < margin) { n.x = margin; n.vx *= -0.5; }
+            if (n.x > width - margin) { n.x = width - margin; n.vx *= -0.5; }
+            if (n.y < margin) { n.y = margin; n.vy *= -0.5; }
+            if (n.y > height - margin) { n.y = height - margin; n.vy *= -0.5; }
           }
         });
       }
@@ -304,17 +315,17 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
         const endY = n2.y - (dy / dist) * n2.r;
 
         ctx.save();
-        ctx.globalAlpha = isDimmed ? 0.12 : 0.45;
+        ctx.globalAlpha = isDimmed ? 0.12 : 0.6;
 
         ctx.beginPath();
         ctx.moveTo(startX, startY);
         ctx.lineTo(endX, endY);
-        ctx.strokeStyle = n1.color || '#2563EB';
-        ctx.lineWidth = isDimmed ? 1 : 1.8;
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = isDimmed ? 1 : 1.5;
         ctx.stroke();
 
         // Render small arrowhead at target
-        const arrowSize = 7;
+        const arrowSize = 6;
         const angle = Math.atan2(dy, dx);
 
         ctx.beginPath();
@@ -328,13 +339,24 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
           endY - arrowSize * Math.sin(angle + Math.PI / 6)
         );
         ctx.closePath();
-        ctx.fillStyle = n1.color || '#2563EB';
+        ctx.fillStyle = '#64748B';
         ctx.fill();
+
+        // Render uppercase relation label text along edge
+        if (e.relation && dist > 60 && !isDimmed) {
+          const midX = (startX + endX) / 2;
+          const midY = (startY + endY) / 2;
+          ctx.font = '800 8.5px Inter, sans-serif';
+          ctx.fillStyle = '#94A3B8';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(e.relation.toUpperCase(), midX, midY);
+        }
 
         ctx.restore();
       });
 
-      // Render Solid Colored Nodes (No White Outline)
+      // Render Solid Colored Pastel Nodes
       nodes.forEach(n => {
         const isHovered = hoveredNode && hoveredNode.id === n.id;
         const isSelected = selectedNode && selectedNode.id === n.id;
@@ -350,31 +372,39 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
         ctx.save();
         ctx.globalAlpha = isDimmed ? 0.15 : 1;
 
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r, 0, 2 * Math.PI);
-
-        // Solid node fill color based on file palette
-        ctx.fillStyle = n.color || '#2563EB';
-
-        // Outer Glow Shadow on hover/selection (No white outline stroke)
-        if (isHovered || isSelected || (activeCommunityFilter && n.fileKey === activeCommunityFilter) || (searchLower && n.label.toLowerCase().includes(searchLower))) {
-          ctx.shadowColor = n.color;
-          ctx.shadowBlur = isSelected ? 22 : 16;
+        // Render Cyan Halo Selection Ring (Matching reference UI)
+        if ((isHovered || isSelected) && !isDimmed) {
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.r + 5, 0, 2 * Math.PI);
+          ctx.strokeStyle = '#38BDF8';
+          ctx.lineWidth = 2.5;
+          ctx.shadowColor = '#38BDF8';
+          ctx.shadowBlur = 12;
+          ctx.stroke();
         }
 
+        // Draw solid pastel node circle
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, 2 * Math.PI);
+        ctx.fillStyle = n.color || '#E9D5FF';
         ctx.fill();
 
-        // Text label inside / centered over node (Solid Black)
-        ctx.font = `800 ${Math.min(13, Math.max(10, n.r * 0.55))}px Inter, sans-serif`;
-        ctx.fillStyle = '#000000';
+        // Subtle node border stroke
+        ctx.strokeStyle = n.borderColor || '#C084FC';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Text label inside node (Dark Crisp Text)
+        ctx.font = `800 ${Math.min(12, Math.max(9.5, n.r * 0.52))}px Inter, sans-serif`;
+        ctx.fillStyle = n.textColor || '#1E1B4B';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         
         // Wrap text if needed
         const maxTextWidth = n.r * 1.7;
         let text = n.label;
-        if (ctx.measureText(text).width > maxTextWidth && text.length > 10) {
-          text = text.substring(0, 8) + '..';
+        if (ctx.measureText(text).width > maxTextWidth && text.length > 9) {
+          text = text.substring(0, 7) + '..';
         }
         ctx.fillText(text, n.x, n.y);
 
@@ -404,8 +434,7 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
       if (canvas && container) {
         const clientW = container.clientWidth || 800;
         const clientH = container.clientHeight || 580;
-        const calculatedWidth = clientW - (isFullscreen ? 300 : 280);
-        canvas.width = Math.max(450, calculatedWidth);
+        canvas.width = Math.max(450, clientW);
         canvas.height = Math.max(500, clientH);
       }
     };
@@ -551,8 +580,6 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
     return () => canvas.removeEventListener('wheel', handleWheelNative);
   }, []);
 
-  const activeDisplayNode = hoveredNode || selectedNode;
-
   return (
     <div 
       ref={containerRef} 
@@ -560,17 +587,17 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
         position: 'relative', 
         width: '100%', 
         height: isFullscreen ? '100vh' : isMobile ? 'auto' : '580px', 
-        backgroundColor: '#FFFFFF', // Pure Light Theme Canvas Background
+        backgroundColor: '#18181B', // Dark Theme Canvas Background (Matching reference UI)
         borderRadius: '24px', 
-        border: '1px solid #E2E8F0', 
+        border: '1px solid #27272A', 
         overflow: 'hidden',
         display: 'flex',
         flexDirection: isMobile ? 'column' : 'row',
-        boxShadow: '0 8px 30px rgba(0,0,0,0.02)',
+        boxShadow: '0 8px 30px rgba(0,0,0,0.3)',
         ...(isFullscreen ? { position: 'fixed', top: 0, left: 0, zIndex: 9999, borderRadius: 0 } : {})
       }}
     >
-      {/* Main Canvas Viewport (Left Area - Light Theme) */}
+      {/* Main Canvas Viewport (Dark Theme) */}
       <div style={{ flex: 1, position: 'relative', height: isMobile ? '380px' : '100%', minHeight: isMobile ? '380px' : 'auto', overflow: 'hidden' }}>
         <canvas 
           ref={canvasRef} 
@@ -580,72 +607,58 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
           style={{ width: '100%', height: '100%', cursor: hoveredNode ? 'pointer' : 'grab' }}
         />
 
-
-        {/* Top Floating Control Toolbar (Light Theme) */}
+        {/* Top Floating Control Toolbar (Dark Theme) */}
         <div style={{ position: 'absolute', top: '16px', left: '16px', display: 'flex', gap: '8px', zIndex: 10 }}>
           <button 
             onClick={zoomIn} 
             title="Zoom In"
-            style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
+            style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#27272A', border: '1px solid #3F3F46', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
           >
-            <ZoomIn size={16} color="#09090B" />
+            <ZoomIn size={16} color="#F4F4F5" />
           </button>
 
           <button 
             onClick={zoomOut} 
             title="Zoom Out"
-            style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
+            style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#27272A', border: '1px solid #3F3F46', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
           >
-            <ZoomOut size={16} color="#09090B" />
+            <ZoomOut size={16} color="#F4F4F5" />
           </button>
 
           <button 
             onClick={resetZoom} 
             title="Reset View"
-            style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
+            style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#27272A', border: '1px solid #3F3F46', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
           >
-            <RefreshCw size={15} color="#09090B" />
+            <RefreshCw size={15} color="#F4F4F5" />
           </button>
 
           <button 
             onClick={() => setIsFullscreen(!isFullscreen)} 
             title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-            style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#09090B', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}
+            style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#3F3F46', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
           >
             {isFullscreen ? <Minimize2 size={16} color="#FFFFFF" /> : <Maximize2 size={16} color="#FFFFFF" />}
           </button>
         </div>
-      </div>
 
-      {/* Right Inspector Sidebar Panel (Clean Light Theme) */}
-      <div style={{
-        width: isMobile ? '100%' : '280px',
-        backgroundColor: '#FFFFFF',
-        borderLeft: isMobile ? 'none' : '1px solid #E2E8F0',
-        borderTop: isMobile ? '1px solid #E2E8F0' : 'none',
-        padding: '18px 16px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '20px',
-        overflowY: 'auto',
-        zIndex: 10
-      }}>
-        
-        {/* 1. Search Nodes Input */}
-        <div>
+        {/* Top Right Floating Search Toolbar (Dark Theme) */}
+        <div style={{ position: 'absolute', top: '16px', right: '16px', zIndex: 10 }}>
           <div style={{
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            backgroundColor: '#F8FAFC',
+            backgroundColor: '#27272A',
             borderRadius: '10px',
             padding: '8px 12px',
-            border: '1px solid #E2E8F0'
+            border: '1px solid #3F3F46',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+            width: isMobile ? '160px' : '220px'
           }}>
-            <Search size={15} color="#64748B" />
+            <Search size={15} color="#A1A1AA" />
             <input
               type="text"
-              placeholder="Search nodes..."
+              placeholder="Search graph..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
@@ -653,98 +666,12 @@ export default function KnowledgeGraphCanvas({ graphData, wikiPages = [], onSele
                 border: 'none',
                 outline: 'none',
                 fontSize: '12.5px',
-                color: '#09090B',
+                color: '#F4F4F5',
                 width: '100%'
               }}
             />
           </div>
         </div>
-
-        {/* 2. NODE INFO Card */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', backgroundColor: '#F8FAFC', padding: '14px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Info size={13} color="#2563EB" />
-            <span style={{ fontSize: '11px', fontWeight: '800', color: '#64748B', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-              NODE INFO
-            </span>
-          </div>
-
-          {activeDisplayNode ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '4px' }}>
-              <p style={{ fontSize: '14px', fontWeight: '700', color: '#09090B', margin: 0 }}>
-                {activeDisplayNode.label}
-              </p>
-              <div style={{ fontSize: '11.5px', color: '#64748B', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <p style={{ margin: 0 }}>Type: <span style={{ color: '#09090B', fontWeight: '600' }}>{activeDisplayNode.type}</span></p>
-                <p style={{ margin: 0 }}>Source: <span style={{ color: activeDisplayNode.color, fontWeight: '700' }}>{activeDisplayNode.fileKey}</span></p>
-                <p style={{ margin: 0 }}>Connections: <span style={{ color: '#09090B', fontWeight: '600' }}>{activeDisplayNode.degree}</span></p>
-              </div>
-            </div>
-          ) : (
-            <p style={{ fontSize: '12px', color: '#94A3B8', fontStyle: 'italic', margin: 0 }}>
-              Click or hover a node to inspect it
-            </p>
-          )}
-        </div>
-
-        {/* 3. SOURCE FILES & COMMUNITIES List */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Layers size={13} color="#2563EB" />
-            <span style={{ fontSize: '11px', fontWeight: '800', color: '#64748B', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-              SOURCE FILES & COMMUNITIES
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            {communities.map((c) => {
-              const isSelectedFilter = activeCommunityFilter === c.name;
-              return (
-                <div
-                  key={c.name}
-                  onMouseEnter={() => setActiveCommunityFilter(c.name)}
-                  onMouseLeave={() => setActiveCommunityFilter(null)}
-                  onClick={() => setActiveCommunityFilter(prev => prev === c.name ? null : c.name)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '8px 10px',
-                    borderRadius: '8px',
-                    backgroundColor: isSelectedFilter ? '#F1F5F9' : 'transparent',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
-                    <div style={{
-                      width: '10px',
-                      height: '10px',
-                      borderRadius: '9999px',
-                      backgroundColor: c.color,
-                      flexShrink: 0,
-                      boxShadow: `0 0 6px ${c.color}`
-                    }} />
-                    <span style={{
-                      fontSize: '12px',
-                      fontWeight: isSelectedFilter ? '700' : '500',
-                      color: isSelectedFilter ? '#09090B' : '#334155',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
-                    }}>
-                      {c.name}
-                    </span>
-                  </div>
-                  <span style={{ fontSize: '11px', fontWeight: '700', color: c.color, marginLeft: '6px', flexShrink: 0 }}>
-                    {c.count} wikis
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
       </div>
     </div>
   );
