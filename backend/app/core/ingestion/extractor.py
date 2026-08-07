@@ -30,7 +30,7 @@ STRICT KNOWLEDGE BOUNDARY RULES (SOURCE GROUNDING):
 2. EXTRACT ONLY WHAT IS EXPLICITLY STATED OR DIRECTLY INFERRED FROM THE TEXT. If a fact, statistic, or date is not in the text, DO NOT INCLUDE IT.
 3. MINIMAL PAGES FOR NAMED ENTITIES: If an entity is mentioned ONLY by name (e.g. "SLIIT" or "Elon Musk") without background details in the document, set `description` to: "Mentioned in uploaded source document without additional background details." DO NOT generate unmentioned history or facts.
 4. EVERY FACT, CLAIM, AND RELATIONSHIP MUST INCLUDE SOURCE PROVENANCE: Include section or exact textual quote supporting the statement.
-5. ACCURACY IS MORE IMPORTANT THAN COMPLETENESS. Prefer sparse, 100% accurate extraction over detailed extraction containing unverified assumptions.
+5. EXHAUSTIVE FACTUAL COMPLETENESS (ZERO OMISSION): Extract 100% of all factual statements, metrics, numbers, dates, scores, technical specifications, step-by-step procedures, and claims present in the parsed text without omitting any details. Ground every extracted fact strictly in the document text.
 
 CRITICAL GRAPH & KNOWLEDGE INTEGRATION RULES:
 1. NO ENTITY SHOULD REMAIN ISOLATED. Every entity extracted MUST have at least one explicit relationship connecting it to the main domain topic, country, founder, technology, or category strictly supported by text.
