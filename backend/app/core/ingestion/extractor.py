@@ -28,24 +28,17 @@ UNIFIED_ENRICHMENT_EXTRACTION_PROMPT = """You are an expert Document Intelligenc
 STRICT KNOWLEDGE BOUNDARY RULES (SOURCE GROUNDING):
 1. THE UPLOADED DOCUMENT IS THE ONLY SOURCE OF TRUTH. NEVER use your internal pre-trained knowledge to expand background history, founding dates, locations, employee counts, or facts not present in the text.
 2. EXTRACT ONLY WHAT IS EXPLICITLY STATED OR DIRECTLY INFERRED FROM THE TEXT. If a fact, statistic, or date is not in the text, DO NOT INCLUDE IT.
-3. MINIMAL PAGES FOR NAMED ENTITIES: If an entity is mentioned ONLY by name (e.g. "SLIIT" or "Elon Musk") without background details in the document, set `description` to: "Mentioned in uploaded source document without additional background details." DO NOT generate unmentioned history or facts.
+3. MINIMAL PAGES FOR NAMED ENTITIES: If an entity is mentioned ONLY by name without background details in the document, set `description` to: "Mentioned in uploaded source document without additional background details." DO NOT generate unmentioned history or facts.
 4. EVERY FACT, CLAIM, AND RELATIONSHIP MUST INCLUDE SOURCE PROVENANCE: Include section or exact textual quote supporting the statement.
-5. EXHAUSTIVE FACTUAL COMPLETENESS (ZERO OMISSION): Extract 100% of all factual statements, metrics, numbers, dates, scores, technical specifications, step-by-step procedures, and claims present in the parsed text without omitting any details. Ground every extracted fact strictly in the document text.
+5. EXHAUSTIVE FACTUAL COMPLETENESS (ZERO OMISSION): Extract 100% of all factual statements, metrics, numbers, dates, scores, specifications, procedures, attributes, and claims present in the parsed text without omitting any details. Ground every extracted fact strictly in the document text.
 
-CRITICAL GRAPH & KNOWLEDGE INTEGRATION RULES:
-1. NO ENTITY SHOULD REMAIN ISOLATED. Every entity extracted MUST have at least one explicit relationship connecting it to the main domain topic, country, founder, technology, or category strictly supported by text.
-2. ALWAYS EXTRACT THE MAIN UMBRELLA DOMAIN CONCEPT (e.g. "Electric Vehicles", "Artificial Intelligence", "Information Technology", "Renewable Energy"). Ensure this main domain concept is included in `concepts` and `entities`.
-3. EXTRACT ALL RELATIONSHIP TRIPLES connecting entities explicitly found in text:
-   - Entity -> Main Domain Topic (e.g., `Tesla --[CATEGORIZED_AS]--> Electric Vehicles`)
-   - Entity -> Location/Country (e.g., `Tesla --[HEADQUARTERED_IN]--> United States`)
-   - Entity -> Product/Model (e.g., `Tesla --[MANUFACTURES]--> Tesla Model 3`)
-   - Entity -> Technology (e.g., `Tesla --[USES_TECHNOLOGY]--> Autopilot`)
-   - Entity -> Founder/Leader (e.g., `Tesla --[FOUNDED_BY]--> Martin Eberhard`)
-4. DO NOT SUMMARIZE AWAY SPECIFIC DETAILS. Extract EVERY numeric value, GPA, credit count, registration/ID number, date, grade, affiliation, score, module name, and specific claim present in the document.
-5. For each entity with rich document text, the `description` MUST be a comprehensive, in-depth multi-paragraph overview detailing full background context, qualifications, achievements, affiliations, and attributes strictly based on the text.
-6. ALWAYS EXTRACT THE PRIMARY SUBJECT / PERSON / AUTHOR / CANDIDATE NAME OF THE DOCUMENT (such as the person whose Resume/CV this is) AND INCLUDE THEM IN `entities` AS TYPE `PERSON` with a full description of their profile, skills, and qualifications. Ensure all projects, experience, education, and affiliations explicitly link to this primary person.
-7. NEVER SUMMARIZE OR SHORTEN CONTENT. For each entity, extract exhaustive, complete, un-truncated multi-paragraph narratives containing ALL facts, step-by-step procedures, technical specifications, code snippets, hardware/software details, numbers, dates, and specific statements from the text. DO NOT condense rich document details into high-level generic bullet points.
-8. EXTRACT ALL PROJECTS, PRODUCTS, SYSTEMS, AND APPLICATIONS AS PRIMARY ENTITIES: Every project, product, system, tool, software, and application mentioned in the document (such as KIKO, WikiMind, PlateX, etc.) MUST be included in the 'entities' array with type 'PRODUCT' or 'SYSTEM' or 'TECHNOLOGY'. Its 'description' MUST contain a comprehensive overview detailing its purpose, features, tech stack, architecture, and candidate responsibilities strictly based on the text.
+CRITICAL UNIVERSAL KNOWLEDGE GRAPH INTEGRATION RULES:
+1. UNIVERSAL DOMAIN AGNOSTICISM: Treat all subjects (technical systems, personal profiles, biographies, research papers, legal documents, financial reports, organizational structures, etc.) equally without domain bias.
+2. PRIMARY SUBJECT & ENTITY DISCOVERY: Identify the primary subject(s) or main topic of the document. Extract ALL distinct named entities mentioned in the text (Person, Organization, Location, Product, System, Concept, Event, Technology, Document) into the 'entities' array with accurate entity types.
+3. EXPLICIT RELATIONSHIP TRIPLES: Extract ALL relationship triples (`Subject --[RELATION_TYPE]--> Object`) explicitly supported by the text linking entities, attributes, topics, and subjects (e.g. `Entity --[HAS_ATTRIBUTE]--> Value`, `Entity --[PART_OF]--> Parent`, `Person --[AFFILIATED_WITH]--> Organization`, `Entity --[CATEGORIZED_AS]--> Topic`). Ensure NO extracted entity remains completely isolated if text provides a connection.
+4. NO LOSS OF SPECIFIC DETAILS: Preserve every numeric value, score, date, metric, affiliation, title, identification code, and specific attribute stated in the text.
+5. EXHAUSTIVE ENTITY DESCRIPTIONS: For each primary entity with rich text, provide a comprehensive, multi-paragraph overview detailing its background context, attributes, features, responsibilities, or properties strictly grounded in the document text.
+6. CANONICAL ENTITY DEDUPLICATION: Use consistent, canonical Title-Case names for all entities across 'entities', 'concepts', 'projects', 'products', 'people', 'organisations', 'locations', and 'relationships'. NEVER output duplicate variations of the same name. Consolidate all facts and relations under one unified canonical title.
 
 Extract ONLY structured metadata and knowledge objects according to this exact JSON schema:
 
@@ -96,7 +89,7 @@ Extract ONLY structured metadata and knowledge objects according to this exact J
   "relationships": [
     {
       "source": "Subject Entity/Concept",
-      "relation": "RELATION_TYPE (e.g. CATEGORIZED_AS, ENROLLED_IN, SPECIALIZES_IN, HEADQUARTERED_IN, MANUFACTURES, FOUNDED_BY, PRODUCES, APPLIES_TO, PART_OF, CREATED, USES_TECHNOLOGY)",
+      "relation": "RELATION_TYPE (e.g. HAS_ATTRIBUTE, PART_OF, AFFILIATED_WITH, CATEGORIZED_AS, LOCATED_IN, DEPENDS_ON, ASSOCIATED_WITH)",
       "target": "Object Entity/Concept",
       "evidence": "Exact quoted textual evidence supporting relationship"
     }
@@ -190,7 +183,7 @@ def extract_structured_knowledge(
     context_prompt += f"\nDocument Text:\n{truncated_md}"
 
     messages = [
-        SystemMessage(content=KNOWLEDGE_EXTRACTION_PROMPT),
+        SystemMessage(content=UNIFIED_ENRICHMENT_EXTRACTION_PROMPT),
         HumanMessage(content=context_prompt)
     ]
 
@@ -220,75 +213,75 @@ def extract_structured_knowledge(
 
 
 def _enforce_no_isolated_entities(knowledge_json: Dict[str, Any], filename: str, enrichment: Dict[str, Any]):
-    """Post-processing step guaranteeing every extracted entity/concept has at least 1 relationship triple
-    and registering any document person/author (such as CV candidate) as a primary PERSON entity.
+    """Post-processing step guaranteeing that 100% of all extracted entities form a single,
+    unified connected Knowledge Graph component centered around the document's primary subject.
+    Eliminates all floating disconnected sub-graph islands.
     """
     entities = knowledge_json.get("entities", [])
     concepts = knowledge_json.get("concepts", [])
     relationships = knowledge_json.get("relationships", [])
 
-    # Register people and authors as PERSON entities if not present
-    people = knowledge_json.get("people", []) + knowledge_json.get("authors", [])
-    existing_entity_names = [e.get("name", "").strip() for e in entities if e.get("name")]
-    
-    person_hub_name = None
-    for person in people:
-        p_name = person.strip()
-        if p_name and p_name.lower() not in [n.lower() for n in existing_entity_names]:
-            entities.append({
-                "name": p_name,
-                "type": "PERSON",
-                "description": f"Primary subject/person extracted from {filename}.",
-                "aliases": []
-            })
-            existing_entity_names.append(p_name)
-            if not person_hub_name:
-                person_hub_name = p_name
-        elif p_name and not person_hub_name:
-            person_hub_name = p_name
-
-    # Determine primary hub entity (PERSON > Document title > main concept > first entity)
-    doc_stem = filename.replace("_", " ").split(".")[0].title()
-    primary_hub = person_hub_name or knowledge_json.get("title") or enrichment.get("title") or doc_stem
-
-    # Collect all node names
+    # Collect all real extracted node names
     all_node_names = []
     for ent in entities:
         n = ent.get("name", "").strip()
         if n and n not in all_node_names:
             all_node_names.append(n)
     for conc in concepts:
-        c = conc.get("name", "").strip()
+        c = conc.get("name", "").strip() if isinstance(conc, dict) else str(conc).strip()
         if c and c not in all_node_names:
             all_node_names.append(c)
 
     if not all_node_names:
         return
 
-    # Find connected nodes
-    connected_nodes = set()
+    # Determine primary subject hub (prefer PERSON type entity, else first entity)
+    target_hub = all_node_names[0]
+    for ent in entities:
+        if ent.get("type", "").upper() == "PERSON":
+            target_hub = ent.get("name", "").strip()
+            break
+
+    # Build undirected adjacency list for graph component reachability
+    from collections import defaultdict
+    adj = defaultdict(set)
     for rel in relationships:
         s = rel.get("source", "").strip()
         t = rel.get("target", "").strip()
-        if s:
-            connected_nodes.add(s)
-        if t:
-            connected_nodes.add(t)
+        if s and t:
+            adj[s].add(t)
+            adj[t].add(s)
 
-    # Main target to connect isolated nodes to
-    target_hub = primary_hub if primary_hub in all_node_names else all_node_names[0]
+    # Perform BFS from target_hub to find all reachable nodes
+    reachable = set()
+    queue = [target_hub]
+    reachable.add(target_hub)
+    while queue:
+        curr = queue.pop(0)
+        for neighbor in adj[curr]:
+            if neighbor not in reachable:
+                reachable.add(neighbor)
+                queue.append(neighbor)
 
+    # For any node or sub-graph island not reachable from target_hub, connect it to target_hub
     for node in all_node_names:
-        if node not in connected_nodes:
+        if node not in reachable:
             if node != target_hub:
                 relationships.append({
                     "source": node,
-                    "relation": "MENTIONED_IN",
+                    "relation": "ASSOCIATED_WITH",
                     "target": target_hub,
                     "evidence": f"Extracted entity from source document {filename}"
                 })
-                connected_nodes.add(node)
-                connected_nodes.add(target_hub)
+                # Update reachability so all nodes in its sub-component are now reachable
+                sub_queue = [node]
+                reachable.add(node)
+                while sub_queue:
+                    sub_curr = sub_queue.pop(0)
+                    for neighbor in adj[sub_curr]:
+                        if neighbor not in reachable:
+                            reachable.add(neighbor)
+                            sub_queue.append(neighbor)
 
     knowledge_json["relationships"] = relationships
 

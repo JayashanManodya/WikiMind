@@ -59,63 +59,154 @@ def update_or_create_wiki_pages(
     pages_updated = []
     page_records = []
 
-    # Map relationships by entity name
+    # Map relationships and entity targets using canonical lookup
+    all_entity_targets: Dict[str, Dict[str, Any]] = {}
+    canonical_map: Dict[str, str] = {}
+
+    def _get_or_create_canonical_name(name: str) -> str:
+        clean_name = name.strip()
+        if not clean_name:
+            return ""
+        
+        # Remove file extension if present (e.g. .pdf, .docx)
+        if "." in clean_name and len(clean_name.rsplit(".", 1)[-1]) <= 4:
+            clean_name = clean_name.rsplit(".", 1)[0].strip()
+
+        norm_key = re.sub(r"[\s_\-]+", " ", clean_name.lower())
+
+        # Check direct normalized key match
+        for existing_low, canonical in list(canonical_map.items()):
+            ex_norm = re.sub(r"[\s_\-]+", " ", existing_low)
+            if norm_key == ex_norm:
+                if clean_name != canonical and clean_name[0].isupper() and canonical[0].islower():
+                    canonical_map[existing_low] = clean_name
+                    canonical_map[norm_key] = clean_name
+                    return clean_name
+                return canonical
+
+        # Dynamic prefix matching with normalized delimiters (Zero hardcoded suffix lists)
+        for existing_low, canonical in list(canonical_map.items()):
+            ex_norm = re.sub(r"[\s_\-]+", " ", existing_low)
+            if norm_key.startswith(ex_norm + " "):
+                canonical_map[norm_key] = canonical
+                return canonical
+            elif ex_norm.startswith(norm_key + " "):
+                canonical_map[existing_low] = clean_name
+                canonical_map[norm_key] = clean_name
+                return clean_name
+
+        canonical_map[norm_key] = clean_name
+        return clean_name
+
+    # 1. Group primary entity targets first so Title-Case canonical names are registered
+    for ent in entities:
+        name = ent.get("name", "").strip()
+        c_name = _get_or_create_canonical_name(name)
+        if c_name:
+            if c_name not in all_entity_targets:
+                all_entity_targets[c_name] = {
+                    "entity_name": c_name,
+                    "entity_type": ent.get("type", "CONCEPT").strip().upper(),
+                    "description": ent.get("description", "").strip(),
+                    "aliases": ent.get("aliases", [])
+                }
+            else:
+                curr_desc = all_entity_targets[c_name].get("description", "")
+                new_desc = ent.get("description", "").strip()
+                if len(new_desc) > len(curr_desc):
+                    all_entity_targets[c_name]["description"] = new_desc
+                for alias in ent.get("aliases", []):
+                    if alias and alias not in all_entity_targets[c_name]["aliases"]:
+                        all_entity_targets[c_name]["aliases"].append(alias)
+
+    # 2. Map relationships using canonical names
     rel_map: Dict[str, List[Dict[str, str]]] = {}
     for rel in relationships:
-        src = rel.get("source", "").strip()
-        tgt = rel.get("target", "").strip()
+        src_raw = rel.get("source", "").strip()
+        tgt_raw = rel.get("target", "").strip()
+        src = _get_or_create_canonical_name(src_raw) if src_raw else ""
+        tgt = _get_or_create_canonical_name(tgt_raw) if tgt_raw else ""
         rel_type = rel.get("relation", "RELATED_TO").strip()
         if src:
             rel_map.setdefault(src, []).append({"source": src, "relation": rel_type, "target": tgt})
         if tgt and tgt != src:
             rel_map.setdefault(tgt, []).append({"source": src, "relation": rel_type, "target": tgt})
 
-    # Group entity targets
-    all_entity_targets = {}
-    for ent in entities:
-        name = ent.get("name", "").strip()
-        if name:
-            all_entity_targets[name] = {
-                "entity_name": name,
-                "entity_type": ent.get("type", "CONCEPT").strip().upper(),
-                "description": ent.get("description", "").strip(),
-                "aliases": ent.get("aliases", [])
-            }
-
-    # Ensure concepts without entity records are included
+    # 3. Ensure concepts without entity records are included
     for conc in concepts:
-        c_name = conc.get("name", "").strip()
+        c_raw = conc.get("name", "").strip() if isinstance(conc, dict) else str(conc).strip()
+        c_name = _get_or_create_canonical_name(c_raw)
         if c_name and c_name not in all_entity_targets:
             all_entity_targets[c_name] = {
                 "entity_name": c_name,
                 "entity_type": "CONCEPT",
-                "description": conc.get("definition", "").strip(),
+                "description": conc.get("definition", "").strip() if isinstance(conc, dict) else f"Extracted concept entity from {source_filename}.",
                 "aliases": []
             }
 
-    # Ensure document people and authors (e.g. CV candidates) are registered as PERSON entities
+    # 4. Ensure organisations and locations are registered
+    orgs = knowledge_json.get("organisations", [])
+    for org in orgs:
+        o_raw = org.strip() if isinstance(org, str) else ""
+        o_name = _get_or_create_canonical_name(o_raw)
+        if o_name and o_name not in all_entity_targets:
+            all_entity_targets[o_name] = {
+                "entity_name": o_name,
+                "entity_type": "ORGANIZATION",
+                "description": f"Extracted organization entity from source document {source_filename}.",
+                "aliases": []
+            }
+
+    locs = knowledge_json.get("locations", [])
+    for loc in locs:
+        l_raw = loc.strip() if isinstance(loc, str) else ""
+        l_name = _get_or_create_canonical_name(l_raw)
+        if l_name and l_name not in all_entity_targets:
+            all_entity_targets[l_name] = {
+                "entity_name": l_name,
+                "entity_type": "LOCATION",
+                "description": f"Extracted location entity from source document {source_filename}.",
+                "aliases": []
+            }
+
+    # 5. Ensure document people and authors are registered as PERSON entities
     people = knowledge_json.get("people", []) + knowledge_json.get("authors", [])
     for p in people:
-        p_name = p.strip() if isinstance(p, str) else ""
+        p_raw = p.strip() if isinstance(p, str) else ""
+        p_name = _get_or_create_canonical_name(p_raw)
         if p_name and p_name not in all_entity_targets:
             all_entity_targets[p_name] = {
                 "entity_name": p_name,
                 "entity_type": "PERSON",
-                "description": f"Primary subject/person extracted from source document {source_filename}.",
+                "description": f"Extracted person entity from source document {source_filename}.",
                 "aliases": []
             }
 
-    # Ensure projects, products, and software systems (e.g. KIKO, WikiMind) are registered as PRODUCT/SYSTEM entities
+    # 6. Ensure projects, products, and software systems are registered as PRODUCT/SYSTEM entities
     projects = knowledge_json.get("projects", []) + knowledge_json.get("products", [])
     for proj in projects:
-        proj_name = proj.strip() if isinstance(proj, str) else (proj.get("name") if isinstance(proj, dict) else "")
+        proj_raw = proj.strip() if isinstance(proj, str) else (proj.get("name") if isinstance(proj, dict) else "")
+        proj_name = _get_or_create_canonical_name(proj_raw)
         if proj_name and proj_name not in all_entity_targets:
             all_entity_targets[proj_name] = {
                 "entity_name": proj_name,
                 "entity_type": "PRODUCT",
-                "description": f"Primary project/product/system extracted from source document {source_filename}.",
+                "description": f"Extracted project/product/system entity from source document {source_filename}.",
                 "aliases": []
             }
+
+    # 7. Ensure any relationship source/target entities are registered
+    for rel in relationships:
+        for term in [rel.get("source", ""), rel.get("target", "")]:
+            t_raw = term.strip() if isinstance(term, str) else ""
+            t_name = _get_or_create_canonical_name(t_raw)
+            if t_name and t_name not in all_entity_targets:
+                all_entity_targets[t_name] = {
+                    "entity_name": t_name,
+                    "entity_type": "CONCEPT",
+                    "description": f"Extracted connected entity from source document {source_filename}.",
+                    "aliases": []
+                }
 
 
     # Process each entity
@@ -124,12 +215,18 @@ def update_or_create_wiki_pages(
         page_path = target_dir / safe_filename
 
         
+        # Determine primary subject hub for fallback relationships (prefer PERSON entity)
+        primary_hub_entity = None
+        for name_key, info in all_entity_targets.items():
+            if info.get("entity_type") == "PERSON":
+                primary_hub_entity = name_key
+                break
+        if not primary_hub_entity:
+            primary_hub_entity = list(all_entity_targets.keys())[0] if all_entity_targets else ""
+
         entity_rels = rel_map.get(entity_name, [])
-        if not entity_rels:
-            doc_stem = Path(source_filename).stem.replace("_", " ").title()
-            hub_target = doc_stem if doc_stem != entity_name else (list(all_entity_targets.keys())[0] if list(all_entity_targets.keys())[0] != entity_name else "")
-            if hub_target:
-                entity_rels = [{"source": entity_name, "relation": "MENTIONED_IN", "target": hub_target}]
+        if not entity_rels and primary_hub_entity and primary_hub_entity != entity_name:
+            entity_rels = [{"source": entity_name, "relation": "MENTIONED_IN", "target": primary_hub_entity}]
 
         related_entity_names = set()
         for r in entity_rels:

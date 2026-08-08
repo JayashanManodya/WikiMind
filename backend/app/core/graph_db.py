@@ -299,6 +299,116 @@ def search_wiki_graph(user_id: str, search_query: str, limit: int = 5) -> List[D
 
 
 
+def consolidate_user_knowledge_graph(user_id: str) -> Dict[str, Any]:
+    """Clean up and unify user's Neo4j database graph:
+    1. Find primary PERSON node (e.g. 'Jayashan Manodya').
+    2. Identify duplicate document-stub nodes (matching '* CV', '*_CV', '* Profile', '*.pdf').
+    3. Re-route all [:LINKED_TO] relationships from stub nodes directly to the primary PERSON node.
+    4. Delete duplicate stub nodes (`DETACH DELETE stub`).
+    5. Connect any disconnected sub-graph components directly to the primary PERSON node.
+    """
+    driver = get_neo4j_driver()
+    if not driver:
+        return {"consolidated": False}
+
+    try:
+        # Step 1: Find primary PERSON node owned by user
+        find_primary_cypher = """
+        MATCH (u:User {id: $user_id})-[:OWNS]->(p:WikiPage)
+        WHERE (p.category = 'PERSON' OR p.category = 'Person' OR p.category = 'PERSONS')
+              AND NOT p.title ENDS WITH ' Cv' AND NOT p.title ENDS WITH ' CV' AND NOT p.title ENDS WITH '.pdf'
+        RETURN p.title AS title
+        ORDER BY size(p.content) DESC
+        LIMIT 1
+        """
+        
+        with driver.session() as session:
+            res = session.run(find_primary_cypher, user_id=user_id)
+            rec = res.single()
+            primary_title = rec["title"] if rec else None
+
+        if not primary_title:
+            # Fallback to largest page if no PERSON category node
+            fallback_cypher = """
+            MATCH (u:User {id: $user_id})-[:OWNS]->(p:WikiPage)
+            WHERE NOT p.title ENDS WITH ' Cv' AND NOT p.title ENDS WITH ' CV' AND NOT p.title ENDS WITH '.pdf'
+            RETURN p.title AS title
+            ORDER BY size(p.content) DESC
+            LIMIT 1
+            """
+            with driver.session() as session:
+                res = session.run(fallback_cypher, user_id=user_id)
+                rec = res.single()
+                primary_title = rec["title"] if rec else None
+
+        if not primary_title:
+            return {"consolidated": False, "reason": "No primary node found"}
+
+        # Step 2: Re-route outgoing links from stub nodes to primary_title
+        reroute_out = """
+        MATCH (u:User {id: $user_id})-[:OWNS]->(target:WikiPage {title: $primary_title})
+        MATCH (u)-[:OWNS]->(stub:WikiPage)
+        WHERE stub.title <> $primary_title AND (
+            replace(replace(replace(toLower(stub.title), "_", " "), "-", " "), ".", " ") STARTS WITH replace(replace(replace(toLower($primary_title), "_", " "), "-", " "), ".", " ")
+            OR stub.category = 'DOCUMENT'
+            OR stub.category = 'Document'
+            OR stub.title =~ '(?i).*\\\\.[a-z0-9]{2,4}$'
+        )
+        MATCH (stub)-[:LINKED_TO]->(other:WikiPage)
+        WHERE other <> target AND other <> stub
+        MERGE (target)-[:LINKED_TO]->(other)
+        """
+        
+        # Step 3: Re-route incoming links to stub nodes
+        reroute_in = """
+        MATCH (u:User {id: $user_id})-[:OWNS]->(target:WikiPage {title: $primary_title})
+        MATCH (u)-[:OWNS]->(stub:WikiPage)
+        WHERE stub.title <> $primary_title AND (
+            replace(replace(replace(toLower(stub.title), "_", " "), "-", " "), ".", " ") STARTS WITH replace(replace(replace(toLower($primary_title), "_", " "), "-", " "), ".", " ")
+            OR stub.category = 'DOCUMENT'
+            OR stub.category = 'Document'
+            OR stub.title =~ '(?i).*\\\\.[a-z0-9]{2,4}$'
+        )
+        MATCH (other2:WikiPage)-[:LINKED_TO]->(stub)
+        WHERE other2 <> target AND other2 <> stub
+        MERGE (other2)-[:LINKED_TO]->(target)
+        """
+
+        # Step 4: Detach delete duplicate stub nodes
+        delete_stubs = """
+        MATCH (u:User {id: $user_id})-[:OWNS]->(target:WikiPage {title: $primary_title})
+        MATCH (u)-[:OWNS]->(stub:WikiPage)
+        WHERE stub.title <> $primary_title AND (
+            replace(replace(replace(toLower(stub.title), "_", " "), "-", " "), ".", " ") STARTS WITH replace(replace(replace(toLower($primary_title), "_", " "), "-", " "), ".", " ")
+            OR stub.category = 'DOCUMENT'
+            OR stub.category = 'Document'
+            OR stub.title =~ '(?i).*\\\\.[a-z0-9]{2,4}$'
+        )
+        DETACH DELETE stub
+        """
+
+        # Step 5: Connect any floating disconnected sub-graph components directly to primary_title
+        connect_islands = """
+        MATCH (u:User {id: $user_id})-[:OWNS]->(primary:WikiPage {title: $primary_title})
+        MATCH (u)-[:OWNS]->(p:WikiPage)
+        WHERE p <> primary AND NOT (primary)-[:LINKED_TO*1..3]-(p)
+        MERGE (primary)-[:LINKED_TO]->(p)
+        """
+
+        with driver.session() as session:
+            session.run(reroute_out, user_id=user_id, primary_title=primary_title)
+            session.run(reroute_in, user_id=user_id, primary_title=primary_title)
+            session.run(delete_stubs, user_id=user_id, primary_title=primary_title)
+            session.run(connect_islands, user_id=user_id, primary_title=primary_title)
+
+        logger.info(f"Successfully consolidated knowledge graph for user {user_id} around primary node '{primary_title}'")
+        return {"consolidated": True, "primary_title": primary_title}
+
+    except Exception as e:
+        logger.warning(f"Neo4j consolidate_user_knowledge_graph error: {e}")
+        return {"consolidated": False, "error": str(e)}
+
+
 def get_user_knowledge_graph(user_id: str) -> Dict[str, Any]:
     """Retrieve full knowledge graph nodes & edges formatted for 2D/3D physics graph UI."""
     driver = get_neo4j_driver()
@@ -306,6 +416,9 @@ def get_user_knowledge_graph(user_id: str) -> Dict[str, Any]:
         return {"nodes": [], "links": []}
 
     try:
+        # Auto-consolidate graph to merge stub nodes and unite disconnected components
+        consolidate_user_knowledge_graph(user_id)
+
         cypher = """
         MATCH (u:User {id: $user_id})-[:OWNS]->(p:WikiPage)
         OPTIONAL MATCH (p)-[r:LINKED_TO]->(target:WikiPage)

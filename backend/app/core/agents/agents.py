@@ -160,6 +160,19 @@ async def wikimind_agent_node(state: QAState) -> QAState:
         synth_res = await wikimind_agent.ainvoke({"messages": synthesis_msgs})
         answer = _extract_last_ai_content(synth_res["messages"])
 
+    # Fallback to direct model synthesis without tools if answer is empty
+    if not answer or not answer.strip():
+        model_no_tools = create_chat_model()
+        synth_messages = [
+            SystemMessage(content=SUMMARIZATION_SYSTEM_PROMPT),
+            HumanMessage(content=f"Question: {question}\n\nRETRIEVED CONTEXT:\n{context_text}\n\nProvide a clear, grounded Markdown answer.")
+        ]
+        res = await model_no_tools.ainvoke(synth_messages)
+        answer = str(res.content).strip() if res and res.content else ""
+
+    if not answer or not answer.strip():
+        answer = f"I searched your knowledge base for '{question}', but no matching information was found in your uploaded documents."
+
     return {
         "context": context_text,
         "answer": answer,
